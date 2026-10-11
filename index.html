@@ -15,7 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#1B0E22; --plum:#2E1640; --plum2:#40205A; --gold:#C9A24B; --ivory:#F2E8DA; --steel:#9AA0AE; --blood:#B0254A;
+  --ink:#1B0E22; --plum:#2E1640; --plum2:#40205A; --gold:#C9A24B; --ivory:#F2E8DA; --steel:#9AA0AE; --blood:#B0254A; --rose:#FF8FAB;
   --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
   --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
 }
@@ -36,21 +36,29 @@ h1,h2,p{margin:0}
 .tile:active{background:var(--plum2)}
 .tile .ico{font-size:30px}
 .tile .tn{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--gold)}
+.tile.wide{width:100%;margin-top:12px;flex-direction:row;justify-content:center;flex-wrap:wrap;gap:10px;padding:16px 12px;border-color:var(--blood)}
+.tile.wide .tn{color:var(--rose)}
+.tile.locked{opacity:.6}
 .list{display:flex;flex-direction:column;gap:10px}
 .opt{background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:16px;color:var(--ivory);font:inherit;font-size:17px;text-align:left;cursor:pointer}
 .opt:active{background:var(--plum2)}
+.rowbtn{display:flex;justify-content:space-between;align-items:center}
+.cnt{color:var(--gold)}
 .btn{border:0;border-radius:12px;padding:15px 18px;font:inherit;font-weight:600;font-size:17px;cursor:pointer;color:var(--ink);background:var(--gold)}
 .btn.ghost{background:transparent;color:var(--ivory);border:1px solid var(--steel)}
 .btn.block{display:block;width:100%;margin-top:12px;text-align:center}
 .btn:disabled{opacity:.5}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-.link{background:none;border:0;color:var(--steel);font:inherit;padding:6px 0;cursor:pointer}
-textarea,input[type=email],input[type=password]{width:100%;background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:14px;color:var(--ivory);font:inherit;font-size:17px;resize:vertical}
-textarea:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.link{background:none;border:0;color:var(--steel);font:inherit;padding:6px 10px 6px 0;cursor:pointer}
+.link.red{color:var(--rose)}
+textarea,select,input[type=email],input[type=password]{width:100%;background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:14px;color:var(--ivory);font:inherit;font-size:17px;resize:vertical}
+select{margin-bottom:10px}
+textarea:focus,input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
 .card{background:var(--plum);border:1px solid var(--plum2);border-radius:14px;padding:16px;margin-top:12px}
 .card.cur{border-color:var(--gold)}
 .card .head{display:flex;justify-content:space-between;gap:8px;color:var(--steel);font-size:13px;margin-bottom:6px}
 .card .cat{font-family:var(--serif);font-size:20px;color:var(--gold);font-weight:700}
+.card .cat.pen{color:var(--rose)}
 .card .txt{font-size:19px;white-space:pre-wrap;word-break:break-word}
 .big{font-family:var(--serif);font-size:30px;line-height:1.2;white-space:pre-wrap;word-break:break-word;margin:6px 0 4px}
 .resp{margin-top:10px;padding-top:10px;border-top:1px dashed var(--plum2)}
@@ -58,6 +66,11 @@ textarea:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px}
 .resp .val{white-space:pre-wrap;word-break:break-word}
 .badge{font-size:12px;border-radius:99px;padding:2px 9px;border:1px solid var(--steel);color:var(--steel)}
 .badge.ok{border-color:var(--gold);color:var(--gold)}
+.badge.red{border-color:var(--blood);color:var(--rose)}
+.timer{font-variant-numeric:tabular-nums;color:var(--gold)}
+.timerline{margin:8px 0;color:var(--steel);font-size:15px}
+.banner{display:block;width:100%;margin-top:12px;padding:12px 14px;border-radius:12px;border:1px dashed var(--gold);background:transparent;color:var(--ivory);font:inherit;font-size:15px;text-align:left}
+button.banner{cursor:pointer}
 .media img,.media video,#prev img,#prev video{width:100%;max-height:60vh;object-fit:contain;border-radius:10px;margin-top:8px;background:#000}
 .media a{color:var(--gold)}
 .sec{font-family:var(--serif);font-size:22px;margin:28px 0 0;color:var(--ivory)}
@@ -78,8 +91,22 @@ textarea:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px}
 <div id="app"><div class="center"><p class="muted">Caricamento…</p></div></div>
 <div id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
+/* Se qualcosa va storto all'avvio, mostra l'errore invece di una pagina vuota */
+window.addEventListener('error', function(e){
+  var a = document.getElementById('app');
+  if(a && a.textContent.indexOf('Caricamento') >= 0){
+    a.innerHTML = '';
+    var d = document.createElement('div'); d.className = 'center';
+    var p = document.createElement('p'); p.className = 'muted';
+    p.textContent = 'Errore: ' + e.message + ' (riga ' + e.lineno + ')';
+    d.appendChild(p); a.appendChild(d);
+  }
+});
+</script>
+
+<script>
+function gdStart(){
 (function(){
 'use strict';
 
@@ -87,6 +114,7 @@ textarea:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px}
 const APP_NAME   = 'GODDESS';
 const SB_URL     = 'https://gpkwaexsximqtfamhhyh.supabase.co';
 const SB_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdwa3dhZXhzeGltcXRmYW1oaHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2OTY4MTEsImV4cCI6MjEwNzI3MjgxMX0.RXjDs6HKopGLe48kubPFIHJNDu-JMwiey5GT2UwnWzE';
+const VAPID_PUBLIC = 'BB_3y2WUZdHQ6ybx-WvapYGlJHHL6dCribjO7VtAYEZUX-L-wIRwmGhWbQheoSYQ8z5M3LZZ3z98KdU7kAxrTeo';
 const PINKEY     = 'gd_pin';
 const LOCK_AFTER = 60 * 1000;
 const MAX_BYTES  = 50 * 1024 * 1024;
@@ -103,7 +131,8 @@ const CATS = {
   verita:    {nome:'Verità',    icona:'🗝', sub:[['custom','Personalizzata']],
               nota:'Dovrà risponderti con la verità.', hint:'Scrivi la tua domanda'},
   richiesta: {nome:'Richiesta', icona:'👑', sub:[['custom','Personalizzata']],
-              nota:'Dovrà solo confermare di obbedire.', hint:'Scrivi la tua richiesta'}
+              nota:'Dovrà solo confermare di obbedire.', hint:'Scrivi la tua richiesta'},
+  penitenza: {nome:'Penitenza', icona:'⛓', sub:[]}
 };
 const OBB = {
   foto:  {nota:'Dovrà inviarti una foto.',  hint:'Descrivi la foto che vuoi'},
@@ -111,10 +140,19 @@ const OBB = {
   soldi: {nota:'Dovrà inviarti la prova del pagamento.', hint:'Scrivi cosa e quanto vuoi (es. 100€)'},
   custom:{nota:'Potrà risponderti con testo, foto o video.', hint:'Scrivi il tuo ordine'}
 };
+const PEN = [
+  {tipo:'foto',  txt:'Scrivi 50 volte «Sono il giocattolo della mia Padrona» su un foglio e mandami la foto'},
+  {tipo:'foto',  txt:'Mandami un selfie in ginocchio con un cartello: «Ho deluso la mia Padrona»'},
+  {tipo:'video', txt:'Registra un video in cui chiedi scusa alla tua Padrona in ginocchio e la ringrazi per la punizione'},
+  {tipo:'foto',  txt:'Pulisci il bagno e mandami la foto del prima e del dopo'},
+  {tipo:'soldi', txt:'Paga una multa di 50€ alla tua Padrona e mandami la prova'},
+  {tipo:'custom',txt:'Per le prossime 24 ore rivolgiti a me solo come «Mia Dea», dandomi sempre del lei. Confermami quando hai capito'}
+];
 
 /* ---------- STATO ---------- */
-let role = null, orders = [], sig = '', ui = {step:'home'}, pendingFile = null;
+let role = null, uid = null, orders = [], sig = '', ui = {step:'home'}, pendingFile = null;
 let locked = false, hiddenAt = 0, tries = 0, channel = null, poll = null, urlCache = {};
+let off = 0, expFlag = false, pendingRender = false;
 
 /* ---------- ICONA E MANIFEST ---------- */
 function makeIcon(size){
@@ -141,16 +179,20 @@ function makeIcon(size){
     document.head.appendChild(mf);
   }catch(e){}
 })();
+try{ if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){}); }catch(e){}
 
 /* ---------- UTILITA ---------- */
 let tt;
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2600); }
 function buzz(){ try{ navigator.vibrate && navigator.vibrate([120,60,120]); }catch(e){} }
 function fdate(d){ return new Date(d).toLocaleString('it-IT',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }
+function fmt(ms){ const s=Math.max(0,Math.floor(ms/1000)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+const now = () => Date.now() + off;
 async function sha(s){
   const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('gd:'+s));
   return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
 }
+function typing(){ const a=document.activeElement; return !!(a && a.tagName==='TEXTAREA' && a.value.trim().length>0); }
 
 /* ---------- PIN ---------- */
 function pinPad(title, cb){
@@ -182,6 +224,47 @@ function unlock(next){
   });
 }
 
+/* ---------- NOTIFICHE PUSH ---------- */
+function pushOK(){ return ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window); }
+function standalone(){ return window.navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches); }
+function swReady(){
+  return Promise.race([navigator.serviceWorker.ready, new Promise(r=>setTimeout(()=>r(null),2000))]);
+}
+function b64u(s){
+  const p = '='.repeat((4 - s.length % 4) % 4);
+  const r = atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));
+  const o = new Uint8Array(r.length);
+  for(let i=0;i<r.length;i++) o[i] = r.charCodeAt(i);
+  return o;
+}
+async function syncPush(){
+  if(!pushOK() || Notification.permission!=='granted' || !uid) return;
+  try{
+    const reg = await swReady(); if(!reg) return;
+    let sub = await reg.pushManager.getSubscription();
+    if(!sub) sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:b64u(VAPID_PUBLIC)});
+    const j = sub.toJSON();
+    await sb.from('push_subs').upsert({user_id:uid, endpoint:j.endpoint, p256dh:j.keys.p256dh, auth:j.keys.auth},{onConflict:'endpoint'});
+  }catch(e){}
+}
+async function enablePush(){
+  try{
+    const perm = await Notification.requestPermission();
+    if(perm!=='granted'){ toast('Notifiche non attivate'); render(); return; }
+    await syncPush(); toast('Notifiche attivate'); render();
+  }catch(e){ toast('Notifiche non disponibili su questo dispositivo'); }
+}
+function pushBanner(){
+  if(!pushOK()){
+    if(/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone())
+      return '<p class="banner">Per ricevere le notifiche aggiungi l\'app alla schermata Home e aprila da lì.</p>';
+    return '';
+  }
+  if(Notification.permission==='default') return '<button class="banner" data-a="push">🔔 Attiva le notifiche</button>';
+  if(Notification.permission==='denied') return '<p class="banner">Notifiche bloccate: riattivale dalle impostazioni del telefono.</p>';
+  return '';
+}
+
 /* ---------- AUTH ---------- */
 function showLogin(){
   app.innerHTML = '<div class="center"><h1 class="brand">'+APP_NAME+'</h1>'+
@@ -202,19 +285,52 @@ function afterLogin(){
 }
 async function logout(){
   stopLive();
+  try{
+    if(pushOK()){
+      const reg = await swReady();
+      const sub = reg && await reg.pushManager.getSubscription();
+      if(sub) await sb.from('push_subs').delete().eq('endpoint', sub.endpoint);
+    }
+  }catch(e){}
   await sb.auth.signOut();
   localStorage.removeItem(PINKEY);
-  role = null; orders = []; sig = ''; ui = {step:'home'}; locked = false; tries = 0; urlCache = {};
+  role = null; uid = null; orders = []; sig = ''; ui = {step:'home'}; locked = false; tries = 0; urlCache = {};
   showLogin();
 }
 
 /* ---------- DATI ---------- */
 async function loadOrders(){
-  const {data,error} = await sb.from('ordini').select('*').order('created_at',{ascending:false}).limit(60);
-  if(error) return false;
-  orders = data; return true;
+  const t0 = Date.now();
+  const res = await Promise.all([
+    sb.from('ordini').select('*').order('created_at',{ascending:false}).limit(200),
+    sb.rpc('adesso')
+  ]);
+  const r = res[0], c = res[1];
+  if(c && !c.error && c.data) off = new Date(c.data).getTime() - (t0 + Date.now())/2;
+  if(r.error) return false;
+  orders = r.data; return true;
 }
-function signature(){ return orders.map(o=>o.id+o.stato).join(','); }
+function signature(){ return orders.map(o=>[o.id,o.stato,o.scade_at,o.rinvii,o.penitenza_di].join(':')).join(','); }
+
+/* stato derivato: done / expired / pending */
+function stat(o){
+  if(o.stato==='completato') return 'done';
+  if(o.categoria!=='penitenza' && o.scade_at && new Date(o.scade_at).getTime() <= now()) return 'expired';
+  return 'pending';
+}
+function hasPen(o){ return orders.some(p=>p.penitenza_di===o.id); }
+function lists(){
+  const pending=[], needPen=[], archive=[];
+  orders.forEach(o=>{
+    const s = stat(o);
+    if(s==='pending') pending.push(o);
+    else if(s==='done') archive.push(o);
+    else if(hasPen(o)) archive.push(o);
+    else needPen.push(o);
+  });
+  return {pending, needPen, archive};
+}
+function curOrder(){ return lists().pending.slice().reverse()[0]; }
 
 async function refresh(notify){
   const prev = orders.slice();
@@ -226,7 +342,9 @@ async function refresh(notify){
     if(role==='schiavo' && orders.some(o=>o.stato==='in_attesa' && !prev.find(p=>p.id===o.id))){ buzz(); toast('Nuovo ordine dalla Padrona'); }
     if(role==='padrona' && orders.some(o=>o.stato==='completato' && prev.find(p=>p.id===o.id && p.stato==='in_attesa'))){ buzz(); toast('Il tuo schiavo ha risposto'); }
   }
-  if(!locked) render();
+  if(locked) return;
+  if(typing()){ pendingRender = true; return; }
+  render();
 }
 function startLive(){
   stopLive();
@@ -239,17 +357,26 @@ async function boot(){
   const {data,error} = await sb.from('ruoli').select('ruolo').maybeSingle();
   if(error || !data){ toast('Accesso non autorizzato'); await logout(); return; }
   role = data.ruolo;
+  const s = await sb.auth.getSession(); uid = s.data.session ? s.data.session.user.id : null;
   await loadOrders(); sig = signature();
   startLive(); render();
+  syncPush();
 }
 
 /* ---------- RENDER ---------- */
 function done(){ return orders.filter(o=>o.stato==='completato').length; }
 
-function cardHtml(o, canCancel){
-  const c = CATS[o.categoria];
+function header(name){
+  return '<div class="top"><div><h1 class="brand">'+name+'</h1><p class="muted">'+done()+' ordini eseguiti</p></div>'+
+    '<button class="link" data-a="logout">Esci</button></div><div class="chain"></div>';
+}
+
+function cardHtml(o, who){
+  const c = CATS[o.categoria] || {nome:o.categoria};
+  const s = stat(o);
+  const src = o.penitenza_di ? orders.find(x=>x.id===o.penitenza_di) : null;
   let r = '';
-  if(o.stato==='completato'){
+  if(s==='done'){
     let val = '';
     if(o.risposta_tipo==='scelta') val = '<div class="val"><b>'+esc(o.risposta_testo==='SI'?'Sì':'No')+'</b></div>';
     else if(o.risposta_tipo==='ok') val = '<div class="val"><b>Obbedisce.</b></div>';
@@ -257,47 +384,113 @@ function cardHtml(o, canCancel){
     const media = o.risposta_media ? '<div class="media" data-path="'+esc(o.risposta_media)+'" data-tipo="'+esc(o.risposta_tipo)+'"></div>' : '';
     r = '<div class="resp"><div class="lab">Risposta · '+fdate(o.risposta_at)+'</div>'+val+media+'</div>';
   }
-  return '<div class="card"><div class="head"><span class="cat">'+c.nome+'</span><span>'+fdate(o.created_at)+'</span></div>'+
+  const badge = s==='done' ? '<span class="badge ok">Eseguito</span>'
+              : s==='expired' ? '<span class="badge red">Scaduto</span>'
+              : '<span class="badge">In attesa</span>';
+  let timer = '';
+  if(s==='pending' && o.scade_at && o.categoria!=='penitenza')
+    timer = ' <span class="timer" data-exp="'+esc(o.scade_at)+'"></span>'+(o.rinvii?' · rinvii '+o.rinvii+'/3':'');
+  let btns = '';
+  if(who==='padrona'){
+    if(s==='expired' && !hasPen(o)) btns += '<button class="link" data-a="penfor" data-id="'+o.id+'">⛓ Assegna penitenza</button>';
+    btns += '<button class="link red" data-a="del" data-id="'+o.id+'">'+(s==='pending'?'Annulla ordine':'Elimina')+'</button>';
+  }
+  return '<div class="card"><div class="head"><span class="cat'+(o.categoria==='penitenza'?' pen':'')+'">'+c.nome+'</span><span>'+fdate(o.created_at)+'</span></div>'+
+    (src ? '<div class="note" style="margin:0 0 6px">Per: «'+esc(src.testo)+'»</div>' : '')+
     '<div class="txt">'+esc(o.testo)+'</div>'+
-    '<div style="margin-top:8px"><span class="badge '+(o.stato==='completato'?'ok':'')+'">'+(o.stato==='completato'?'Eseguito':'In attesa')+'</span></div>'+
-    (canCancel && o.stato==='in_attesa' ? '<button class="link" data-a="cancel" data-id="'+o.id+'">Annulla ordine</button>' : '')+
-    r+'</div>';
+    '<div style="margin-top:8px">'+badge+timer+'</div>'+
+    (btns ? '<div>'+btns+'</div>' : '')+r+'</div>';
+}
+
+function archiveRows(arr){
+  const c = {}; arr.forEach(o=>{ c[o.categoria] = (c[o.categoria]||0)+1; });
+  const keys = Object.keys(CATS).filter(k=>c[k]);
+  if(!keys.length) return '';
+  return '<p class="sec">Archivio</p><div class="list" style="margin-top:12px">'+
+    keys.map(k=>'<button class="opt rowbtn" data-a="arch" data-c="'+k+'"><span>'+CATS[k].icona+' '+CATS[k].nome+'</span><span class="cnt">'+c[k]+' ›</span></button>').join('')+'</div>';
+}
+function archiveView(arr, who){
+  const items = arr.filter(o=>o.categoria===ui.cat);
+  if(!items.length){ ui = {step:'home'}; return null; }
+  return '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+CATS[ui.cat].icona+' '+CATS[ui.cat].nome+'</p>'+
+    items.map(o=>cardHtml(o,who)).join('');
 }
 
 function render(){
-  if(locked) return;
-  if(!role) return;
+  if(locked || !role) return;
+  pendingRender = false;
   app.innerHTML = role==='padrona' ? viewPadrona() : viewSchiavo();
   hydrate();
+  tick();
 }
 
 function viewPadrona(){
-  let h = '<div class="top"><div><h1 class="brand">Padrona</h1><p class="muted">'+done()+' ordini eseguiti</p></div><button class="link" data-a="logout">Esci</button></div><div class="chain"></div>';
-  const c = CATS[ui.cat];
-  if(ui.step==='home'){
-    h += '<p class="lead">Cosa desideri?</p><div class="grid">'+
-      Object.keys(CATS).map(k=>'<button class="tile" data-a="cat" data-c="'+k+'"><span class="ico">'+CATS[k].icona+'</span><span class="tn">'+CATS[k].nome+'</span></button>').join('')+'</div>';
-    const list = orders.slice(0,20);
-    if(list.length) h += '<p class="sec">Ordini</p>'+list.map(o=>cardHtml(o,true)).join('');
-  } else if(ui.step==='sub'){
-    h += '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+c.nome+'</p><div class="list">'+
+  const L = lists();
+  const st = ui.step;
+  let h = header('Padrona');
+
+  if(st==='archive'){
+    const a = archiveView(L.archive, 'padrona');
+    if(a===null) return viewPadrona();
+    return h + a;
+  }
+  if(st==='sub'){
+    const c = CATS[ui.cat];
+    return h + '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+c.nome+'</p><div class="list">'+
       c.sub.map(s=>'<button class="opt" data-a="sub" data-s="'+s[0]+'">'+s[1]+'</button>').join('')+'</div>';
-  } else {
+  }
+  if(st==='compose'){
+    const c = CATS[ui.cat];
     const info = ui.cat==='obbligo' ? OBB[ui.sub] : c;
-    h += '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+c.nome+'</p>'+
-      '<p class="note">'+esc(info.nota)+'</p><textarea id="ot" rows="5" placeholder="'+esc(info.hint)+'"></textarea>'+
+    return h + '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+c.nome+'</p>'+
+      '<p class="note">'+esc(info.nota)+' Avrà 10 minuti per eseguire (rinviabili 3 volte).</p>'+
+      '<textarea id="ot" rows="5" placeholder="'+esc(info.hint)+'"></textarea>'+
       '<button class="btn block" data-a="order">Invia ordine</button>';
   }
+  if(st==='penlist'){
+    if(!L.needPen.length){ ui = {step:'home'}; return viewPadrona(); }
+    return h + '<button class="link" data-a="back">‹ Indietro</button><p class="lead">Penitenze sbloccate</p>'+
+      L.needPen.map(o=>cardHtml(o,'padrona')).join('');
+  }
+  if(st==='pen'){
+    const src = orders.find(x=>x.id===ui.src);
+    if(!src){ ui = {step:'home'}; return viewPadrona(); }
+    return h + '<button class="link" data-a="back">‹ Indietro</button><p class="lead">Penitenza</p>'+
+      '<p class="note">Per non aver eseguito: «'+esc(src.testo)+'»</p><div class="list">'+
+      PEN.map((p,i)=>'<button class="opt" data-a="prs" data-i="'+i+'">'+esc(p.txt)+'</button>').join('')+
+      '<button class="opt" data-a="prs" data-i="-1">✍️ Personalizzata</button></div>';
+  }
+  if(st==='pencompose'){
+    const opts = [['foto','Dovrà inviare una foto'],['video','Dovrà inviare un video'],['soldi','Pagamento con prova'],['custom','Risposta libera']];
+    return h + '<button class="link" data-a="back">‹ Indietro</button><p class="lead">Penitenza</p>'+
+      '<p class="note">Puoi modificare il testo prima di inviare. Nessun limite di tempo.</p>'+
+      '<select id="pt">'+opts.map(o=>'<option value="'+o[0]+'"'+(ui.ptipo===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
+      '<textarea id="ot" rows="5" placeholder="Scrivi la penitenza">'+esc(ui.ptxt||'')+'</textarea>'+
+      '<button class="btn block" data-a="penorder">Assegna penitenza</button>';
+  }
+
+  /* home */
+  h += pushBanner();
+  h += '<p class="lead">Cosa desideri?</p><div class="grid">'+
+    ['domanda','obbligo','verita','richiesta'].map(k=>'<button class="tile" data-a="cat" data-c="'+k+'"><span class="ico">'+CATS[k].icona+'</span><span class="tn">'+CATS[k].nome+'</span></button>').join('')+'</div>';
+  const n = L.needPen.length;
+  h += '<button class="tile wide'+(n?'':' locked')+'" data-a="pen"><span class="ico">'+(n?'⛓':'🔒')+'</span><span class="tn">Penitenze</span>'+
+    (n ? '<span class="badge ok">'+n+' da assegnare</span>' : '')+'</button>';
+  if(!n) h += '<p class="note" style="text-align:center">Si sblocca quando lo schiavo non esegue un ordine in tempo.</p>';
+  const open = L.pending.concat(L.needPen).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  if(open.length) h += '<p class="sec">In attesa</p>'+open.map(o=>cardHtml(o,'padrona')).join('');
+  h += archiveRows(L.archive);
   return h;
 }
 
 function respArea(o){
   const c = o.categoria, t = o.tipo;
+  const isObb = (c==='obbligo' || c==='penitenza');
   if(c==='domanda') return '<div class="row2"><button class="btn" data-a="yn" data-v="SI">Sì</button><button class="btn ghost" data-a="yn" data-v="NO">No</button></div>';
   if(c==='richiesta') return '<button class="btn block" data-a="ok">Obbedisco, Padrona</button>';
   let h = '';
   if(c==='verita' || t==='custom') h += '<textarea id="rt" rows="4" placeholder="'+(c==='verita'?'Scrivi la verità':'La tua risposta')+'"></textarea>';
-  if(c==='obbligo'){
+  if(isObb){
     const acc = t==='video'?'video/*' : t==='foto'?'image/*' : t==='soldi'?'image/*,application/pdf' : 'image/*,video/*';
     const cap = (t==='foto'||t==='video') ? ' capture' : '';
     const lab = t==='foto'?'Scatta la foto' : t==='video'?'Registra il video' : t==='soldi'?'Allega la prova del pagamento' : 'Allega foto o video (facoltativo)';
@@ -307,19 +500,37 @@ function respArea(o){
 }
 
 function viewSchiavo(){
-  const pend = orders.filter(o=>o.stato==='in_attesa').reverse();
-  const cur = pend[0];
-  const hist = orders.filter(o=>o.stato==='completato').slice(0,15);
-  let h = '<div class="top"><div><h1 class="brand">Schiavo</h1><p class="muted">'+done()+' ordini eseguiti</p></div><button class="link" data-a="logout">Esci</button></div><div class="chain"></div>';
+  const L = lists();
+  const cur = L.pending.slice().reverse()[0];
+  const arch = L.archive.concat(L.needPen);
+  let h = header('Schiavo');
+
+  if(ui.step==='archive'){
+    const a = archiveView(arch, 'schiavo');
+    if(a===null) return viewSchiavo();
+    return h + a;
+  }
+
+  h += pushBanner();
   if(cur){
-    const inf = cur.categoria==='obbligo' ? OBB[cur.tipo].nota : CATS[cur.categoria].nota;
-    h += '<div class="card cur"><div class="head"><span class="cat">'+CATS[cur.categoria].nome+'</span><span>'+fdate(cur.created_at)+'</span></div>'+
-      '<div class="big">'+esc(cur.testo)+'</div>'+(inf?'<p class="note">'+esc(inf)+'</p>':'')+respArea(cur)+'</div>';
-    if(pend.length>1) h += '<p class="note" style="margin-top:12px">Altri ordini in attesa: '+(pend.length-1)+'</p>';
+    const isPen = cur.categoria==='penitenza';
+    const src = cur.penitenza_di ? orders.find(x=>x.id===cur.penitenza_di) : null;
+    const inf = (cur.categoria==='obbligo' || isPen) ? OBB[cur.tipo].nota : CATS[cur.categoria].nota;
+    const timed = cur.scade_at && !isPen;
+    h += '<div class="card cur"><div class="head"><span class="cat'+(isPen?' pen':'')+'">'+CATS[cur.categoria].nome+'</span><span>'+fdate(cur.created_at)+'</span></div>'+
+      (src ? '<div class="note" style="margin:0 0 6px">Per non aver eseguito: «'+esc(src.testo)+'»</div>' : '')+
+      '<div class="big">'+esc(cur.testo)+'</div>'+
+      (timed ? '<div class="timerline">Tempo rimasto <b class="timer" data-exp="'+esc(cur.scade_at)+'"></b></div>' : '')+
+      (inf ? '<p class="note">'+esc(inf)+'</p>' : '')+
+      respArea(cur)+
+      (timed && cur.rinvii<3 ? '<button class="btn ghost block" data-a="rinvia">Rinvia di 10 minuti (restano '+(3-cur.rinvii)+')</button>' : '')+
+      '</div>';
+    const others = L.pending.length - 1;
+    if(others>0) h += '<p class="note" style="margin-top:12px">Altri ordini in attesa: '+others+'</p>';
   } else {
     h += '<p class="lead">Attendi gli ordini della Padrona.</p>';
   }
-  if(hist.length) h += '<p class="sec">Ordini eseguiti</p>'+hist.map(o=>cardHtml(o,false)).join('');
+  h += archiveRows(arch);
   return h;
 }
 
@@ -339,6 +550,22 @@ async function hydrate(){
   }
 }
 
+/* ---------- TIMER ---------- */
+function tick(){
+  let expired = false;
+  document.querySelectorAll('.timer').forEach(el=>{
+    const left = new Date(el.dataset.exp).getTime() - now();
+    if(left<=0){ el.textContent = 'Scaduto'; expired = true; }
+    else el.textContent = fmt(left);
+  });
+  if(expired && !expFlag && !locked){
+    expFlag = true; sig = '';
+    refresh(false);
+    setTimeout(()=>{ expFlag = false; }, 5000);
+  }
+}
+setInterval(tick, 1000);
+
 /* ---------- AZIONI ---------- */
 async function sendOrder(){
   const testo = ($('#ot').value||'').trim();
@@ -351,27 +578,48 @@ async function sendOrder(){
   sig=''; await refresh(false); render();
 }
 
+async function sendPen(){
+  const t = ($('#ot').value||'').trim();
+  if(!t) return toast('Scrivi la penitenza');
+  const b = $('[data-a=penorder]'); b.disabled = true;
+  const {error} = await sb.rpc('assegna_penitenza',{p_scaduto:ui.src, p_tipo:$('#pt').value, p_testo:t});
+  if(error){ b.disabled=false; return toast('Non riuscito: già assegnata o non sbloccata'); }
+  toast('Penitenza assegnata'); ui = {step:'home'};
+  sig=''; await refresh(false); render();
+}
+
+async function delOrder(id){
+  const o = orders.find(x=>x.id===id); if(!o) return;
+  if(!confirm('Eliminare definitivamente questa richiesta?')) return;
+  if(o.risposta_media){ try{ await sb.storage.from('media').remove([o.risposta_media]); }catch(e){} }
+  const {error} = await sb.from('ordini').delete().eq('id', id);
+  if(error) return toast('Non riuscito');
+  toast('Eliminata'); sig=''; await refresh(false); render();
+}
+
 async function answer(o, testo, path, tipo){
   const {error} = await sb.rpc('rispondi',{p_id:o.id, p_testo:testo, p_media:path, p_tipo:tipo});
   if(error) throw error;
 }
+function isExpiredErr(e){ return /scaduto/i.test(String(e && e.message)); }
 
 async function replyChoice(kind, val){
-  const o = orders.filter(x=>x.stato==='in_attesa').reverse()[0]; if(!o) return;
+  const o = curOrder(); if(!o) return;
   try{
     if(kind==='yn') await answer(o, val, null, 'scelta'); else await answer(o, 'Obbedisco', null, 'ok');
     toast('Inviato alla Padrona');
-  }catch(e){ toast('Invio non riuscito, riprova'); }
+  }catch(e){ toast(isExpiredErr(e) ? 'Tempo scaduto' : 'Invio non riuscito, riprova'); }
   sig=''; await refresh(false); render();
 }
 
 async function sendReply(){
-  const o = orders.filter(x=>x.stato==='in_attesa').reverse()[0]; if(!o) return;
+  const o = curOrder(); if(!o) return;
   const rt = ($('#rt') ? $('#rt').value : '').trim();
   const f = pendingFile, c = o.categoria, t = o.tipo;
+  const isObb = (c==='obbligo' || c==='penitenza');
   if(c==='verita' && !rt) return toast('Scrivi la risposta');
-  if(c==='obbligo' && t!=='custom' && !f) return toast('Allega quanto richiesto');
-  if(c==='obbligo' && t==='custom' && !rt && !f) return toast('Rispondi o allega qualcosa');
+  if(isObb && t!=='custom' && !f) return toast('Allega quanto richiesto');
+  if(isObb && t==='custom' && !rt && !f) return toast('Rispondi o allega qualcosa');
   if(f && f.size > MAX_BYTES) return toast('File troppo grande (max 50 MB)');
   const b = $('#sendbtn'); b.disabled = true; b.textContent = 'Invio in corso...';
   try{
@@ -385,14 +633,18 @@ async function sendReply(){
     }
     await answer(o, rt || null, path, tipo);
     pendingFile = null; toast('Inviato alla Padrona');
-  }catch(e){ toast('Invio non riuscito, riprova'); b.disabled=false; b.textContent='Invia alla Padrona'; return; }
+  }catch(e){
+    if(isExpiredErr(e)){ toast('Tempo scaduto'); sig=''; await refresh(false); render(); return; }
+    toast('Invio non riuscito, riprova'); b.disabled=false; b.textContent='Invia alla Padrona'; return;
+  }
   sig=''; await refresh(false); render();
 }
 
-async function cancelOrder(id){
-  const {error} = await sb.from('ordini').delete().eq('id', id);
-  if(error) return toast('Non riuscito');
-  toast('Ordine annullato'); sig=''; await refresh(false); render();
+async function rinvia(){
+  const o = curOrder(); if(!o) return;
+  const {error} = await sb.rpc('rinvia',{p_id:o.id});
+  toast(error ? 'Non rinviabile' : 'Rinviato di 10 minuti');
+  sig=''; await refresh(false); render();
 }
 
 /* ---------- EVENTI ---------- */
@@ -400,21 +652,43 @@ app.addEventListener('click', e => {
   const b = e.target.closest('[data-a]'); if(!b) return;
   const a = b.dataset.a;
   if(a==='logout') return logout();
+  if(a==='push') return enablePush();
   if(a==='cat'){
-    ui.cat = b.dataset.c;
+    ui = {step:'home', cat:b.dataset.c};
     if(CATS[ui.cat].sub.length===1){ ui.sub = CATS[ui.cat].sub[0][0]; ui.step='compose'; } else ui.step='sub';
     return render();
   }
   if(a==='sub'){ ui.sub = b.dataset.s; ui.step='compose'; return render(); }
+  if(a==='arch'){ ui = {step:'archive', cat:b.dataset.c}; return render(); }
+  if(a==='pen'){
+    const need = lists().needPen;
+    if(!need.length) return toast('Si sblocca quando lo schiavo non esegue un ordine in tempo');
+    if(need.length===1) ui = {step:'pen', src:need[0].id}; else ui = {step:'penlist'};
+    return render();
+  }
+  if(a==='penfor'){ ui = {step:'pen', src:b.dataset.id}; return render(); }
+  if(a==='prs'){
+    const i = parseInt(b.dataset.i,10);
+    ui.step = 'pencompose';
+    ui.ptipo = i>=0 ? PEN[i].tipo : 'custom';
+    ui.ptxt  = i>=0 ? PEN[i].txt : '';
+    return render();
+  }
   if(a==='back'){
-    if(ui.step==='compose' && CATS[ui.cat].sub.length>1) ui.step='sub'; else ui.step='home';
+    const s = ui.step;
+    if(s==='compose' && CATS[ui.cat].sub.length>1) ui = {step:'sub', cat:ui.cat};
+    else if(s==='pencompose') ui = {step:'pen', src:ui.src};
+    else if(s==='pen' && lists().needPen.length>1) ui = {step:'penlist'};
+    else ui = {step:'home'};
     return render();
   }
   if(a==='order') return sendOrder();
-  if(a==='cancel') return cancelOrder(b.dataset.id);
+  if(a==='penorder') return sendPen();
+  if(a==='del') return delOrder(b.dataset.id);
   if(a==='yn') return replyChoice('yn', b.dataset.v);
   if(a==='ok') return replyChoice('ok');
   if(a==='send') return sendReply();
+  if(a==='rinvia') return rinvia();
 });
 
 app.addEventListener('change', e => {
@@ -426,6 +700,11 @@ app.addEventListener('change', e => {
   p.innerHTML = f.type.indexOf('video')===0 ? '<video src="'+u+'" controls playsinline></video>'
               : f.type.indexOf('image')===0 ? '<img src="'+u+'" alt="">'
               : '<p class="note">'+esc(f.name)+'</p>';
+});
+
+app.addEventListener('focusout', () => {
+  if(!pendingRender) return;
+  setTimeout(()=>{ if(pendingRender && !typing() && !locked) render(); }, 300);
 });
 
 document.addEventListener('visibilitychange', () => {
@@ -443,6 +722,28 @@ document.addEventListener('visibilitychange', () => {
   else setPin(boot);
 })();
 
+})();
+}
+
+/* Carica la libreria Supabase, con un secondo indirizzo di riserva */
+(function(){
+  var urls = [
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js',
+    'https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'
+  ];
+  function tryLoad(i){
+    if(i >= urls.length){
+      document.getElementById('app').innerHTML =
+        '<div class="center"><p class="muted">Impossibile caricare la libreria. Controlla la connessione o disattiva blocchi pubblicità/DNS filtranti.</p></div>';
+      return;
+    }
+    var s = document.createElement('script');
+    s.src = urls[i];
+    s.onload = function(){ if(window.supabase) gdStart(); else tryLoad(i+1); };
+    s.onerror = function(){ tryLoad(i+1); };
+    document.head.appendChild(s);
+  }
+  tryLoad(0);
 })();
 </script>
 </body>
