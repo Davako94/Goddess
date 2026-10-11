@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="GODDESS">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1B0E22">
+<meta name="robots" content="noindex,nofollow">
+<title>GODDESS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1B0E22; --plum:#2E1640; --plum2:#40205A; --gold:#C9A24B; --ivory:#F2E8DA; --steel:#9AA0AE; --blood:#B0254A;
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--ink);color:var(--ivory);font-family:var(--sans);font-size:16px;line-height:1.45}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#app{max-width:520px;margin:0 auto;padding:18px 18px 48px;min-height:100%}
+h1,h2,p{margin:0}
+.brand{font-family:var(--serif);font-weight:700;font-size:44px;letter-spacing:.02em;color:var(--gold);line-height:1.05}
+.muted{color:var(--steel);font-size:14px}
+.lead{font-family:var(--serif);font-size:28px;font-weight:500;margin:22px 0 12px}
+.note{color:var(--steel);font-size:14px;margin:6px 0 14px}
+.chain{height:10px;margin:14px 0 4px;background:
+  radial-gradient(ellipse 9px 4px at 9px 5px,transparent 60%,var(--gold) 64% 100%) 0 0/18px 10px repeat-x;opacity:.8}
+.center{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{background:var(--plum);border:1px solid var(--plum2);border-radius:14px;padding:22px 12px;color:var(--ivory);display:flex;flex-direction:column;align-items:center;gap:8px;font:inherit;cursor:pointer}
+.tile:active{background:var(--plum2)}
+.tile .ico{font-size:30px}
+.tile .tn{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--gold)}
+.list{display:flex;flex-direction:column;gap:10px}
+.opt{background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:16px;color:var(--ivory);font:inherit;font-size:17px;text-align:left;cursor:pointer}
+.opt:active{background:var(--plum2)}
+.btn{border:0;border-radius:12px;padding:15px 18px;font:inherit;font-weight:600;font-size:17px;cursor:pointer;color:var(--ink);background:var(--gold)}
+.btn.ghost{background:transparent;color:var(--ivory);border:1px solid var(--steel)}
+.btn.block{display:block;width:100%;margin-top:12px;text-align:center}
+.btn:disabled{opacity:.5}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.link{background:none;border:0;color:var(--steel);font:inherit;padding:6px 0;cursor:pointer}
+textarea,input[type=email],input[type=password]{width:100%;background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:14px;color:var(--ivory);font:inherit;font-size:17px;resize:vertical}
+textarea:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.card{background:var(--plum);border:1px solid var(--plum2);border-radius:14px;padding:16px;margin-top:12px}
+.card.cur{border-color:var(--gold)}
+.card .head{display:flex;justify-content:space-between;gap:8px;color:var(--steel);font-size:13px;margin-bottom:6px}
+.card .cat{font-family:var(--serif);font-size:20px;color:var(--gold);font-weight:700}
+.card .txt{font-size:19px;white-space:pre-wrap;word-break:break-word}
+.big{font-family:var(--serif);font-size:30px;line-height:1.2;white-space:pre-wrap;word-break:break-word;margin:6px 0 4px}
+.resp{margin-top:10px;padding-top:10px;border-top:1px dashed var(--plum2)}
+.resp .lab{color:var(--steel);font-size:13px}
+.resp .val{white-space:pre-wrap;word-break:break-word}
+.badge{font-size:12px;border-radius:99px;padding:2px 9px;border:1px solid var(--steel);color:var(--steel)}
+.badge.ok{border-color:var(--gold);color:var(--gold)}
+.media img,.media video,#prev img,#prev video{width:100%;max-height:60vh;object-fit:contain;border-radius:10px;margin-top:8px;background:#000}
+.media a{color:var(--gold)}
+.sec{font-family:var(--serif);font-size:22px;margin:28px 0 0;color:var(--ivory)}
+.dots{display:flex;gap:14px;margin:6px 0}
+.dots i{width:14px;height:14px;border-radius:50%;border:1px solid var(--gold)}
+.dots i.on{background:var(--gold)}
+.pad{display:grid;grid-template-columns:repeat(3,76px);gap:14px;margin-top:10px}
+.pad button{height:76px;border-radius:50%;background:var(--plum);border:1px solid var(--plum2);color:var(--ivory);font:inherit;font-size:26px}
+.pad button:active{background:var(--plum2)}
+.form{width:100%;display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.top{display:flex;justify-content:space-between;align-items:flex-start}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ivory);color:var(--ink);padding:11px 18px;border-radius:99px;font-size:15px;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center;z-index:9}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ---------- CONFIG ---------- */
+const APP_NAME   = 'GODDESS';
+const SB_URL     = 'https://gpkwaexsximqtfamhhyh.supabase.co';
+const SB_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdwa3dhZXhzeGltcXRmYW1oaHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2OTY4MTEsImV4cCI6MjEwNzI3MjgxMX0.RXjDs6HKopGLe48kubPFIHJNDu-JMwiey5GT2UwnWzE';
+const PINKEY     = 'gd_pin';
+const LOCK_AFTER = 60 * 1000;
+const MAX_BYTES  = 50 * 1024 * 1024;
+
+const sb  = supabase.createClient(SB_URL, SB_KEY);
+const app = document.getElementById('app');
+const $   = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const CATS = {
+  domanda:   {nome:'Domanda',   icona:'❓', sub:[['custom','Personalizzata']],
+              nota:'Lui potrà rispondere solo Sì o No.', hint:'Scrivi la tua domanda'},
+  obbligo:   {nome:'Obbligo',   icona:'🔥', sub:[['foto','Foto'],['video','Video'],['soldi','Soldi'],['custom','Personalizzato']]},
+  verita:    {nome:'Verità',    icona:'🗝', sub:[['custom','Personalizzata']],
+              nota:'Dovrà risponderti con la verità.', hint:'Scrivi la tua domanda'},
+  richiesta: {nome:'Richiesta', icona:'👑', sub:[['custom','Personalizzata']],
+              nota:'Dovrà solo confermare di obbedire.', hint:'Scrivi la tua richiesta'}
+};
+const OBB = {
+  foto:  {nota:'Dovrà inviarti una foto.',  hint:'Descrivi la foto che vuoi'},
+  video: {nota:'Dovrà inviarti un video.',  hint:'Descrivi il video che vuoi'},
+  soldi: {nota:'Dovrà inviarti la prova del pagamento.', hint:'Scrivi cosa e quanto vuoi (es. 100€)'},
+  custom:{nota:'Potrà risponderti con testo, foto o video.', hint:'Scrivi il tuo ordine'}
+};
+
+/* ---------- STATO ---------- */
+let role = null, orders = [], sig = '', ui = {step:'home'}, pendingFile = null;
+let locked = false, hiddenAt = 0, tries = 0, channel = null, poll = null, urlCache = {};
+
+/* ---------- ICONA E MANIFEST ---------- */
+function makeIcon(size){
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0,0,size,size);
+  g.addColorStop(0,'#40205A'); g.addColorStop(1,'#1B0E22');
+  x.fillStyle = g; x.fillRect(0,0,size,size);
+  x.strokeStyle = '#C9A24B'; x.lineWidth = size*0.025;
+  x.beginPath(); x.arc(size/2,size/2,size*0.34,0,Math.PI*2); x.stroke();
+  x.fillStyle = '#C9A24B'; x.font = '600 '+(size*0.46)+'px Georgia,serif';
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText(APP_NAME[0], size/2, size/2 + size*0.03);
+  return c.toDataURL('image/png');
+}
+(function setupPwa(){
+  try{
+    const l = document.createElement('link'); l.rel='apple-touch-icon'; l.href=makeIcon(180); document.head.appendChild(l);
+    const m = {name:APP_NAME, short_name:APP_NAME, display:'standalone', background_color:'#1B0E22', theme_color:'#1B0E22',
+      start_url: location.href.split('#')[0].split('?')[0],
+      icons:[{src:makeIcon(192),sizes:'192x192',type:'image/png'},{src:makeIcon(512),sizes:'512x512',type:'image/png'}]};
+    const mf = document.createElement('link'); mf.rel='manifest';
+    mf.href = URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
+    document.head.appendChild(mf);
+  }catch(e){}
+})();
+
+/* ---------- UTILITA ---------- */
+let tt;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2600); }
+function buzz(){ try{ navigator.vibrate && navigator.vibrate([120,60,120]); }catch(e){} }
+function fdate(d){ return new Date(d).toLocaleString('it-IT',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }
+async function sha(s){
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('gd:'+s));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+/* ---------- PIN ---------- */
+function pinPad(title, cb){
+  let v = '';
+  app.innerHTML = '<div class="center"><h1 class="brand">'+APP_NAME+'</h1><p class="muted">'+esc(title)+'</p>'+
+    '<div class="dots">'+'<i></i>'.repeat(4)+'</div>'+
+    '<div class="pad">'+[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>k===''?'<span></span>':'<button data-k="'+k+'">'+k+'</button>').join('')+'</div></div>';
+  const upd = () => document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i<v.length));
+  document.querySelector('.pad').onclick = e => {
+    const b = e.target.closest('button'); if(!b) return;
+    const k = b.dataset.k;
+    if(k==='⌫') v = v.slice(0,-1); else if(v.length<4) v += k;
+    upd();
+    if(v.length===4){ const p=v; v=''; setTimeout(()=>{ upd(); cb(p); },120); }
+  };
+}
+function setPin(next){
+  pinPad('Scegli un PIN di 4 cifre', p1 => {
+    pinPad('Ripeti il PIN', async p2 => {
+      if(p1!==p2){ toast('I PIN non coincidono'); setPin(next); return; }
+      localStorage.setItem(PINKEY, await sha(p1)); next();
+    });
+  });
+}
+function unlock(next){
+  pinPad('Inserisci il PIN', async p => {
+    if(await sha(p) === localStorage.getItem(PINKEY)){ tries=0; next(); }
+    else { tries++; if(tries>=5){ await logout(); return; } toast('PIN errato'); unlock(next); }
+  });
+}
+
+/* ---------- AUTH ---------- */
+function showLogin(){
+  app.innerHTML = '<div class="center"><h1 class="brand">'+APP_NAME+'</h1>'+
+    '<div class="form"><input id="em" type="email" placeholder="Email" autocomplete="username" autocapitalize="none">'+
+    '<input id="pw" type="password" placeholder="Password" autocomplete="current-password">'+
+    '<button class="btn block" id="go">Entra</button></div></div>';
+  $('#go').onclick = async () => {
+    const email = $('#em').value.trim(), password = $('#pw').value;
+    if(!email || !password) return toast('Inserisci email e password');
+    $('#go').disabled = true;
+    const {error} = await sb.auth.signInWithPassword({email, password});
+    if(error){ $('#go').disabled=false; return toast('Accesso non riuscito'); }
+    afterLogin();
+  };
+}
+function afterLogin(){
+  if(localStorage.getItem(PINKEY)) boot(); else setPin(boot);
+}
+async function logout(){
+  stopLive();
+  await sb.auth.signOut();
+  localStorage.removeItem(PINKEY);
+  role = null; orders = []; sig = ''; ui = {step:'home'}; locked = false; tries = 0; urlCache = {};
+  showLogin();
+}
+
+/* ---------- DATI ---------- */
+async function loadOrders(){
+  const {data,error} = await sb.from('ordini').select('*').order('created_at',{ascending:false}).limit(60);
+  if(error) return false;
+  orders = data; return true;
+}
+function signature(){ return orders.map(o=>o.id+o.stato).join(','); }
+
+async function refresh(notify){
+  const prev = orders.slice();
+  if(!await loadOrders()) return;
+  const s = signature();
+  if(s === sig) return;
+  sig = s;
+  if(notify){
+    if(role==='schiavo' && orders.some(o=>o.stato==='in_attesa' && !prev.find(p=>p.id===o.id))){ buzz(); toast('Nuovo ordine dalla Padrona'); }
+    if(role==='padrona' && orders.some(o=>o.stato==='completato' && prev.find(p=>p.id===o.id && p.stato==='in_attesa'))){ buzz(); toast('Il tuo schiavo ha risposto'); }
+  }
+  if(!locked) render();
+}
+function startLive(){
+  stopLive();
+  channel = sb.channel('ordini-live').on('postgres_changes',{event:'*',schema:'public',table:'ordini'},()=>refresh(true)).subscribe();
+  poll = setInterval(()=>{ if(!document.hidden && !locked) refresh(true); }, 15000);
+}
+function stopLive(){ if(channel){ sb.removeChannel(channel); channel=null; } if(poll){ clearInterval(poll); poll=null; } }
+
+async function boot(){
+  const {data,error} = await sb.from('ruoli').select('ruolo').maybeSingle();
+  if(error || !data){ toast('Accesso non autorizzato'); await logout(); return; }
+  role = data.ruolo;
+  await loadOrders(); sig = signature();
+  startLive(); render();
+}
+
+/* ---------- RENDER ---------- */
+function done(){ return orders.filter(o=>o.stato==='completato').length; }
+
+function cardHtml(o, canCancel){
+  const c = CATS[o.categoria];
+  let r = '';
+  if(o.stato==='completato'){
+    let val = '';
+    if(o.risposta_tipo==='scelta') val = '<div class="val"><b>'+esc(o.risposta_testo==='SI'?'Sì':'No')+'</b></div>';
+    else if(o.risposta_tipo==='ok') val = '<div class="val"><b>Obbedisce.</b></div>';
+    else if(o.risposta_testo) val = '<div class="val">'+esc(o.risposta_testo)+'</div>';
+    const media = o.risposta_media ? '<div class="media" data-path="'+esc(o.risposta_media)+'" data-tipo="'+esc(o.risposta_tipo)+'"></div>' : '';
+    r = '<div class="resp"><div class="lab">Risposta · '+fdate(o.risposta_at)+'</div>'+val+media+'</div>';
+  }
+  return '<div class="card"><div class="head"><span class="cat">'+c.nome+'</span><span>'+fdate(o.created_at)+'</span></div>'+
+    '<div class="txt">'+esc(o.testo)+'</div>'+
+    '<div style="margin-top:8px"><span class="badge '+(o.stato==='completato'?'ok':'')+'">'+(o.stato==='completato'?'Eseguito':'In attesa')+'</span></div>'+
+    (canCancel && o.stato==='in_attesa' ? '<button class="link" data-a="cancel" data-id="'+o.id+'">Annulla ordine</button>' : '')+
+    r+'</div>';
+}
+
+function render(){
+  if(locked) return;
+  if(!role) return;
+  app.innerHTML = role==='padrona' ? viewPadrona() : viewSchiavo();
+  hydrate();
+}
+
+function viewPadrona(){
+  let h = '<div class="top"><div><h1 class="brand">Padrona</h1><p class="muted">'+done()+' ordini eseguiti</p></div><button class="link" data-a="logout">Esci</button></div><div class="chain"></div>';
+  const c = CATS[ui.cat];
+  if(ui.step==='home'){
+    h += '<p class="lead">Cosa desideri?</p><div class="grid">'+
+      Object.keys(CATS).map(k=>'<button class="tile" data-a="cat" data-c="'+k+'"><span class="ico">'+CATS[k].icona+'</span><span class="tn">'+CATS[k].nome+'</span></button>').join('')+'</div>';
+    const list = orders.slice(0,20);
+    if(list.length) h += '<p class="sec">Ordini</p>'+list.map(o=>cardHtml(o,true)).join('');
+  } else if(ui.step==='sub'){
+    h += '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+c.nome+'</p><div class="list">'+
+      c.sub.map(s=>'<button class="opt" data-a="sub" data-s="'+s[0]+'">'+s[1]+'</button>').join('')+'</div>';
+  } else {
+    const info = ui.cat==='obbligo' ? OBB[ui.sub] : c;
+    h += '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+c.nome+'</p>'+
+      '<p class="note">'+esc(info.nota)+'</p><textarea id="ot" rows="5" placeholder="'+esc(info.hint)+'"></textarea>'+
+      '<button class="btn block" data-a="order">Invia ordine</button>';
+  }
+  return h;
+}
+
+function respArea(o){
+  const c = o.categoria, t = o.tipo;
+  if(c==='domanda') return '<div class="row2"><button class="btn" data-a="yn" data-v="SI">Sì</button><button class="btn ghost" data-a="yn" data-v="NO">No</button></div>';
+  if(c==='richiesta') return '<button class="btn block" data-a="ok">Obbedisco, Padrona</button>';
+  let h = '';
+  if(c==='verita' || t==='custom') h += '<textarea id="rt" rows="4" placeholder="'+(c==='verita'?'Scrivi la verità':'La tua risposta')+'"></textarea>';
+  if(c==='obbligo'){
+    const acc = t==='video'?'video/*' : t==='foto'?'image/*' : t==='soldi'?'image/*,application/pdf' : 'image/*,video/*';
+    const cap = (t==='foto'||t==='video') ? ' capture' : '';
+    const lab = t==='foto'?'Scatta la foto' : t==='video'?'Registra il video' : t==='soldi'?'Allega la prova del pagamento' : 'Allega foto o video (facoltativo)';
+    h += '<label class="btn ghost block">'+lab+'<input type="file" id="rf" accept="'+acc+'"'+cap+' hidden></label><div id="prev"></div>';
+  }
+  return h + '<button class="btn block" id="sendbtn" data-a="send">Invia alla Padrona</button>';
+}
+
+function viewSchiavo(){
+  const pend = orders.filter(o=>o.stato==='in_attesa').reverse();
+  const cur = pend[0];
+  const hist = orders.filter(o=>o.stato==='completato').slice(0,15);
+  let h = '<div class="top"><div><h1 class="brand">Schiavo</h1><p class="muted">'+done()+' ordini eseguiti</p></div><button class="link" data-a="logout">Esci</button></div><div class="chain"></div>';
+  if(cur){
+    const inf = cur.categoria==='obbligo' ? OBB[cur.tipo].nota : CATS[cur.categoria].nota;
+    h += '<div class="card cur"><div class="head"><span class="cat">'+CATS[cur.categoria].nome+'</span><span>'+fdate(cur.created_at)+'</span></div>'+
+      '<div class="big">'+esc(cur.testo)+'</div>'+(inf?'<p class="note">'+esc(inf)+'</p>':'')+respArea(cur)+'</div>';
+    if(pend.length>1) h += '<p class="note" style="margin-top:12px">Altri ordini in attesa: '+(pend.length-1)+'</p>';
+  } else {
+    h += '<p class="lead">Attendi gli ordini della Padrona.</p>';
+  }
+  if(hist.length) h += '<p class="sec">Ordini eseguiti</p>'+hist.map(o=>cardHtml(o,false)).join('');
+  return h;
+}
+
+async function hydrate(){
+  for(const el of document.querySelectorAll('[data-path]')){
+    const p = el.dataset.path;
+    let e = urlCache[p];
+    if(!e || Date.now()-e.t > 50*60*1000){
+      const {data} = await sb.storage.from('media').createSignedUrl(p, 3600);
+      e = {url: data && data.signedUrl, t: Date.now()}; urlCache[p] = e;
+    }
+    if(!e.url) continue;
+    const t = el.dataset.tipo;
+    el.innerHTML = t==='video' ? '<video src="'+e.url+'" controls playsinline preload="metadata"></video>'
+                 : t==='image' ? '<img src="'+e.url+'" alt="">'
+                 : '<a href="'+e.url+'" target="_blank" rel="noopener">Apri il file</a>';
+  }
+}
+
+/* ---------- AZIONI ---------- */
+async function sendOrder(){
+  const testo = ($('#ot').value||'').trim();
+  if(!testo) return toast('Scrivi qualcosa');
+  const tipo = ui.cat==='obbligo' ? ui.sub : 'custom';
+  const b = $('[data-a=order]'); b.disabled = true;
+  const {error} = await sb.from('ordini').insert({categoria:ui.cat, tipo, testo});
+  if(error){ b.disabled=false; return toast('Invio non riuscito, riprova'); }
+  toast('Ordine inviato'); ui = {step:'home'};
+  sig=''; await refresh(false); render();
+}
+
+async function answer(o, testo, path, tipo){
+  const {error} = await sb.rpc('rispondi',{p_id:o.id, p_testo:testo, p_media:path, p_tipo:tipo});
+  if(error) throw error;
+}
+
+async function replyChoice(kind, val){
+  const o = orders.filter(x=>x.stato==='in_attesa').reverse()[0]; if(!o) ret
