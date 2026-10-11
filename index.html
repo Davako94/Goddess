@@ -75,7 +75,7 @@ textarea:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px}
 </style>
 </head>
 <body>
-<div id="app"></div>
+<div id="app"><div class="center"><p class="muted">Caricamento…</p></div></div>
 <div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -357,4 +357,4 @@ async function answer(o, testo, path, tipo){
 }
 
 async function replyChoice(kind, val){
-  const o = orders.filter(x=>x.stato==='in_attesa').reverse()[0]; if(!o) ret
+  const o = order
