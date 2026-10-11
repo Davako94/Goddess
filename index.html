@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="it" data-theme="locktober">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -12,45 +12,74 @@
 <title>GODDESS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#1B0E22; --plum:#2E1640; --plum2:#40205A; --gold:#C9A24B; --ivory:#F2E8DA; --steel:#9AA0AE; --blood:#B0254A; --rose:#FF8FAB;
+  --ink:#1B0E22; --plum:#2E1640; --plum2:#40205A; --gold:#C9A24B; --ivory:#F2E8DA; --steel:#9AA0AE; --blood:#B0254A; --rose:#FF8FAB; --onacc:#1B0E22;
   --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
   --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
 }
+html[data-theme=latex]{--ink:#0A0A0C;--plum:#17171B;--plum2:#2A2A31;--gold:#E0243E;--ivory:#EDEDF0;--steel:#8E8E99;--blood:#E0243E;--rose:#FF6B81;--onacc:#FFFFFF}
+html[data-theme=cuck]{--ink:#0C0A16;--plum:#181430;--plum2:#2C2556;--gold:#B79CFF;--ivory:#EEEAF8;--steel:#9A97B0;--blood:#8E5BFF;--rose:#D3B8FF;--onacc:#0C0A16}
+html[data-theme=hard]{--ink:#120606;--plum:#2A0D0D;--plum2:#451616;--gold:#FF5A1F;--ivory:#F5E6DC;--steel:#A8908A;--blood:#D81E1E;--rose:#FF8A5C;--onacc:#120606}
+
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--ink);color:var(--ivory);font-family:var(--sans);font-size:16px;line-height:1.45}
-body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-#app{max-width:520px;margin:0 auto;padding:18px 18px 48px;min-height:100%}
+html,body{margin:0;min-height:100%;background:var(--ink);color:var(--ivory);font-family:var(--sans);font-size:16px;line-height:1.45}
+body{background:radial-gradient(120% 55% at 50% -8%,var(--plum) 0,var(--ink) 62%) no-repeat,var(--ink);
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#app{max-width:520px;margin:0 auto;padding:18px 18px 48px;min-height:100vh}
 h1,h2,p{margin:0}
-.brand{font-family:var(--serif);font-weight:700;font-size:44px;letter-spacing:.02em;color:var(--gold);line-height:1.05}
+.ic{width:1.1em;height:1.1em;vertical-align:-.18em;color:inherit;flex:none}
+
+/* Scritta GODDESS tematica */
+.brand{display:flex;align-items:center;gap:.4em;font-family:var(--serif);font-weight:700;font-size:38px;letter-spacing:.06em;color:var(--gold);line-height:1.05}
+.brand .orn{font-size:.6em;display:inline-flex;opacity:.95}
+.tag{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);opacity:.85;margin-top:-4px}
+html[data-theme=latex] .brand{font-family:var(--sans);font-weight:800;letter-spacing:.16em;font-size:28px;text-transform:uppercase}
+html[data-theme=cuck] .brand{font-style:italic;letter-spacing:.07em;text-shadow:0 0 20px rgba(183,156,255,.38)}
+html[data-theme=hard] .brand{font-family:var(--sans);font-weight:900;letter-spacing:.1em;font-size:30px;text-transform:uppercase;text-shadow:0 0 18px rgba(255,90,31,.5)}
+.center .brand{justify-content:center;font-size:40px}
+html[data-theme=latex] .center .brand{font-size:30px}
+html[data-theme=hard] .center .brand{font-size:32px}
+
 .muted{color:var(--steel);font-size:14px}
 .lead{font-family:var(--serif);font-size:28px;font-weight:500;margin:22px 0 12px}
 .note{color:var(--steel);font-size:14px;margin:6px 0 14px}
+
+/* Divisore tematico */
 .chain{height:10px;margin:14px 0 4px;background:
   radial-gradient(ellipse 9px 4px at 9px 5px,transparent 60%,var(--gold) 64% 100%) 0 0/18px 10px repeat-x;opacity:.8}
+html[data-theme=latex] .chain{height:8px;background:radial-gradient(circle at 5px 4px,var(--gold) 2.4px,transparent 3px) 0 0/14px 8px repeat-x;opacity:.9}
+html[data-theme=cuck] .chain{height:auto;background:none;overflow:hidden;white-space:nowrap;color:var(--gold);letter-spacing:.55em;text-align:center;line-height:1;margin:14px 0 4px;opacity:.85}
+html[data-theme=cuck] .chain::before{content:'♠ ♠ ♠ ♠ ♠ ♠ ♠ ♠ ♠ ♠ ♠ ♠ ♠ ♠ ♠ ♠'}
+html[data-theme=hard] .chain{height:8px;background:repeating-linear-gradient(135deg,var(--gold) 0 3px,transparent 3px 9px);opacity:.9}
+
 .center{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .tile{background:var(--plum);border:1px solid var(--plum2);border-radius:14px;padding:22px 12px;color:var(--ivory);display:flex;flex-direction:column;align-items:center;gap:8px;font:inherit;cursor:pointer}
 .tile:active{background:var(--plum2)}
-.tile .ico{font-size:30px}
+.tile .ico{font-size:34px;color:var(--gold);display:flex}
 .tile .tn{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--gold)}
+html[data-theme=latex] .tile .tn,html[data-theme=hard] .tile .tn{font-family:var(--sans);font-size:17px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 .tile.wide{width:100%;margin-top:12px;flex-direction:row;justify-content:center;flex-wrap:wrap;gap:10px;padding:16px 12px;border-color:var(--blood)}
-.tile.wide .tn{color:var(--rose)}
+.tile.wide .tn,.tile.wide .ico{color:var(--rose)}
 .tile.locked{opacity:.6}
 .list{display:flex;flex-direction:column;gap:10px}
 .opt{background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:16px;color:var(--ivory);font:inherit;font-size:17px;text-align:left;cursor:pointer}
 .opt:active{background:var(--plum2)}
-.rowbtn{display:flex;justify-content:space-between;align-items:center}
+.opt.sel{border-color:var(--gold)}
+.opt.idea{font-size:15px;padding:12px 14px;border-style:dashed;color:var(--ivory)}
+.rowbtn{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .cnt{color:var(--gold)}
-.btn{border:0;border-radius:12px;padding:15px 18px;font:inherit;font-weight:600;font-size:17px;cursor:pointer;color:var(--ink);background:var(--gold)}
+.sw i{display:inline-block;width:16px;height:16px;border-radius:50%;margin-left:6px;border:1px solid var(--steel);vertical-align:middle}
+.btn{border:0;border-radius:12px;padding:15px 18px;font:inherit;font-weight:600;font-size:17px;cursor:pointer;color:var(--onacc);background:var(--gold)}
 .btn.ghost{background:transparent;color:var(--ivory);border:1px solid var(--steel)}
 .btn.block{display:block;width:100%;margin-top:12px;text-align:center}
 .btn:disabled{opacity:.5}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .link{background:none;border:0;color:var(--steel);font:inherit;padding:6px 10px 6px 0;cursor:pointer}
 .link.red{color:var(--rose)}
+.gear{font-size:26px;padding:4px 0 4px 10px;color:var(--steel)}
 textarea,select,input[type=email],input[type=password]{width:100%;background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:14px;color:var(--ivory);font:inherit;font-size:17px;resize:vertical}
 select{margin-bottom:10px}
 textarea:focus,input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
@@ -58,9 +87,11 @@ textarea:focus,input:focus,select:focus{outline:2px solid var(--gold);outline-of
 .card.cur{border-color:var(--gold)}
 .card .head{display:flex;justify-content:space-between;gap:8px;color:var(--steel);font-size:13px;margin-bottom:6px}
 .card .cat{font-family:var(--serif);font-size:20px;color:var(--gold);font-weight:700}
+html[data-theme=latex] .card .cat,html[data-theme=hard] .card .cat{font-family:var(--sans);font-size:14px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 .card .cat.pen{color:var(--rose)}
 .card .txt{font-size:19px;white-space:pre-wrap;word-break:break-word}
 .big{font-family:var(--serif);font-size:30px;line-height:1.2;white-space:pre-wrap;word-break:break-word;margin:6px 0 4px}
+html[data-theme=latex] .big,html[data-theme=hard] .big{font-family:var(--sans);font-size:24px;font-weight:700}
 .resp{margin-top:10px;padding-top:10px;border-top:1px dashed var(--plum2)}
 .resp .lab{color:var(--steel);font-size:13px}
 .resp .val{white-space:pre-wrap;word-break:break-word}
@@ -88,11 +119,26 @@ button.banner{cursor:pointer}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1" fill="currentColor"/></g></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="12" r="3.5"/><path d="M11.5 12H21M18 12v3M15 12v2"/></g></symbol>
+    <symbol id="i-crown" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h18M4 18L3 8l5 4 4-7 4 7 5-4-1 10"/></g></symbol>
+    <symbol id="i-chain" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8.5" width="12" height="7" rx="3.5"/><rect x="10" y="8.5" width="12" height="7" rx="3.5"/></g></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+    <symbol id="i-cage" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V9a5 5 0 0 1 10 0v11"/><path d="M10 20V8M14 20V8M5 20h14"/></g></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></g></symbol>
+    <symbol id="i-spade" viewBox="0 0 24 24"><g fill="currentColor" stroke="none"><path d="M12 2c3 4 8 6 8 10.5a4.2 4.2 0 0 1-7 3.1c.2 2-.4 4-1.8 5.4h-2.4c-1.4-1.4-2-3.4-1.8-5.4a4.2 4.2 0 0 1-7-3.1C4 8 9 6 12 2z"/></g></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></g></symbol>
+  </defs>
+</svg>
+
 <div id="app"><div class="center"><p class="muted">Caricamento…</p></div></div>
 <div id="toast"></div>
 
 <script>
-/* Se qualcosa va storto all'avvio, mostra l'errore invece di una pagina vuota */
+/* Applica subito il tema salvato e mostra eventuali errori all'avvio */
+try{ document.documentElement.setAttribute('data-theme', localStorage.getItem('gd_theme') || 'locktober'); }catch(e){}
 window.addEventListener('error', function(e){
   var a = document.getElementById('app');
   if(a && a.textContent.indexOf('Caricamento') >= 0){
@@ -124,15 +170,23 @@ const app = document.getElementById('app');
 const $   = s => document.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+/* ---------- TEMI GRAFICI ---------- */
+const THEMES = {
+  locktober: {nome:'Locktober', orn:['chain','chain'], tag:'Locktober',     glyph:'G', ink:'#1B0E22', bg:['#40205A','#1B0E22'], acc:'#C9A24B'},
+  latex:     {nome:'Latex',     orn:['lock','lock'],   tag:'Obbedisci',     glyph:'G', ink:'#0A0A0C', bg:['#2A2A31','#0A0A0C'], acc:'#E0243E'},
+  cuck:      {nome:'Cuck',      orn:['spade','spade'], tag:'Q♠',            glyph:'♠', ink:'#0C0A16', bg:['#2C2556','#0C0A16'], acc:'#B79CFF'},
+  hard:      {nome:'Hard',      orn:['flame','flame'], tag:'Nessuna pietà', glyph:'G', ink:'#120606', bg:['#451616','#120606'], acc:'#FF5A1F'}
+};
+
 const CATS = {
-  domanda:   {nome:'Domanda',   icona:'❓', sub:[['custom','Personalizzata']],
+  domanda:   {nome:'Domanda',   icona:'eye',   sub:[['custom','Personalizzata']],
               nota:'Lui potrà rispondere solo Sì o No.', hint:'Scrivi la tua domanda'},
-  obbligo:   {nome:'Obbligo',   icona:'🔥', sub:[['foto','Foto'],['video','Video'],['soldi','Soldi'],['custom','Personalizzato']]},
-  verita:    {nome:'Verità',    icona:'🗝', sub:[['custom','Personalizzata']],
+  obbligo:   {nome:'Obbligo',   icona:'lock',  sub:[['foto','Foto'],['video','Video'],['soldi','Soldi'],['custom','Personalizzato']]},
+  verita:    {nome:'Verità',    icona:'key',   sub:[['custom','Personalizzata']],
               nota:'Dovrà risponderti con la verità.', hint:'Scrivi la tua domanda'},
-  richiesta: {nome:'Richiesta', icona:'👑', sub:[['custom','Personalizzata']],
+  richiesta: {nome:'Richiesta', icona:'crown', sub:[['custom','Personalizzata']],
               nota:'Dovrà solo confermare di obbedire.', hint:'Scrivi la tua richiesta'},
-  penitenza: {nome:'Penitenza', icona:'⛓', sub:[]}
+  penitenza: {nome:'Penitenza', icona:'chain', sub:[]}
 };
 const OBB = {
   foto:  {nota:'Dovrà inviarti una foto.',  hint:'Descrivi la foto che vuoi'},
@@ -140,45 +194,115 @@ const OBB = {
   soldi: {nota:'Dovrà inviarti la prova del pagamento.', hint:'Scrivi cosa e quanto vuoi (es. 100€)'},
   custom:{nota:'Potrà risponderti con testo, foto o video.', hint:'Scrivi il tuo ordine'}
 };
-const PEN = [
-  {tipo:'foto',  txt:'Scrivi 50 volte «Sono il giocattolo della mia Padrona» su un foglio e mandami la foto'},
-  {tipo:'foto',  txt:'Mandami un selfie in ginocchio con un cartello: «Ho deluso la mia Padrona»'},
-  {tipo:'video', txt:'Registra un video in cui chiedi scusa alla tua Padrona in ginocchio e la ringrazi per la punizione'},
-  {tipo:'foto',  txt:'Pulisci il bagno e mandami la foto del prima e del dopo'},
-  {tipo:'soldi', txt:'Paga una multa di 50€ alla tua Padrona e mandami la prova'},
-  {tipo:'custom',txt:'Per le prossime 24 ore rivolgiti a me solo come «Mia Dea», dandomi sempre del lei. Confermami quando hai capito'}
-];
+
+/* ---------- PACCHETTI DI CONTENUTI (idee modificabili prima dell'invio) ---------- */
+const PACKS = {
+  soft: {nome:'Soft',
+    domanda:["Sei stato bravo oggi?","Hai pensato a me durante la giornata?","Hai rispettato le mie regole senza che te lo ricordassi?"],
+    verita:["Qual è la cosa che desideri di più da me in questo momento?","Cosa ti piace di più quando ti dico cosa fare?","Qual è stato il tuo pensiero più impertinente di oggi?"],
+    richiesta:["Per i prossimi 30 minuti rivolgiti a me solo come «Padrona»","Prepara per me un tè e portamelo con un inchino","Per tutta la sera niente lamentele: confermami che obbedirai"],
+    foto:["Mandami una foto da ingabbiato","Mandami un selfie in ginocchio","Scrivi il mio nome su un foglio e mandami la foto"],
+    video:["Registra un video in cui mi dici «Obbedisco, Padrona»","Registra un video in cui mi ringrazi per il tempo che ti dedico"],
+    soldi:["Mandami 20€ per un caffè da Padrona","Mandami 50€ come tributo e allega la prova"],
+    custom:["Scrivimi una poesia breve per la tua Padrona","Descrivimi come vorresti servirmi stasera"],
+    pen:[["foto","Scrivi 50 volte «Sono il giocattolo della mia Padrona» su un foglio e mandami la foto"],
+         ["foto","Mandami un selfie in ginocchio con un cartello: «Ho deluso la mia Padrona»"],
+         ["video","Registra un video in cui chiedi scusa alla tua Padrona in ginocchio"],
+         ["foto","Pulisci il bagno e mandami la foto del prima e del dopo"],
+         ["soldi","Paga una multa di 50€ alla tua Padrona e mandami la prova"]]},
+  bdsm: {nome:'BDSM',
+    domanda:["Hai infranto una delle mie regole oggi?","Sei pronto a ricevere la tua punizione?","Ti senti ingabbiato e ti piace?"],
+    verita:["Qual è la regola che hai più voglia di infrangere?","Cosa provi quando ti nego qualcosa che desideri?","Quanto a lungo resisteresti chiuso, se te lo ordinassi?"],
+    richiesta:["Da adesso fino a stasera non mi chiedi nulla e rispondi solo «Sì, Padrona»","Inginocchiati ai miei piedi appena rientro e aspetta il mio permesso per alzarti","Per la prossima ora non puoi parlare senza il mio permesso"],
+    foto:["Inginocchiati e mandami un selfie","Scrivi il mio nome sul tuo corpo con un pennarello e mandami la foto","Mandami una foto da ingabbiato con il mio nome scritto su un biglietto"],
+    video:["Registra un video in cui giuri obbedienza alla tua Padrona","Registra un video in cui ripeti le mie regole una per una"],
+    soldi:["Mandami 100€ come tributo","Paga una multa di 30€ per ogni regola che hai dimenticato"],
+    custom:["Scrivimi cinque regole che prometti di rispettare","Elencami tutto ciò che sei disposto a fare per compiacermi"],
+    pen:[["foto","Scrivi 100 volte «Obbedirò sempre alla mia Padrona» e mandami la foto del foglio"],
+         ["video","Registra un video in cui chiedi perdono in ginocchio e accetti la punizione"],
+         ["foto","Resta in ginocchio per 15 minuti e mandami la foto all'inizio e alla fine"],
+         ["custom","Per 24 ore ti rivolgi a me solo come «Mia Dea», sempre in terza persona. Confermami quando hai capito"],
+         ["soldi","Paga una multa di 50€ alla tua Padrona e mandami la prova"]]},
+  cuck: {nome:'Cuck',
+    domanda:["Ti piace sapere che la tua Dea è desiderata?","Sei geloso, ma ti eccita esserlo?","Sei pronto a restare al tuo posto mentre io mi diverto?"],
+    verita:["Cosa provi quando immagini la tua Dea ammirata da altri?","Qual è la cosa che ti fa più gelosia e più eccita insieme?","Che ruolo vorresti avere accanto a me, quando sono io a godermi la serata?"],
+    richiesta:["Preparami il vestito e le scarpe per stasera e aspetta senza fare domande","Quando esco, resta in casa e aspetta il mio messaggio","Per tutta la serata mi chiami «Regina» e non fai domande"],
+    foto:["Mandami una foto da ingabbiato mentre aspetti il mio rientro","Mandami una foto del vestito che mi hai preparato","Mandami un selfie con un cartello: «Il posto del tuo schiavo è qui»"],
+    video:["Registra un video in cui mi auguri una bella serata e ti scusi di non essere abbastanza","Registra un video in cui riconosci chi comanda in questa casa"],
+    soldi:["Mandami 50€ per la mia serata","Mandami 100€ per il mio prossimo capriccio"],
+    custom:["Scrivimi cosa provi mentre aspetti il mio ritorno","Scrivimi un messaggio di buonanotte da cornuto devoto"],
+    pen:[["foto","Scrivi 50 volte «Il mio posto è accanto alla mia Dea» e mandami la foto del foglio"],
+         ["foto","Mandami un selfie con un cartello: «Mi accontento di ciò che la mia Dea mi concede»"],
+         ["video","Registra un video in cui ringrazi la tua Dea per ogni cosa che ti nega"],
+         ["custom","Per 24 ore niente lamentele né domande su dove sono. Confermami che obbedirai"],
+         ["soldi","Paga una multa di 50€ alla tua Dea e mandami la prova"]]},
+  hard: {nome:'Hard',
+    domanda:["Meriti di essere punito?","Ti sei comportato come un vero schiavo oggi?","Sai di non valere nulla senza il mio permesso?"],
+    verita:["Qual è la cosa più umiliante che saresti disposto a fare per me?","Cosa provi quando ti tratto come un oggetto?","Quale posto occupi fra le cose che possiedo?"],
+    richiesta:["Da adesso mi parli solo a testa bassa e rispondi «Sì, Padrona»","Stasera servi in ginocchio e in silenzio fino al mio permesso","Per due ore il tuo nome è «Schiavo» e rispondi solo a quello"],
+    foto:["In ginocchio, a testa bassa, con il mio nome scritto sulla mano: mandami la foto","Mandami un selfie con un cartello: «Proprietà della mia Dea»","Mandami una foto della tua gabbia e della tua faccia umiliata"],
+    video:["Registra un video in cui implori il mio perdono guardando in camera","Registra un video in cui descrivi quanto sei inferiore a me"],
+    soldi:["Mandami 200€ come tributo, senza discutere","Paga 100€ per avermi fatto aspettare"],
+    custom:["Scrivimi tutto ciò che meriti per aver deluso la tua Dea","Scrivi una lettera di sottomissione completa e mandamela"],
+    pen:[["foto","Scrivi 200 volte «Sono il giocattolo della mia Dea» e mandami la foto dei fogli"],
+         ["foto","Resta in ginocchio 20 minuti e mandami la foto all'inizio e alla fine"],
+         ["video","Registra un video in cui implori perdono e ringrazi per ogni punizione"],
+         ["custom","Per 48 ore mi dai del lei, mi chiami «Mia Dea» e ti definisci «schiavo». Confermami quando hai capito"],
+         ["soldi","Paga 100€ alla tua Dea come penitenza e mandami la prova"]]}
+};
 
 /* ---------- STATO ---------- */
 let role = null, uid = null, orders = [], sig = '', ui = {step:'home'}, pendingFile = null;
 let locked = false, hiddenAt = 0, tries = 0, channel = null, poll = null, urlCache = {};
 let off = 0, expFlag = false, pendingRender = false;
+let theme = 'locktober', pack = 'soft';
+try{ theme = localStorage.getItem('gd_theme') || 'locktober'; pack = localStorage.getItem('gd_pack') || 'soft'; }catch(e){}
+if(!THEMES[theme]) theme = 'locktober';
+if(!PACKS[pack]) pack = 'soft';
 
-/* ---------- ICONA E MANIFEST ---------- */
+/* ---------- ICONE E TEMA ---------- */
+function ic(n){ return '<svg class="ic" aria-hidden="true"><use href="#i-'+n+'"/></svg>'; }
+function brand(){
+  const T = THEMES[theme];
+  return '<h1 class="brand"><span class="orn">'+ic(T.orn[0])+'</span>'+(theme==='cuck'?'Goddess':APP_NAME)+'<span class="orn">'+ic(T.orn[1])+'</span></h1>';
+}
 function makeIcon(size){
+  const T = THEMES[theme];
   const c = document.createElement('canvas'); c.width = c.height = size;
   const x = c.getContext('2d');
   const g = x.createLinearGradient(0,0,size,size);
-  g.addColorStop(0,'#40205A'); g.addColorStop(1,'#1B0E22');
+  g.addColorStop(0,T.bg[0]); g.addColorStop(1,T.bg[1]);
   x.fillStyle = g; x.fillRect(0,0,size,size);
-  x.strokeStyle = '#C9A24B'; x.lineWidth = size*0.025;
+  x.strokeStyle = T.acc; x.lineWidth = size*0.025;
   x.beginPath(); x.arc(size/2,size/2,size*0.34,0,Math.PI*2); x.stroke();
-  x.fillStyle = '#C9A24B'; x.font = '600 '+(size*0.46)+'px Georgia,serif';
+  x.fillStyle = T.acc; x.font = '600 '+(size*0.46)+'px Georgia,serif';
   x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.fillText(APP_NAME[0], size/2, size/2 + size*0.03);
+  x.fillText(T.glyph, size/2, size/2 + size*0.03);
   return c.toDataURL('image/png');
 }
-(function setupPwa(){
+function buildIcons(){
   try{
-    const l = document.createElement('link'); l.rel='apple-touch-icon'; l.href=makeIcon(180); document.head.appendChild(l);
-    const m = {name:APP_NAME, short_name:APP_NAME, display:'standalone', background_color:'#1B0E22', theme_color:'#1B0E22',
+    ['gd-icon','gd-manifest'].forEach(id=>{ const e=document.getElementById(id); if(e) e.remove(); });
+    const T = THEMES[theme];
+    const l = document.createElement('link'); l.id='gd-icon'; l.rel='apple-touch-icon'; l.href=makeIcon(180); document.head.appendChild(l);
+    const m = {name:APP_NAME, short_name:APP_NAME, display:'standalone', background_color:T.ink, theme_color:T.ink,
       start_url: location.href.split('#')[0].split('?')[0],
       icons:[{src:makeIcon(192),sizes:'192x192',type:'image/png'},{src:makeIcon(512),sizes:'512x512',type:'image/png'}]};
-    const mf = document.createElement('link'); mf.rel='manifest';
+    const mf = document.createElement('link'); mf.id='gd-manifest'; mf.rel='manifest';
     mf.href = URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
     document.head.appendChild(mf);
   }catch(e){}
-})();
+}
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', theme);
+  const m = document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute('content', THEMES[theme].ink);
+}
+function setTheme(t){
+  if(!THEMES[t]) return;
+  theme = t; try{ localStorage.setItem('gd_theme', t); }catch(e){}
+  applyTheme(); buildIcons();
+}
+applyTheme(); buildIcons();
 try{ if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){}); }catch(e){}
 
 /* ---------- UTILITA ---------- */
@@ -197,7 +321,7 @@ function typing(){ const a=document.activeElement; return !!(a && a.tagName==='T
 /* ---------- PIN ---------- */
 function pinPad(title, cb){
   let v = '';
-  app.innerHTML = '<div class="center"><h1 class="brand">'+APP_NAME+'</h1><p class="muted">'+esc(title)+'</p>'+
+  app.innerHTML = '<div class="center">'+brand()+'<p class="tag">'+esc(THEMES[theme].tag)+'</p><p class="muted">'+esc(title)+'</p>'+
     '<div class="dots">'+'<i></i>'.repeat(4)+'</div>'+
     '<div class="pad">'+[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>k===''?'<span></span>':'<button data-k="'+k+'">'+k+'</button>').join('')+'</div></div>';
   const upd = () => document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i<v.length));
@@ -267,7 +391,7 @@ function pushBanner(){
 
 /* ---------- AUTH ---------- */
 function showLogin(){
-  app.innerHTML = '<div class="center"><h1 class="brand">'+APP_NAME+'</h1>'+
+  app.innerHTML = '<div class="center">'+brand()+'<p class="tag">'+esc(THEMES[theme].tag)+'</p>'+
     '<div class="form"><input id="em" type="email" placeholder="Email" autocomplete="username" autocapitalize="none">'+
     '<input id="pw" type="password" placeholder="Password" autocomplete="current-password">'+
     '<button class="btn block" id="go">Entra</button></div></div>';
@@ -366,9 +490,9 @@ async function boot(){
 /* ---------- RENDER ---------- */
 function done(){ return orders.filter(o=>o.stato==='completato').length; }
 
-function header(name){
-  return '<div class="top"><div><h1 class="brand">'+name+'</h1><p class="muted">'+done()+' ordini eseguiti</p></div>'+
-    '<button class="link" data-a="logout">Esci</button></div><div class="chain"></div>';
+function header(label){
+  return '<div class="top"><div>'+brand()+'<p class="muted" style="margin-top:4px">'+label+' · '+done()+' ordini eseguiti</p></div>'+
+    '<button class="link gear" data-a="settings" aria-label="Impostazioni">'+ic('gear')+'</button></div><div class="chain"></div>';
 }
 
 function cardHtml(o, who){
@@ -392,7 +516,7 @@ function cardHtml(o, who){
     timer = ' <span class="timer" data-exp="'+esc(o.scade_at)+'"></span>'+(o.rinvii?' · rinvii '+o.rinvii+'/3':'');
   let btns = '';
   if(who==='padrona'){
-    if(s==='expired' && !hasPen(o)) btns += '<button class="link" data-a="penfor" data-id="'+o.id+'">⛓ Assegna penitenza</button>';
+    if(s==='expired' && !hasPen(o)) btns += '<button class="link" data-a="penfor" data-id="'+o.id+'">'+ic('chain')+' Assegna penitenza</button>';
     btns += '<button class="link red" data-a="del" data-id="'+o.id+'">'+(s==='pending'?'Annulla ordine':'Elimina')+'</button>';
   }
   return '<div class="card"><div class="head"><span class="cat'+(o.categoria==='penitenza'?' pen':'')+'">'+c.nome+'</span><span>'+fdate(o.created_at)+'</span></div>'+
@@ -407,13 +531,34 @@ function archiveRows(arr){
   const keys = Object.keys(CATS).filter(k=>c[k]);
   if(!keys.length) return '';
   return '<p class="sec">Archivio</p><div class="list" style="margin-top:12px">'+
-    keys.map(k=>'<button class="opt rowbtn" data-a="arch" data-c="'+k+'"><span>'+CATS[k].icona+' '+CATS[k].nome+'</span><span class="cnt">'+c[k]+' ›</span></button>').join('')+'</div>';
+    keys.map(k=>'<button class="opt rowbtn" data-a="arch" data-c="'+k+'"><span>'+ic(CATS[k].icona)+' '+CATS[k].nome+'</span><span class="cnt">'+c[k]+' ›</span></button>').join('')+'</div>';
 }
 function archiveView(arr, who){
   const items = arr.filter(o=>o.categoria===ui.cat);
   if(!items.length){ ui = {step:'home'}; return null; }
-  return '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+CATS[ui.cat].icona+' '+CATS[ui.cat].nome+'</p>'+
+  return '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+ic(CATS[ui.cat].icona)+' '+CATS[ui.cat].nome+'</p>'+
     items.map(o=>cardHtml(o,who)).join('');
+}
+
+function settingsHtml(){
+  let h = '<button class="link" data-a="back">‹ Indietro</button><p class="lead">Impostazioni</p>'+
+    '<p class="note">Tema (solo su questo telefono)</p><div class="list">'+
+    Object.keys(THEMES).map(k=>{
+      const T = THEMES[k];
+      return '<button class="opt rowbtn'+(k===theme?' sel':'')+'" data-a="theme" data-t="'+k+'"><span>'+ic(T.orn[0])+' '+T.nome+'</span>'+
+        '<span class="sw"><i style="background:'+T.bg[0]+'"></i><i style="background:'+T.acc+'"></i></span></button>';
+    }).join('')+'</div>';
+  if(role==='padrona'){
+    h += '<p class="note" style="margin-top:22px">Livello delle idee suggerite quando scrivi un ordine</p><div class="list">'+
+      Object.keys(PACKS).map(k=>'<button class="opt rowbtn'+(k===pack?' sel':'')+'" data-a="pack" data-p="'+k+'"><span>'+PACKS[k].nome+'</span><span class="cnt">'+(k===pack?'✓':'')+'</span></button>').join('')+'</div>';
+  }
+  h += '<button class="btn ghost block" data-a="logout" style="margin-top:28px">Esci</button>';
+  return h;
+}
+
+function ideas(){
+  const key = ui.cat==='obbligo' ? ui.sub : ui.cat;
+  return PACKS[pack][key] || [];
 }
 
 function render(){
@@ -429,6 +574,7 @@ function viewPadrona(){
   const st = ui.step;
   let h = header('Padrona');
 
+  if(st==='settings') return h + settingsHtml();
   if(st==='archive'){
     const a = archiveView(L.archive, 'padrona');
     if(a===null) return viewPadrona();
@@ -442,10 +588,13 @@ function viewPadrona(){
   if(st==='compose'){
     const c = CATS[ui.cat];
     const info = ui.cat==='obbligo' ? OBB[ui.sub] : c;
+    const id = ideas();
     return h + '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+c.nome+'</p>'+
       '<p class="note">'+esc(info.nota)+' Avrà 10 minuti per eseguire (rinviabili 3 volte).</p>'+
       '<textarea id="ot" rows="5" placeholder="'+esc(info.hint)+'"></textarea>'+
-      '<button class="btn block" data-a="order">Invia ordine</button>';
+      '<button class="btn block" data-a="order">Invia ordine</button>'+
+      (id.length ? '<p class="note" style="margin-top:18px">Idee · '+PACKS[pack].nome+'</p><div class="list">'+
+        id.map((t,i)=>'<button class="opt idea" data-a="idea" data-i="'+i+'">'+esc(t)+'</button>').join('')+'</div>' : '');
   }
   if(st==='penlist'){
     if(!L.needPen.length){ ui = {step:'home'}; return viewPadrona(); }
@@ -457,7 +606,7 @@ function viewPadrona(){
     if(!src){ ui = {step:'home'}; return viewPadrona(); }
     return h + '<button class="link" data-a="back">‹ Indietro</button><p class="lead">Penitenza</p>'+
       '<p class="note">Per non aver eseguito: «'+esc(src.testo)+'»</p><div class="list">'+
-      PEN.map((p,i)=>'<button class="opt" data-a="prs" data-i="'+i+'">'+esc(p.txt)+'</button>').join('')+
+      PACKS[pack].pen.map((p,i)=>'<button class="opt" data-a="prs" data-i="'+i+'">'+esc(p[1])+'</button>').join('')+
       '<button class="opt" data-a="prs" data-i="-1">✍️ Personalizzata</button></div>';
   }
   if(st==='pencompose'){
@@ -472,9 +621,9 @@ function viewPadrona(){
   /* home */
   h += pushBanner();
   h += '<p class="lead">Cosa desideri?</p><div class="grid">'+
-    ['domanda','obbligo','verita','richiesta'].map(k=>'<button class="tile" data-a="cat" data-c="'+k+'"><span class="ico">'+CATS[k].icona+'</span><span class="tn">'+CATS[k].nome+'</span></button>').join('')+'</div>';
+    ['domanda','obbligo','verita','richiesta'].map(k=>'<button class="tile" data-a="cat" data-c="'+k+'"><span class="ico">'+ic(CATS[k].icona)+'</span><span class="tn">'+CATS[k].nome+'</span></button>').join('')+'</div>';
   const n = L.needPen.length;
-  h += '<button class="tile wide'+(n?'':' locked')+'" data-a="pen"><span class="ico">'+(n?'⛓':'🔒')+'</span><span class="tn">Penitenze</span>'+
+  h += '<button class="tile wide'+(n?'':' locked')+'" data-a="pen"><span class="ico">'+ic(n?'chain':'lock')+'</span><span class="tn">Penitenze</span>'+
     (n ? '<span class="badge ok">'+n+' da assegnare</span>' : '')+'</button>';
   if(!n) h += '<p class="note" style="text-align:center">Si sblocca quando lo schiavo non esegue un ordine in tempo.</p>';
   const open = L.pending.concat(L.needPen).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
@@ -505,6 +654,7 @@ function viewSchiavo(){
   const arch = L.archive.concat(L.needPen);
   let h = header('Schiavo');
 
+  if(ui.step==='settings') return h + settingsHtml();
   if(ui.step==='archive'){
     const a = archiveView(arch, 'schiavo');
     if(a===null) return viewSchiavo();
@@ -653,12 +803,20 @@ app.addEventListener('click', e => {
   const a = b.dataset.a;
   if(a==='logout') return logout();
   if(a==='push') return enablePush();
+  if(a==='settings'){ ui = {step:'settings'}; return render(); }
+  if(a==='theme'){ setTheme(b.dataset.t); return render(); }
+  if(a==='pack'){ pack = b.dataset.p; try{ localStorage.setItem('gd_pack', pack); }catch(x){} toast('Livello: '+PACKS[pack].nome); return render(); }
   if(a==='cat'){
     ui = {step:'home', cat:b.dataset.c};
     if(CATS[ui.cat].sub.length===1){ ui.sub = CATS[ui.cat].sub[0][0]; ui.step='compose'; } else ui.step='sub';
     return render();
   }
   if(a==='sub'){ ui.sub = b.dataset.s; ui.step='compose'; return render(); }
+  if(a==='idea'){
+    const t = ideas()[parseInt(b.dataset.i,10)]; const ta = $('#ot');
+    if(t && ta){ ta.value = t; ta.focus(); }
+    return;
+  }
   if(a==='arch'){ ui = {step:'archive', cat:b.dataset.c}; return render(); }
   if(a==='pen'){
     const need = lists().needPen;
@@ -669,9 +827,10 @@ app.addEventListener('click', e => {
   if(a==='penfor'){ ui = {step:'pen', src:b.dataset.id}; return render(); }
   if(a==='prs'){
     const i = parseInt(b.dataset.i,10);
+    const p = i>=0 ? PACKS[pack].pen[i] : null;
     ui.step = 'pencompose';
-    ui.ptipo = i>=0 ? PEN[i].tipo : 'custom';
-    ui.ptxt  = i>=0 ? PEN[i].txt : '';
+    ui.ptipo = p ? p[0] : 'custom';
+    ui.ptxt  = p ? p[1] : '';
     return render();
   }
   if(a==='back'){
