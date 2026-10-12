@@ -10,9 +10,13 @@
 <meta name="theme-color" content="#1B0E22">
 <meta name="robots" content="noindex,nofollow">
 <title>GODDESS</title>
+<link rel="preconnect" href="https://gpkwaexsximqtfamhhyh.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&display=swap"></noscript>
 <style>
 :root{
   --ink:#1B0E22; --plum:#2E1640; --plum2:#40205A; --gold:#C9A24B; --ivory:#F2E8DA; --steel:#9AA0AE; --blood:#B0254A; --rose:#FF8FAB; --onacc:#1B0E22;
@@ -24,6 +28,7 @@ html[data-theme=cuck]{--ink:#0C0A16;--plum:#181430;--plum2:#2C2556;--gold:#B79CF
 html[data-theme=hard]{--ink:#120606;--plum:#2A0D0D;--plum2:#451616;--gold:#FF5A1F;--ivory:#F5E6DC;--steel:#A8908A;--blood:#D81E1E;--rose:#FF8A5C;--onacc:#120606}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+button,label,.opt,.tile{touch-action:manipulation}
 html,body{margin:0;min-height:100%;background:var(--ink);color:var(--ivory);font-family:var(--sans);font-size:16px;line-height:1.45}
 body{background:radial-gradient(120% 55% at 50% -8%,var(--plum) 0,var(--ink) 62%) no-repeat,var(--ink);
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
@@ -256,6 +261,7 @@ let role = null, uid = null, orders = [], sig = '', ui = {step:'home'}, pendingF
 let locked = false, hiddenAt = 0, tries = 0, channel = null, poll = null, urlCache = {};
 let off = 0, expFlag = false, pendingRender = false;
 let theme = 'locktober', pack = 'soft';
+let openTarget = null, lastClock = 0, rtT = null;
 try{ theme = localStorage.getItem('gd_theme') || 'locktober'; pack = localStorage.getItem('gd_pack') || 'soft'; }catch(e){}
 if(!THEMES[theme]) theme = 'locktober';
 if(!PACKS[pack]) pack = 'soft';
@@ -302,8 +308,19 @@ function setTheme(t){
   theme = t; try{ localStorage.setItem('gd_theme', t); }catch(e){}
   applyTheme(); buildIcons();
 }
-applyTheme(); buildIcons();
+applyTheme(); setTimeout(buildIcons, 1200);
 try{ if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){}); }catch(e){}
+/* Apertura diretta dell'ordine dalla notifica */
+try{
+  const u0 = new URL(location.href), o0 = u0.searchParams.get('o');
+  if(o0){ openTarget = o0; history.replaceState(null, '', u0.pathname); }
+}catch(e){}
+try{
+  if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', ev => {
+    const d = ev.data;
+    if(d && d.type==='open' && d.ordine){ openTarget = d.ordine; applyTarget(); }
+  });
+}catch(e){}
 
 /* ---------- UTILITA ---------- */
 let tt;
@@ -418,21 +435,28 @@ async function logout(){
   }catch(e){}
   await sb.auth.signOut();
   localStorage.removeItem(PINKEY);
+  localStorage.removeItem('gd_cache');
   role = null; uid = null; orders = []; sig = ''; ui = {step:'home'}; locked = false; tries = 0; urlCache = {};
   showLogin();
 }
 
 /* ---------- DATI ---------- */
+function readCache(){ try{ return JSON.parse(localStorage.getItem('gd_cache') || 'null'); }catch(e){ return null; } }
+function writeCache(){
+  try{ if(uid && role) localStorage.setItem('gd_cache', JSON.stringify({uid:uid, role:role, orders:orders.slice(0,60)})); }catch(e){}
+}
 async function loadOrders(){
-  const t0 = Date.now();
-  const res = await Promise.all([
-    sb.from('ordini').select('*').order('created_at',{ascending:false}).limit(200),
-    sb.rpc('adesso')
-  ]);
-  const r = res[0], c = res[1];
-  if(c && !c.error && c.data) off = new Date(c.data).getTime() - (t0 + Date.now())/2;
+  const r = await sb.from('ordini').select('*').order('created_at',{ascending:false}).limit(200);
   if(r.error) return false;
-  orders = r.data; return true;
+  orders = r.data; writeCache(); return true;
+}
+async function syncClock(){
+  try{
+    const t0 = Date.now();
+    const r = await sb.rpc('adesso');
+    if(!r.error && r.data) off = new Date(r.data).getTime() - (t0 + Date.now())/2;
+    lastClock = Date.now();
+  }catch(e){}
 }
 function signature(){ return orders.map(o=>[o.id,o.stato,o.scade_at,o.rinvii,o.penitenza_di].join(':')).join(','); }
 
@@ -454,7 +478,13 @@ function lists(){
   });
   return {pending, needPen, archive};
 }
-function curOrder(){ return lists().pending.slice().reverse()[0]; }
+function curOrder(){
+  if(ui.step==='detail'){
+    const o = orders.find(x=>x.id===ui.id);
+    if(o && stat(o)==='pending') return o;
+  }
+  return lists().pending.slice().reverse()[0];
+}
 
 async function refresh(notify){
   const prev = orders.slice();
@@ -472,19 +502,31 @@ async function refresh(notify){
 }
 function startLive(){
   stopLive();
-  channel = sb.channel('ordini-live').on('postgres_changes',{event:'*',schema:'public',table:'ordini'},()=>refresh(true)).subscribe();
-  poll = setInterval(()=>{ if(!document.hidden && !locked) refresh(true); }, 15000);
+  channel = sb.channel('ordini-live').on('postgres_changes',{event:'*',schema:'public',table:'ordini'},()=>{
+    clearTimeout(rtT); rtT = setTimeout(()=>refresh(true), 350);
+  }).subscribe();
+  poll = setInterval(()=>{ if(!document.hidden && !locked) refresh(true); }, 25000);
 }
 function stopLive(){ if(channel){ sb.removeChannel(channel); channel=null; } if(poll){ clearInterval(poll); poll=null; } }
 
 async function boot(){
-  const {data,error} = await sb.from('ruoli').select('ruolo').maybeSingle();
-  if(error || !data){ toast('Accesso non autorizzato'); await logout(); return; }
-  role = data.ruolo;
-  const s = await sb.auth.getSession(); uid = s.data.session ? s.data.session.user.id : null;
-  await loadOrders(); sig = signature();
+  const s0 = await sb.auth.getSession();
+  uid = s0.data.session ? s0.data.session.user.id : null;
+  /* prima schermata subito, dai dati salvati; poi si aggiorna */
+  const c = readCache();
+  if(c && c.uid===uid && c.role){ role = c.role; orders = c.orders || []; sig = signature(); render(); }
+  const res = await Promise.all([sb.from('ruoli').select('ruolo').maybeSingle(), loadOrders()]);
+  const rl = res[0];
+  if(rl.error){
+    if(!role){ toast('Connessione assente, riprovo...'); setTimeout(boot, 4000); return; }
+  } else if(!rl.data){
+    toast('Accesso non autorizzato'); await logout(); return;
+  } else {
+    role = rl.data.ruolo;
+  }
+  sig = signature(); writeCache();
   startLive(); render();
-  syncPush();
+  syncPush(); syncClock(); applyTarget();
 }
 
 /* ---------- RENDER ---------- */
@@ -516,7 +558,7 @@ function cardHtml(o, who){
     timer = ' <span class="timer" data-exp="'+esc(o.scade_at)+'"></span>'+(o.rinvii?' · rinvii '+o.rinvii+'/3':'');
   let btns = '';
   if(who==='padrona'){
-    if(s==='expired' && !hasPen(o)) btns += '<button class="link" data-a="penfor" data-id="'+o.id+'">'+ic('chain')+' Assegna penitenza</button>';
+    if(s==='expired' || s==='done') btns += '<button class="link" data-a="penfor" data-id="'+o.id+'">'+ic('chain')+' Penitenza</button>';
     btns += '<button class="link red" data-a="del" data-id="'+o.id+'">'+(s==='pending'?'Annulla ordine':'Elimina')+'</button>';
   }
   return '<div class="card"><div class="head"><span class="cat'+(o.categoria==='penitenza'?' pen':'')+'">'+c.nome+'</span><span>'+fdate(o.created_at)+'</span></div>'+
@@ -596,16 +638,15 @@ function viewPadrona(){
       (id.length ? '<p class="note" style="margin-top:18px">Idee · '+PACKS[pack].nome+'</p><div class="list">'+
         id.map((t,i)=>'<button class="opt idea" data-a="idea" data-i="'+i+'">'+esc(t)+'</button>').join('')+'</div>' : '');
   }
-  if(st==='penlist'){
-    if(!L.needPen.length){ ui = {step:'home'}; return viewPadrona(); }
-    return h + '<button class="link" data-a="back">‹ Indietro</button><p class="lead">Penitenze sbloccate</p>'+
-      L.needPen.map(o=>cardHtml(o,'padrona')).join('');
+  if(st==='detail'){
+    const o = orders.find(x=>x.id===ui.id);
+    if(!o){ ui = {step:'home'}; return viewPadrona(); }
+    return h + '<button class="link" data-a="back">‹ Indietro</button>'+cardHtml(o,'padrona');
   }
   if(st==='pen'){
-    const src = orders.find(x=>x.id===ui.src);
-    if(!src){ ui = {step:'home'}; return viewPadrona(); }
+    const src = ui.src ? orders.find(x=>x.id===ui.src) : null;
     return h + '<button class="link" data-a="back">‹ Indietro</button><p class="lead">Penitenza</p>'+
-      '<p class="note">Per non aver eseguito: «'+esc(src.testo)+'»</p><div class="list">'+
+      '<p class="note">'+(src ? 'Per: «'+esc(src.testo)+'»' : 'Penitenza libera, senza ordine collegato.')+'</p><div class="list">'+
       PACKS[pack].pen.map((p,i)=>'<button class="opt" data-a="prs" data-i="'+i+'">'+esc(p[1])+'</button>').join('')+
       '<button class="opt" data-a="prs" data-i="-1">✍️ Personalizzata</button></div>';
   }
@@ -623,9 +664,8 @@ function viewPadrona(){
   h += '<p class="lead">Cosa desideri?</p><div class="grid">'+
     ['domanda','obbligo','verita','richiesta'].map(k=>'<button class="tile" data-a="cat" data-c="'+k+'"><span class="ico">'+ic(CATS[k].icona)+'</span><span class="tn">'+CATS[k].nome+'</span></button>').join('')+'</div>';
   const n = L.needPen.length;
-  h += '<button class="tile wide'+(n?'':' locked')+'" data-a="pen"><span class="ico">'+ic(n?'chain':'lock')+'</span><span class="tn">Penitenze</span>'+
-    (n ? '<span class="badge ok">'+n+' da assegnare</span>' : '')+'</button>';
-  if(!n) h += '<p class="note" style="text-align:center">Si sblocca quando lo schiavo non esegue un ordine in tempo.</p>';
+  h += '<button class="tile wide" data-a="pen"><span class="ico">'+ic('chain')+'</span><span class="tn">Penitenze</span>'+
+    (n ? '<span class="badge ok">'+n+' scaduti</span>' : '')+'</button>';
   const open = L.pending.concat(L.needPen).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
   if(open.length) h += '<p class="sec">In attesa</p>'+open.map(o=>cardHtml(o,'padrona')).join('');
   h += archiveRows(L.archive);
@@ -648,9 +688,23 @@ function respArea(o){
   return h + '<button class="btn block" id="sendbtn" data-a="send">Invia alla Padrona</button>';
 }
 
+function answerCard(cur){
+  const isPen = cur.categoria==='penitenza';
+  const src = cur.penitenza_di ? orders.find(x=>x.id===cur.penitenza_di) : null;
+  const inf = (cur.categoria==='obbligo' || isPen) ? OBB[cur.tipo].nota : CATS[cur.categoria].nota;
+  const timed = cur.scade_at && !isPen;
+  return '<div class="card cur"><div class="head"><span class="cat'+(isPen?' pen':'')+'">'+CATS[cur.categoria].nome+'</span><span>'+fdate(cur.created_at)+'</span></div>'+
+    (src ? '<div class="note" style="margin:0 0 6px">Penitenza per: «'+esc(src.testo)+'»</div>' : '')+
+    '<div class="big">'+esc(cur.testo)+'</div>'+
+    (timed ? '<div class="timerline">Tempo rimasto <b class="timer" data-exp="'+esc(cur.scade_at)+'"></b></div>' : '')+
+    (inf ? '<p class="note">'+esc(inf)+'</p>' : '')+
+    respArea(cur)+
+    (timed && cur.rinvii<3 ? '<button class="btn ghost block" data-a="rinvia">Rinvia di 10 minuti (restano '+(3-cur.rinvii)+')</button>' : '')+
+    '</div>';
+}
+
 function viewSchiavo(){
   const L = lists();
-  const cur = L.pending.slice().reverse()[0];
   const arch = L.archive.concat(L.needPen);
   let h = header('Schiavo');
 
@@ -660,21 +714,16 @@ function viewSchiavo(){
     if(a===null) return viewSchiavo();
     return h + a;
   }
+  if(ui.step==='detail'){
+    const o = orders.find(x=>x.id===ui.id);
+    if(!o){ ui = {step:'home'}; return viewSchiavo(); }
+    return h + '<button class="link" data-a="back">‹ Indietro</button>' + (stat(o)==='pending' ? answerCard(o) : cardHtml(o,'schiavo'));
+  }
 
+  const cur = L.pending.slice().reverse()[0];
   h += pushBanner();
   if(cur){
-    const isPen = cur.categoria==='penitenza';
-    const src = cur.penitenza_di ? orders.find(x=>x.id===cur.penitenza_di) : null;
-    const inf = (cur.categoria==='obbligo' || isPen) ? OBB[cur.tipo].nota : CATS[cur.categoria].nota;
-    const timed = cur.scade_at && !isPen;
-    h += '<div class="card cur"><div class="head"><span class="cat'+(isPen?' pen':'')+'">'+CATS[cur.categoria].nome+'</span><span>'+fdate(cur.created_at)+'</span></div>'+
-      (src ? '<div class="note" style="margin:0 0 6px">Per non aver eseguito: «'+esc(src.testo)+'»</div>' : '')+
-      '<div class="big">'+esc(cur.testo)+'</div>'+
-      (timed ? '<div class="timerline">Tempo rimasto <b class="timer" data-exp="'+esc(cur.scade_at)+'"></b></div>' : '')+
-      (inf ? '<p class="note">'+esc(inf)+'</p>' : '')+
-      respArea(cur)+
-      (timed && cur.rinvii<3 ? '<button class="btn ghost block" data-a="rinvia">Rinvia di 10 minuti (restano '+(3-cur.rinvii)+')</button>' : '')+
-      '</div>';
+    h += answerCard(cur);
     const others = L.pending.length - 1;
     if(others>0) h += '<p class="note" style="margin-top:12px">Altri ordini in attesa: '+others+'</p>';
   } else {
@@ -685,19 +734,27 @@ function viewSchiavo(){
 }
 
 async function hydrate(){
-  for(const el of document.querySelectorAll('[data-path]')){
-    const p = el.dataset.path;
-    let e = urlCache[p];
-    if(!e || Date.now()-e.t > 50*60*1000){
-      const {data} = await sb.storage.from('media').createSignedUrl(p, 3600);
-      e = {url: data && data.signedUrl, t: Date.now()}; urlCache[p] = e;
-    }
-    if(!e.url) continue;
+  const els = Array.from(document.querySelectorAll('[data-path]'));
+  if(!els.length) return;
+  const fill = () => els.forEach(el=>{
+    if(el.dataset.done) return;
+    const e = urlCache[el.dataset.path]; if(!e || !e.url) return;
     const t = el.dataset.tipo;
-    el.innerHTML = t==='video' ? '<video src="'+e.url+'" controls playsinline preload="metadata"></video>'
-                 : t==='image' ? '<img src="'+e.url+'" alt="">'
+    el.innerHTML = t==='video' ? '<video src="'+e.url+'" controls playsinline preload="none"></video>'
+                 : t==='image' ? '<img src="'+e.url+'" alt="" loading="lazy" decoding="async">'
                  : '<a href="'+e.url+'" target="_blank" rel="noopener">Apri il file</a>';
-  }
+    el.dataset.done = '1';
+  });
+  fill();
+  const need = Array.from(new Set(els.map(el=>el.dataset.path).filter(p=>{
+    const e = urlCache[p]; return !e || Date.now()-e.t > 50*60*1000;
+  })));
+  if(!need.length) return;
+  try{
+    const r = await sb.storage.from('media').createSignedUrls(need, 3600);
+    (r.data || []).forEach(d=>{ if(d && d.signedUrl) urlCache[d.path] = {url:d.signedUrl, t:Date.now()}; });
+  }catch(e){}
+  fill();
 }
 
 /* ---------- TIMER ---------- */
@@ -717,64 +774,107 @@ function tick(){
 setInterval(tick, 1000);
 
 /* ---------- AZIONI ---------- */
+function localDone(o, testo, path, tipo){
+  o.stato = 'completato'; o.risposta_testo = testo; o.risposta_media = path; o.risposta_tipo = tipo;
+  o.risposta_at = new Date().toISOString();
+}
+
+async function applyTarget(){
+  if(!openTarget || !role || locked) return;
+  const id = openTarget;
+  let o = orders.find(x=>x.id===id);
+  if(!o && await loadOrders()){ sig = signature(); o = orders.find(x=>x.id===id); }
+  openTarget = null;
+  if(!o){ toast('Ordine non più disponibile'); render(); return; }
+  ui = {step:'detail', id:id};
+  render();
+}
+
+async function shrinkImage(f){
+  if(!f.type || f.type.indexOf('image/')!==0 || f.type==='image/gif') return f;
+  try{
+    let bmp;
+    try{ bmp = await createImageBitmap(f, {imageOrientation:'from-image'}); }
+    catch(e){ bmp = await createImageBitmap(f); }
+    const sc = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+    if(sc===1 && f.size < 1.2*1024*1024) return f;
+    const c = document.createElement('canvas');
+    c.width = Math.round(bmp.width*sc); c.height = Math.round(bmp.height*sc);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise(r=>c.toBlob(r,'image/jpeg',0.82));
+    return blob ? new File([blob], 'foto.jpg', {type:'image/jpeg'}) : f;
+  }catch(e){ return f; }
+}
+
 async function sendOrder(){
   const testo = ($('#ot').value||'').trim();
   if(!testo) return toast('Scrivi qualcosa');
   const tipo = ui.cat==='obbligo' ? ui.sub : 'custom';
   const b = $('[data-a=order]'); b.disabled = true;
-  const {error} = await sb.from('ordini').insert({categoria:ui.cat, tipo, testo});
-  if(error){ b.disabled=false; return toast('Invio non riuscito, riprova'); }
-  toast('Ordine inviato'); ui = {step:'home'};
-  sig=''; await refresh(false); render();
+  const r = await sb.from('ordini').insert({categoria:ui.cat, tipo, testo}).select().single();
+  if(r.error){ b.disabled=false; return toast('Invio non riuscito, riprova'); }
+  if(r.data) orders.unshift(r.data);
+  sig = signature(); writeCache();
+  toast('Ordine inviato'); ui = {step:'home'}; render();
 }
 
 async function sendPen(){
   const t = ($('#ot').value||'').trim();
   if(!t) return toast('Scrivi la penitenza');
   const b = $('[data-a=penorder]'); b.disabled = true;
-  const {error} = await sb.rpc('assegna_penitenza',{p_scaduto:ui.src, p_tipo:$('#pt').value, p_testo:t});
-  if(error){ b.disabled=false; return toast('Non riuscito: già assegnata o non sbloccata'); }
-  toast('Penitenza assegnata'); ui = {step:'home'};
-  sig=''; await refresh(false); render();
+  const r = await sb.rpc('assegna_penitenza',{p_scaduto:ui.src||null, p_tipo:$('#pt').value, p_testo:t});
+  if(r.error){ b.disabled=false; return toast('Non riuscito, riprova'); }
+  toast('Penitenza assegnata'); ui = {step:'home'}; render();
+  sig=''; refresh(false);
 }
 
 async function delOrder(id){
   const o = orders.find(x=>x.id===id); if(!o) return;
   if(!confirm('Eliminare definitivamente questa richiesta?')) return;
-  if(o.risposta_media){ try{ await sb.storage.from('media').remove([o.risposta_media]); }catch(e){} }
-  const {error} = await sb.from('ordini').delete().eq('id', id);
-  if(error) return toast('Non riuscito');
-  toast('Eliminata'); sig=''; await refresh(false); render();
+  orders = orders.filter(x=>x.id!==id); sig = signature(); writeCache();
+  if(ui.step==='detail') ui = {step:'home'};
+  render(); toast('Eliminata');
+  try{
+    if(o.risposta_media) await sb.storage.from('media').remove([o.risposta_media]);
+    const r = await sb.from('ordini').delete().eq('id', id);
+    if(r.error) throw r.error;
+  }catch(e){ toast('Eliminazione non riuscita'); sig=''; refresh(false); }
 }
 
 async function answer(o, testo, path, tipo){
-  const {error} = await sb.rpc('rispondi',{p_id:o.id, p_testo:testo, p_media:path, p_tipo:tipo});
-  if(error) throw error;
+  const r = await sb.rpc('rispondi',{p_id:o.id, p_testo:testo, p_media:path, p_tipo:tipo});
+  if(r.error) throw r.error;
 }
 function isExpiredErr(e){ return /scaduto/i.test(String(e && e.message)); }
 
 async function replyChoice(kind, val){
   const o = curOrder(); if(!o) return;
-  try{
-    if(kind==='yn') await answer(o, val, null, 'scelta'); else await answer(o, 'Obbedisco', null, 'ok');
-    toast('Inviato alla Padrona');
-  }catch(e){ toast(isExpiredErr(e) ? 'Tempo scaduto' : 'Invio non riuscito, riprova'); }
-  sig=''; await refresh(false); render();
+  const testo = kind==='yn' ? val : 'Obbedisco', tipo = kind==='yn' ? 'scelta' : 'ok';
+  const snap = Object.assign({}, o);
+  localDone(o, testo, null, tipo); sig = signature(); ui = {step:'home'}; render(); toast('Inviato alla Padrona');
+  try{ await answer(o, testo, null, tipo); writeCache(); }
+  catch(e){
+    Object.assign(o, snap); sig = signature(); render();
+    toast(isExpiredErr(e) ? 'Tempo scaduto' : 'Invio non riuscito, riprova');
+    sig=''; refresh(false);
+  }
 }
 
 async function sendReply(){
   const o = curOrder(); if(!o) return;
   const rt = ($('#rt') ? $('#rt').value : '').trim();
-  const f = pendingFile, c = o.categoria, t = o.tipo;
+  let f = pendingFile;
+  const c = o.categoria, t = o.tipo;
   const isObb = (c==='obbligo' || c==='penitenza');
   if(c==='verita' && !rt) return toast('Scrivi la risposta');
   if(isObb && t!=='custom' && !f) return toast('Allega quanto richiesto');
   if(isObb && t==='custom' && !rt && !f) return toast('Rispondi o allega qualcosa');
-  if(f && f.size > MAX_BYTES) return toast('File troppo grande (max 50 MB)');
   const b = $('#sendbtn'); b.disabled = true; b.textContent = 'Invio in corso...';
   try{
     let path = null, tipo = 'testo';
     if(f){
+      f = await shrinkImage(f);
+      if(f.size > MAX_BYTES){ b.disabled=false; b.textContent='Invia alla Padrona'; return toast('File troppo grande (max 50 MB)'); }
       const ext = ((f.name.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5)) || 'bin';
       path = o.id+'/'+Date.now()+'.'+ext;
       const up = await sb.storage.from('media').upload(path, f, {contentType: f.type || undefined});
@@ -782,19 +882,22 @@ async function sendReply(){
       tipo = f.type.indexOf('video')===0 ? 'video' : f.type.indexOf('image')===0 ? 'image' : 'file';
     }
     await answer(o, rt || null, path, tipo);
-    pendingFile = null; toast('Inviato alla Padrona');
+    localDone(o, rt || null, path, tipo);
+    pendingFile = null; sig = signature(); writeCache(); ui = {step:'home'}; render(); toast('Inviato alla Padrona');
   }catch(e){
     if(isExpiredErr(e)){ toast('Tempo scaduto'); sig=''; await refresh(false); render(); return; }
-    toast('Invio non riuscito, riprova'); b.disabled=false; b.textContent='Invia alla Padrona'; return;
+    toast('Invio non riuscito, riprova'); b.disabled=false; b.textContent='Invia alla Padrona';
   }
-  sig=''; await refresh(false); render();
 }
 
 async function rinvia(){
   const o = curOrder(); if(!o) return;
-  const {error} = await sb.rpc('rinvia',{p_id:o.id});
-  toast(error ? 'Non rinviabile' : 'Rinviato di 10 minuti');
-  sig=''; await refresh(false); render();
+  const snap = {scade_at:o.scade_at, rinvii:o.rinvii};
+  o.scade_at = new Date(new Date(o.scade_at).getTime() + 10*60*1000).toISOString();
+  o.rinvii = (o.rinvii||0) + 1;
+  sig = signature(); render(); toast('Rinviato di 10 minuti');
+  const r = await sb.rpc('rinvia',{p_id:o.id});
+  if(r.error){ Object.assign(o, snap); sig = signature(); render(); toast('Non rinviabile'); sig=''; refresh(false); }
 }
 
 /* ---------- EVENTI ---------- */
@@ -818,13 +921,8 @@ app.addEventListener('click', e => {
     return;
   }
   if(a==='arch'){ ui = {step:'archive', cat:b.dataset.c}; return render(); }
-  if(a==='pen'){
-    const need = lists().needPen;
-    if(!need.length) return toast('Si sblocca quando lo schiavo non esegue un ordine in tempo');
-    if(need.length===1) ui = {step:'pen', src:need[0].id}; else ui = {step:'penlist'};
-    return render();
-  }
-  if(a==='penfor'){ ui = {step:'pen', src:b.dataset.id}; return render(); }
+  if(a==='pen'){ ui = {step:'pen', src:null, prev:ui}; return render(); }
+  if(a==='penfor'){ ui = {step:'pen', src:b.dataset.id, prev:ui}; return render(); }
   if(a==='prs'){
     const i = parseInt(b.dataset.i,10);
     const p = i>=0 ? PACKS[pack].pen[i] : null;
@@ -836,8 +934,8 @@ app.addEventListener('click', e => {
   if(a==='back'){
     const s = ui.step;
     if(s==='compose' && CATS[ui.cat].sub.length>1) ui = {step:'sub', cat:ui.cat};
-    else if(s==='pencompose') ui = {step:'pen', src:ui.src};
-    else if(s==='pen' && lists().needPen.length>1) ui = {step:'penlist'};
+    else if(s==='pencompose') ui = {step:'pen', src:ui.src, prev:ui.prev};
+    else if(s==='pen') ui = ui.prev || {step:'home'};
     else ui = {step:'home'};
     return render();
   }
@@ -869,8 +967,8 @@ app.addEventListener('focusout', () => {
 document.addEventListener('visibilitychange', () => {
   if(document.hidden){ hiddenAt = Date.now(); return; }
   if(role && localStorage.getItem(PINKEY) && Date.now()-hiddenAt > LOCK_AFTER){
-    locked = true; unlock(()=>{ locked=false; sig=''; refresh(false).then(render); });
-  } else if(role){ refresh(true); }
+    locked = true; unlock(()=>{ locked=false; sig=''; refresh(false).then(render).then(applyTarget); });
+  } else if(role){ refresh(true); applyTarget(); if(Date.now()-lastClock > 300000) syncClock(); }
 });
 
 /* ---------- AVVIO ---------- */
