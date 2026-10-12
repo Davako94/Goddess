@@ -121,6 +121,29 @@ button.banner{cursor:pointer}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ivory);color:var(--ink);padding:11px 18px;border-radius:99px;font-size:15px;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center;z-index:9}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 @media (prefers-reduced-motion:reduce){#toast{transition:none}}
+#popup{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:18px}
+#popup[hidden]{display:none}
+.pcard{width:100%;max-width:440px;max-height:90vh;overflow:auto;background:var(--plum);border:1px solid var(--gold);border-radius:20px;padding:22px 18px;text-align:center}
+.pfrom{color:var(--steel);font-size:13px;letter-spacing:.2em;text-transform:uppercase}
+.pemoji{font-size:84px;line-height:1.1;margin:10px 0;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.ptext{font-family:var(--serif);font-size:30px;line-height:1.2;margin-bottom:16px;word-break:break-word}
+html[data-theme=latex] .ptext,html[data-theme=hard] .ptext{font-family:var(--sans);font-weight:800;font-size:24px}
+.prow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.plist{display:flex;flex-direction:column;gap:8px;margin:12px 0;text-align:left}
+.chip{font-size:15px;padding:12px 14px}
+@keyframes pop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.pemoji{animation:none}}
+.qbtn{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;font-size:15px;padding:14px 8px}
+.qe{font-size:28px;line-height:1}
+.bub{background:var(--plum);border:1px solid var(--plum2);border-radius:14px;padding:12px 14px;margin-top:10px;max-width:92%}
+.bub.me{margin-left:auto;border-color:var(--gold)}
+.bub .bhead{display:flex;justify-content:space-between;gap:10px;color:var(--steel);font-size:12px;margin-bottom:4px}
+.bub .btxt{font-size:17px;word-break:break-word}
+.bub .btxt .qe{font-size:22px;vertical-align:-.1em}
+.bub .blike{text-align:right}
+.bub.unread{border-color:var(--rose)}
+.tile.wide.cast,.tile.wide.msg{border-color:var(--gold)}
+.tile.wide.cast .tn,.tile.wide.cast .ico,.tile.wide.msg .tn,.tile.wide.msg .ico{color:var(--gold)}
 </style>
 </head>
 <body>
@@ -135,11 +158,13 @@ button.banner{cursor:pointer}
     <symbol id="i-flame" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></g></symbol>
     <symbol id="i-spade" viewBox="0 0 24 24"><g fill="currentColor" stroke="none"><path d="M12 2c3 4 8 6 8 10.5a4.2 4.2 0 0 1-7 3.1c.2 2-.4 4-1.8 5.4h-2.4c-1.4-1.4-2-3.4-1.8-5.4a4.2 4.2 0 0 1-7-3.1C4 8 9 6 12 2z"/></g></symbol>
     <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></g></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></g></symbol>
   </defs>
 </svg>
 
 <div id="app"><div class="center"><p class="muted">Caricamento…</p></div></div>
 <div id="toast"></div>
+<div id="popup" hidden></div>
 
 <script>
 /* Applica subito il tema salvato e mostra eventuali errori all'avvio */
@@ -191,6 +216,7 @@ const CATS = {
               nota:'Dovrà risponderti con la verità.', hint:'Scrivi la tua domanda'},
   richiesta: {nome:'Richiesta', icona:'crown', sub:[['custom','Personalizzata']],
               nota:'Dovrà solo confermare di obbedire.', hint:'Scrivi la tua richiesta'},
+  castita:   {nome:'Castità',   icona:'cage',  sub:[['foto','Foto'],['video','Video'],['soldi','Tributo'],['custom','Frase / obbligo']]},
   penitenza: {nome:'Penitenza', icona:'chain', sub:[]}
 };
 const OBB = {
@@ -256,12 +282,87 @@ const PACKS = {
          ["soldi","Paga 100€ alla tua Dea come penitenza e mandami la prova"]]}
 };
 
+PACKS.soft.cast = {
+  foto:["Mandami una foto della tua gabbia, ben chiusa","Mandami una foto della gabbia con un biglietto: «Sono nelle mani della mia Padrona»"],
+  video:["Registra un video in cui mi mostri la gabbia e mi ringrazi per tenerti chiuso"],
+  soldi:["Paga 10€ per ogni giorno in cui resti chiuso e mandami la prova"],
+  custom:["Scrivimi 3 motivi per cui è giusto che io tenga la chiave","Scrivi 20 volte «La chiave è della mia Padrona» e mandami la foto del foglio"]
+};
+PACKS.bdsm.cast = {
+  foto:["Mandami una foto della gabbia e del tuo sguardo da prigioniero","Mandami una foto della gabbia con il mio nome scritto accanto"],
+  video:["Registra un video in cui supplichi un'ora di libertà e accetti il mio no","Registra un video in cui giuri di non chiedere mai di essere aperto senza il mio permesso"],
+  soldi:["Paga 30€ per ogni richiesta di essere liberato"],
+  custom:["Scrivi 50 volte «Il mio piacere appartiene alla mia Padrona»","Elencami tutto ciò che farai per meritare di essere aperto"]
+};
+PACKS.cuck.cast = {
+  foto:["Mandami una foto della gabbia mentre aspetti il mio rientro a testa bassa","Mandami una foto della gabbia con un cartello: «Chiuso mentre lei si diverte»"],
+  video:["Registra un video in cui ammetti che è giusto che sia io a godere e tu a restare chiuso"],
+  soldi:["Paga 50€ per ogni serata in cui ti lascio chiuso mentre io mi diverto"],
+  custom:["Scrivimi cosa provi a restare chiuso mentre sono io a decidere tutto","Scrivi 50 volte «Il mio ruolo è aspettare e obbedire»"]
+};
+PACKS.hard.cast = {
+  foto:["Mandami una foto della gabbia e di te in ginocchio, a testa bassa","Scrivi «proprietà della mia Dea» su un biglietto e mandami la foto accanto alla gabbia"],
+  video:["Registra un video in cui implori di restare chiuso un altro giorno e mi ringrazi per la fatica di tenerti","Registra un video in cui ripeti dieci volte «non merito di essere aperto»"],
+  soldi:["Paga 100€ per l'onore di essere tenuto chiuso da me"],
+  custom:["Scrivi una lettera in cui ammetti perché meriti di restare chiuso","Scrivi 100 volte «Sono inutile senza la chiave della mia Dea»"]
+};
+PACKS.estremo = {nome:'Estremo',
+  domanda:["Ti vergogni di te stesso, vero?","Sai di essere inferiore a qualsiasi uomo che mi desideri?","Accetti di restare chiuso finché non decido io?"],
+  verita:["Qual è la cosa più umiliante che ti sia piaciuto fare per me, e perché ti è piaciuta?","In cosa sei più patetico, secondo te?","Se dovessi descrivere il tuo posto accanto a me con una sola parola, quale sarebbe?"],
+  richiesta:["Per tutta la serata parli di te solo come «questo verme» e ti rivolgi a me come «Dea»","Servi la cena in ginocchio e mangi solo ciò che ti lascio","Per tre ore non puoi sederti in mia presenza senza il mio permesso"],
+  foto:["Mandami un selfie con un cartello al collo: «Verme al servizio della sua Dea»","Mandami una foto in ginocchio con il mio nome scritto sul petto","Mandami una foto della tua faccia più patetica, con un biglietto: «Chiuso e senza valore»"],
+  video:["Registra un video in cui ripeti, guardando in camera: «Sono un verme e la mia Dea è tutto»","Registra un video in cui ringrazi la tua Dea per tutte le volte che ti ha ignorato"],
+  soldi:["Mandami 300€ come tributo di un verme","Paga 150€ per ogni volta che ho riso di te questa settimana"],
+  custom:["Scrivimi cosa dovrei fare per ricordarti ogni giorno chi sei","Scrivi una lettera di sottomissione in cui rinunci a ogni diritto, e firmala"],
+  pen:[["foto","Scrivi 300 volte «Sono un verme al servizio della mia Dea» e mandami la foto dei fogli"],
+       ["video","Registra un video in cui implori perdono e ti dai da solo i nomi che ti meriti"],
+       ["foto","Resta in ginocchio a testa bassa per 20 minuti e mandami la foto all'inizio e alla fine"],
+       ["custom","Per 72 ore nessun «io»: parli di te solo come «lo schiavo» e mi dai del lei. Confermamelo"],
+       ["soldi","Paga 200€ come penitenza e mandami la prova"]],
+  cast:{
+    foto:["Mandami una foto in ginocchio con la gabbia ben visibile e un cartello: «Sono il giocattolo inutile della mia Dea»","Mandami una foto della gabbia con un biglietto: «Chiuso e senza valore»"],
+    video:["Registra un video in cui ti presenti: nome, ruolo e tutto ciò che non vali senza di me","Registra un video in cui ringrazi la tua Dea per averti reso inutile e chiuso"],
+    soldi:["Paga 200€ come tassa di mantenimento per la tua gabbia"],
+    custom:["Scrivimi la lista delle cose di cui ti vergogni di più e ringraziami per averle viste","Scrivi un contratto in cui cedi a me ogni decisione sulla gabbia, e firmalo"]
+  }
+};
+
+/* ---------- MESSAGGI LAMPO (10 per lei, 10 per lui) ---------- */
+const QM = {
+  padrona:[
+    {id:'g1',  e:'🐂🤡', t:'Cornuto sfigato'},
+    {id:'g2',  e:'🦶',   t:'Sei il mio zerbino'},
+    {id:'g3',  e:'🐛',   t:'In ginocchio, verme'},
+    {id:'g4',  e:'🔒❌', t:'Resti chiuso, nessuno ti vuole'},
+    {id:'g5',  e:'👀🍷', t:'Stasera mi diverto, tu guardi e basta'},
+    {id:'g6',  e:'😒',   t:'Mi fai pena, schiavo'},
+    {id:'g7',  e:'🗝👑', t:'La chiave è mia, tu non conti niente'},
+    {id:'g8',  e:'🤏😈', t:'Piccolo, patetico e mio'},
+    {id:'g9',  e:'🤣',   t:'Mi fai ridere, sfigato'},
+    {id:'g10', e:'🙏⛓', t:'Ringraziami per ogni umiliazione'}
+  ],
+  schiavo:[
+    {id:'s1',  e:'👑💜', t:'Dea, padrona unica della mia vita'},
+    {id:'s2',  e:'🦶🙇', t:'Sono il tuo zerbino, calpestami'},
+    {id:'s3',  e:'🙈',   t:'Non merito nemmeno di guardarti'},
+    {id:'s4',  e:'🔒🙏', t:'Grazie per la mia gabbia, Dea'},
+    {id:'s5',  e:'✨👑', t:'Sei la donna più perfetta del mondo'},
+    {id:'s6',  e:'⛓💜', t:'Sono tuo, solo tuo, per sempre'},
+    {id:'s7',  e:'🙇⏳', t:'Divertiti, io aspetto in ginocchio'},
+    {id:'s8',  e:'🐂💜', t:'Sono il tuo cornuto devoto'},
+    {id:'s9',  e:'🙇🔥', t:'Comandami, Dea: vivo per servirti'},
+    {id:'s10', e:'😍🙏', t:'Ti adoro, mia Padrona'}
+  ]
+};
+
 /* ---------- STATO ---------- */
 let role = null, uid = null, orders = [], sig = '', ui = {step:'home'}, pendingFile = null;
 let locked = false, hiddenAt = 0, tries = 0, channel = null, poll = null, urlCache = {};
 let off = 0, expFlag = false, pendingRender = false;
 let theme = 'locktober', pack = 'soft';
-let openTarget = null, lastClock = 0, rtT = null;
+let openTarget = null, lastClock = 0, rtT = null, rtM = null;
+let openMsg = null, msgs = [], popupId = null;
+const shownMsgs = new Set();
 try{ theme = localStorage.getItem('gd_theme') || 'locktober'; pack = localStorage.getItem('gd_pack') || 'soft'; }catch(e){}
 if(!THEMES[theme]) theme = 'locktober';
 if(!PACKS[pack]) pack = 'soft';
@@ -312,13 +413,15 @@ applyTheme(); setTimeout(buildIcons, 1200);
 try{ if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){}); }catch(e){}
 /* Apertura diretta dell'ordine dalla notifica */
 try{
-  const u0 = new URL(location.href), o0 = u0.searchParams.get('o');
-  if(o0){ openTarget = o0; history.replaceState(null, '', u0.pathname); }
+  const u0 = new URL(location.href), o0 = u0.searchParams.get('o'), m0 = u0.searchParams.get('m');
+  if(o0) openTarget = o0;
+  if(m0) openMsg = m0;
+  if(o0 || m0) history.replaceState(null, '', u0.pathname);
 }catch(e){}
 try{
   if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', ev => {
     const d = ev.data;
-    if(d && d.type==='open' && d.ordine){ openTarget = d.ordine; applyTarget(); }
+    if(d && d.type==='open' && (d.ordine || d.msg)){ if(d.ordine) openTarget = d.ordine; if(d.msg) openMsg = d.msg; applyTarget(); }
   });
 }catch(e){}
 
@@ -458,6 +561,132 @@ async function syncClock(){
     lastClock = Date.now();
   }catch(e){}
 }
+/* ---------- MESSAGGI LAMPO ---------- */
+async function loadMsgs(){
+  const r = await sb.from('messaggi').select('*').order('created_at',{ascending:false}).limit(60);
+  if(r.error) return false;
+  msgs = r.data; return true;
+}
+function unreadMsgs(){ return msgs.filter(m=>m.da!==role && !m.letto_at); }
+
+async function refreshMsgs(notify){
+  const before = {};
+  msgs.forEach(m=>{ before[m.id] = m.mi_piace; });
+  if(!await loadMsgs()) return;
+  if(notify && !locked){
+    const fresh = unreadMsgs().filter(m=>!(m.id in before));
+    const liked = msgs.filter(m=>m.da===role && m.mi_piace && before[m.id]===false);
+    if(fresh.length) buzz();
+    if(liked.length){ buzz(); toast('❤️ Mi piace al tuo messaggio'); }
+  }
+  if(!locked && ui.step==='msgs' && !typing()) render();
+  checkPopups();
+}
+
+function checkPopups(){
+  if(locked || !role || popupId || document.hidden) return;
+  const q = unreadMsgs().filter(m=>!shownMsgs.has(m.id)).reverse();
+  if(q.length) showPopup(q[0]);
+}
+
+function showPopup(m){
+  popupId = m.id; shownMsgs.add(m.id);
+  const from = m.da==='padrona' ? 'La tua Dea' : 'Il tuo schiavo';
+  const P = $('#popup');
+  P.innerHTML = '<div class="pcard"><p class="pfrom">'+from+'</p><div class="pemoji">'+esc(m.emoji||'💬')+'</div>'+
+    '<p class="ptext">'+esc(m.testo)+'</p>'+
+    '<div class="prow"><button class="btn'+(m.mi_piace?'':' ghost')+'" data-p="like">'+(m.mi_piace?'❤️ Piaciuto':'🤍 Mi piace')+'</button>'+
+    '<button class="btn ghost" data-p="reply">↩ Rispondi</button></div>'+
+    '<button class="link" data-p="close">Chiudi</button></div>';
+  P.hidden = false;
+}
+function popupReply(){
+  const P = $('#popup');
+  P.innerHTML = '<div class="pcard"><p class="pfrom">Rispondi</p><div class="plist">'+
+    QM[role].map((q,i)=>'<button class="opt chip" data-p="rq" data-i="'+i+'"><span>'+q.e+'</span> '+esc(q.t)+'</button>').join('')+'</div>'+
+    '<textarea id="prt" rows="2" maxlength="300" placeholder="Oppure scrivi la tua risposta"></textarea>'+
+    '<button class="btn block" data-p="rsend">Invia risposta</button>'+
+    '<button class="link" data-p="rback">‹ Indietro</button></div>';
+}
+function closePopup(){
+  const m = msgs.find(x=>x.id===popupId);
+  if(m && m.da!==role && !m.letto_at){ m.letto_at = new Date().toISOString(); sb.rpc('msg_letto',{p_id:m.id}); }
+  const P = $('#popup'); P.hidden = true; P.innerHTML = '';
+  popupId = null;
+  if(!locked && ui.step==='msgs') render();
+  setTimeout(checkPopups, 250);
+}
+function lockHidePopup(){
+  if(!popupId) return;
+  shownMsgs.delete(popupId); popupId = null;
+  const P = $('#popup'); P.hidden = true; P.innerHTML = '';
+}
+async function sendMsg(def, txt, replyTo){
+  const row = {da:role, codice:def?def.id:'custom', emoji:def?def.e:'💬', testo:def?def.t:txt, risposta_a:replyTo||null};
+  const r = await sb.from('messaggi').insert(row).select().single();
+  if(r.error){ toast('Invio non riuscito, riprova'); return false; }
+  if(r.data) msgs.unshift(r.data);
+  return true;
+}
+async function sendQuick(i){
+  const def = QM[role][i]; if(!def) return;
+  if(await sendMsg(def, null, null)){ toast('Inviato: '+def.t); if(ui.step==='msgs') render(); }
+}
+async function delMsg(id){
+  msgs = msgs.filter(x=>x.id!==id); render();
+  const r = await sb.from('messaggi').delete().eq('id', id);
+  if(r.error){ toast('Eliminazione non riuscita'); refreshMsgs(false); }
+}
+async function toggleLike(){
+  const m = msgs.find(x=>x.id===popupId); if(!m) return;
+  m.mi_piace = !m.mi_piace;
+  showPopup(m);
+  sb.rpc('msg_mi_piace',{p_id:m.id, p_val:m.mi_piace});
+}
+$('#popup').addEventListener('click', async e => {
+  const P = $('#popup');
+  if(e.target===P) return closePopup();
+  const b = e.target.closest('[data-p]'); if(!b) return;
+  const a = b.dataset.p;
+  if(a==='close') return closePopup();
+  if(a==='like') return toggleLike();
+  if(a==='reply') return popupReply();
+  if(a==='rback'){ const m = msgs.find(x=>x.id===popupId); if(m) showPopup(m); return; }
+  if(a==='rq'){
+    const def = QM[role][parseInt(b.dataset.i,10)]; if(!def) return;
+    if(await sendMsg(def, null, popupId)){ toast('Risposta inviata'); closePopup(); }
+    return;
+  }
+  if(a==='rsend'){
+    const t = ($('#prt').value||'').trim();
+    if(!t) return toast('Scrivi qualcosa');
+    if(await sendMsg(null, t, popupId)){ toast('Risposta inviata'); closePopup(); }
+  }
+});
+
+function msgTile(){
+  const n = unreadMsgs().length;
+  return '<button class="tile wide msg" data-a="msgs"><span class="ico">'+ic('bolt')+'</span><span class="tn">Messaggi lampo</span>'+
+    (n ? '<span class="badge ok">'+n+' nuovi</span>' : '')+'</button>';
+}
+function msgsHtml(){
+  let h = '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+ic('bolt')+' Messaggi lampo</p>'+
+    '<p class="note">Arrivano come notifica e si leggono solo dopo il PIN.</p><div class="grid">'+
+    QM[role].map((q,i)=>'<button class="opt qbtn" data-a="qm" data-i="'+i+'"><span class="qe">'+q.e+'</span><span>'+esc(q.t)+'</span></button>').join('')+'</div>';
+  if(msgs.length){
+    h += '<p class="sec">Cronologia</p>'+msgs.slice(0,30).map(m=>{
+      const mine = m.da===role;
+      const unread = !mine && !m.letto_at;
+      return '<div class="bub'+(mine?' me':'')+(unread?' unread':'')+'"'+(mine?'':' data-a="openmsg" data-id="'+m.id+'"')+'>'+
+        '<div class="bhead"><span>'+(mine?'Tu':(m.da==='padrona'?'Dea':'Schiavo'))+'</span><span>'+fdate(m.created_at)+'</span></div>'+
+        '<div class="btxt"><span class="qe">'+esc(m.emoji||'')+'</span> '+esc(m.testo)+'</div>'+
+        (m.mi_piace ? '<div class="blike">❤️</div>' : '')+
+        (role==='padrona' ? '<button class="link red" data-a="delmsg" data-id="'+m.id+'">Elimina</button>' : '')+'</div>';
+    }).join('');
+  }
+  return h;
+}
+
 function signature(){ return orders.map(o=>[o.id,o.stato,o.scade_at,o.rinvii,o.penitenza_di].join(':')).join(','); }
 
 /* stato derivato: done / expired / pending */
@@ -504,8 +733,10 @@ function startLive(){
   stopLive();
   channel = sb.channel('ordini-live').on('postgres_changes',{event:'*',schema:'public',table:'ordini'},()=>{
     clearTimeout(rtT); rtT = setTimeout(()=>refresh(true), 350);
+  }).on('postgres_changes',{event:'*',schema:'public',table:'messaggi'},()=>{
+    clearTimeout(rtM); rtM = setTimeout(()=>refreshMsgs(true), 300);
   }).subscribe();
-  poll = setInterval(()=>{ if(!document.hidden && !locked) refresh(true); }, 25000);
+  poll = setInterval(()=>{ if(!document.hidden && !locked){ refresh(true); refreshMsgs(true); } }, 25000);
 }
 function stopLive(){ if(channel){ sb.removeChannel(channel); channel=null; } if(poll){ clearInterval(poll); poll=null; } }
 
@@ -515,7 +746,7 @@ async function boot(){
   /* prima schermata subito, dai dati salvati; poi si aggiorna */
   const c = readCache();
   if(c && c.uid===uid && c.role){ role = c.role; orders = c.orders || []; sig = signature(); render(); }
-  const res = await Promise.all([sb.from('ruoli').select('ruolo').maybeSingle(), loadOrders()]);
+  const res = await Promise.all([sb.from('ruoli').select('ruolo').maybeSingle(), loadOrders(), loadMsgs()]);
   const rl = res[0];
   if(rl.error){
     if(!role){ toast('Connessione assente, riprovo...'); setTimeout(boot, 4000); return; }
@@ -526,7 +757,7 @@ async function boot(){
   }
   sig = signature(); writeCache();
   startLive(); render();
-  syncPush(); syncClock(); applyTarget();
+  syncPush(); syncClock(); applyTarget(); checkPopups();
 }
 
 /* ---------- RENDER ---------- */
@@ -599,6 +830,7 @@ function settingsHtml(){
 }
 
 function ideas(){
+  if(ui.cat==='castita') return (PACKS[pack].cast && PACKS[pack].cast[ui.sub]) || [];
   const key = ui.cat==='obbligo' ? ui.sub : ui.cat;
   return PACKS[pack][key] || [];
 }
@@ -617,6 +849,7 @@ function viewPadrona(){
   let h = header('Padrona');
 
   if(st==='settings') return h + settingsHtml();
+  if(st==='msgs') return h + msgsHtml();
   if(st==='archive'){
     const a = archiveView(L.archive, 'padrona');
     if(a===null) return viewPadrona();
@@ -629,7 +862,7 @@ function viewPadrona(){
   }
   if(st==='compose'){
     const c = CATS[ui.cat];
-    const info = ui.cat==='obbligo' ? OBB[ui.sub] : c;
+    const info = (ui.cat==='obbligo' || ui.cat==='castita') ? OBB[ui.sub] : c;
     const id = ideas();
     return h + '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+c.nome+'</p>'+
       '<p class="note">'+esc(info.nota)+' Avrà 10 minuti per eseguire (rinviabili 3 volte).</p>'+
@@ -664,8 +897,10 @@ function viewPadrona(){
   h += '<p class="lead">Cosa desideri?</p><div class="grid">'+
     ['domanda','obbligo','verita','richiesta'].map(k=>'<button class="tile" data-a="cat" data-c="'+k+'"><span class="ico">'+ic(CATS[k].icona)+'</span><span class="tn">'+CATS[k].nome+'</span></button>').join('')+'</div>';
   const n = L.needPen.length;
+  h += '<button class="tile wide cast" data-a="cat" data-c="castita"><span class="ico">'+ic('cage')+'</span><span class="tn">Castità</span></button>';
   h += '<button class="tile wide" data-a="pen"><span class="ico">'+ic('chain')+'</span><span class="tn">Penitenze</span>'+
     (n ? '<span class="badge ok">'+n+' scaduti</span>' : '')+'</button>';
+  h += msgTile();
   const open = L.pending.concat(L.needPen).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
   if(open.length) h += '<p class="sec">In attesa</p>'+open.map(o=>cardHtml(o,'padrona')).join('');
   h += archiveRows(L.archive);
@@ -674,7 +909,7 @@ function viewPadrona(){
 
 function respArea(o){
   const c = o.categoria, t = o.tipo;
-  const isObb = (c==='obbligo' || c==='penitenza');
+  const isObb = (c==='obbligo' || c==='castita' || c==='penitenza');
   if(c==='domanda') return '<div class="row2"><button class="btn" data-a="yn" data-v="SI">Sì</button><button class="btn ghost" data-a="yn" data-v="NO">No</button></div>';
   if(c==='richiesta') return '<button class="btn block" data-a="ok">Obbedisco, Padrona</button>';
   let h = '';
@@ -691,7 +926,7 @@ function respArea(o){
 function answerCard(cur){
   const isPen = cur.categoria==='penitenza';
   const src = cur.penitenza_di ? orders.find(x=>x.id===cur.penitenza_di) : null;
-  const inf = (cur.categoria==='obbligo' || isPen) ? OBB[cur.tipo].nota : CATS[cur.categoria].nota;
+  const inf = (cur.categoria==='obbligo' || cur.categoria==='castita' || isPen) ? OBB[cur.tipo].nota : CATS[cur.categoria].nota;
   const timed = cur.scade_at && !isPen;
   return '<div class="card cur"><div class="head"><span class="cat'+(isPen?' pen':'')+'">'+CATS[cur.categoria].nome+'</span><span>'+fdate(cur.created_at)+'</span></div>'+
     (src ? '<div class="note" style="margin:0 0 6px">Penitenza per: «'+esc(src.testo)+'»</div>' : '')+
@@ -709,6 +944,7 @@ function viewSchiavo(){
   let h = header('Schiavo');
 
   if(ui.step==='settings') return h + settingsHtml();
+  if(ui.step==='msgs') return h + msgsHtml();
   if(ui.step==='archive'){
     const a = archiveView(arch, 'schiavo');
     if(a===null) return viewSchiavo();
@@ -729,6 +965,7 @@ function viewSchiavo(){
   } else {
     h += '<p class="lead">Attendi gli ordini della Padrona.</p>';
   }
+  h += msgTile();
   h += archiveRows(arch);
   return h;
 }
@@ -780,7 +1017,15 @@ function localDone(o, testo, path, tipo){
 }
 
 async function applyTarget(){
-  if(!openTarget || !role || locked) return;
+  if(!role || locked) return;
+  if(openMsg){
+    const mid = openMsg; openMsg = null;
+    await loadMsgs();
+    const mm = msgs.find(x=>x.id===mid);
+    if(mm && mm.da!==role){ shownMsgs.delete(mid); showPopup(mm); }
+    else { ui = {step:'msgs'}; render(); }
+  }
+  if(!openTarget) return;
   const id = openTarget;
   let o = orders.find(x=>x.id===id);
   if(!o && await loadOrders()){ sig = signature(); o = orders.find(x=>x.id===id); }
@@ -809,7 +1054,7 @@ async function shrinkImage(f){
 async function sendOrder(){
   const testo = ($('#ot').value||'').trim();
   if(!testo) return toast('Scrivi qualcosa');
-  const tipo = ui.cat==='obbligo' ? ui.sub : 'custom';
+  const tipo = (ui.cat==='obbligo' || ui.cat==='castita') ? ui.sub : 'custom';
   const b = $('[data-a=order]'); b.disabled = true;
   const r = await sb.from('ordini').insert({categoria:ui.cat, tipo, testo}).select().single();
   if(r.error){ b.disabled=false; return toast('Invio non riuscito, riprova'); }
@@ -865,7 +1110,7 @@ async function sendReply(){
   const rt = ($('#rt') ? $('#rt').value : '').trim();
   let f = pendingFile;
   const c = o.categoria, t = o.tipo;
-  const isObb = (c==='obbligo' || c==='penitenza');
+  const isObb = (c==='obbligo' || c==='castita' || c==='penitenza');
   if(c==='verita' && !rt) return toast('Scrivi la risposta');
   if(isObb && t!=='custom' && !f) return toast('Allega quanto richiesto');
   if(isObb && t==='custom' && !rt && !f) return toast('Rispondi o allega qualcosa');
@@ -909,6 +1154,10 @@ app.addEventListener('click', e => {
   if(a==='settings'){ ui = {step:'settings'}; return render(); }
   if(a==='theme'){ setTheme(b.dataset.t); return render(); }
   if(a==='pack'){ pack = b.dataset.p; try{ localStorage.setItem('gd_pack', pack); }catch(x){} toast('Livello: '+PACKS[pack].nome); return render(); }
+  if(a==='msgs'){ ui = {step:'msgs'}; return render(); }
+  if(a==='qm') return sendQuick(parseInt(b.dataset.i,10));
+  if(a==='openmsg'){ const mm = msgs.find(x=>x.id===b.dataset.id); if(mm) showPopup(mm); return; }
+  if(a==='delmsg') return delMsg(b.dataset.id);
   if(a==='cat'){
     ui = {step:'home', cat:b.dataset.c};
     if(CATS[ui.cat].sub.length===1){ ui.sub = CATS[ui.cat].sub[0][0]; ui.step='compose'; } else ui.step='sub';
@@ -967,8 +1216,8 @@ app.addEventListener('focusout', () => {
 document.addEventListener('visibilitychange', () => {
   if(document.hidden){ hiddenAt = Date.now(); return; }
   if(role && localStorage.getItem(PINKEY) && Date.now()-hiddenAt > LOCK_AFTER){
-    locked = true; unlock(()=>{ locked=false; sig=''; refresh(false).then(render).then(applyTarget); });
-  } else if(role){ refresh(true); applyTarget(); if(Date.now()-lastClock > 300000) syncClock(); }
+    locked = true; lockHidePopup(); unlock(()=>{ locked=false; sig=''; refresh(false).then(render).then(applyTarget).then(()=>refreshMsgs(false)); });
+  } else if(role){ refresh(true); refreshMsgs(true); applyTarget(); if(Date.now()-lastClock > 300000) syncClock(); }
 });
 
 /* ---------- AVVIO ---------- */
