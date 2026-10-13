@@ -85,7 +85,7 @@ html[data-theme=latex] .tile .tn,html[data-theme=hard] .tile .tn{font-family:var
 .link{background:none;border:0;color:var(--steel);font:inherit;padding:6px 10px 6px 0;cursor:pointer}
 .link.red{color:var(--rose)}
 .gear{font-size:26px;padding:4px 0 4px 10px;color:var(--steel)}
-textarea,select,input[type=email],input[type=password],input[type=text],input[type=number]{width:100%;background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:14px;color:var(--ivory);font:inherit;font-size:17px;resize:vertical}
+textarea,select,input[type=email],input[type=password],input[type=text],input[type=number],input[type=tel]{width:100%;background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:14px;color:var(--ivory);font:inherit;font-size:17px;resize:vertical}
 select{margin-bottom:10px}
 textarea:focus,input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
 .card{background:var(--plum);border:1px solid var(--plum2);border-radius:14px;padding:16px;margin-top:12px}
@@ -163,6 +163,12 @@ html[data-theme=latex] .tlab,html[data-theme=hard] .tlab{font-family:var(--sans)
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
 .chip2{background:transparent;border:1px solid var(--plum2);color:var(--ivory);border-radius:99px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
 .chip2:active{background:var(--plum2)}
+.opts{margin-top:12px;border:1px dashed var(--plum2);border-radius:12px;padding:10px 12px}
+.opts summary{cursor:pointer;color:var(--steel)}
+.chk{display:flex;gap:10px;align-items:center;margin-top:12px}
+.chk input{width:auto}
+a.btn{text-decoration:none;display:block}
+.opt small{font-size:12px}
 </style>
 </head>
 <body>
@@ -236,6 +242,7 @@ const CATS = {
               nota:'Dovrà risponderti con la verità.', hint:'Scrivi la tua domanda'},
   richiesta: {nome:'Richiesta', icona:'crown', sub:[['custom','Personalizzata']],
               nota:'Dovrà solo confermare di obbedire.', hint:'Scrivi la tua richiesta'},
+  sfida:     {nome:'Sfida',     icona:'bolt',  sub:[['foto','Foto'],['video','Video'],['soldi','Soldi'],['custom','Personalizzata']]},
   castita:   {nome:'Castità',   icona:'cage',  sub:[['foto','Foto'],['video','Video'],['soldi','Tributo'],['custom','Frase / obbligo']]},
   penitenza: {nome:'Penitenza', icona:'chain', sub:[]}
 };
@@ -246,105 +253,140 @@ const OBB = {
   custom:{nota:'Potrà risponderti con testo, foto o video.', hint:'Scrivi il tuo ordine'}
 };
 
+const TIPED = ['obbligo','castita','sfida'];
+
 /* ---------- PACCHETTI DI CONTENUTI (idee modificabili prima dell'invio) ---------- */
+const S = (t, m, nr, pen) => ({t:t, m:m, nr:!!nr, pen:pen||null});
 const PACKS = {
   soft: {nome:'Soft',
-    domanda:["Sei stato bravo oggi?","Hai pensato a me durante la giornata?","Hai rispettato le mie regole senza che te lo ricordassi?"],
-    verita:["Qual è la cosa che desideri di più da me in questo momento?","Cosa ti piace di più quando ti dico cosa fare?","Qual è stato il tuo pensiero più impertinente di oggi?"],
-    richiesta:["Per i prossimi 30 minuti rivolgiti a me solo come «Padrona»","Prepara per me un tè e portamelo con un inchino","Per tutta la sera niente lamentele: confermami che obbedirai"],
-    foto:["Mandami una foto da ingabbiato","Mandami un selfie in ginocchio","Scrivi il mio nome su un foglio e mandami la foto"],
-    video:["Registra un video in cui mi dici «Obbedisco, Padrona»","Registra un video in cui mi ringrazi per il tempo che ti dedico"],
-    soldi:["Mandami 20€ per un caffè da Padrona","Mandami 50€ come tributo e allega la prova"],
-    custom:["Scrivimi una poesia breve per la tua Padrona","Descrivimi come vorresti servirmi stasera"],
-    pen:[["foto","Scrivi 50 volte «Sono il giocattolo della mia Padrona» su un foglio e mandami la foto"],
+    domanda:["Hai pensato a me senza il mio permesso?","Ti piace quando ti dico cosa fare?","Mi trovi irresistibile, vero?","Hai fatto il bravo oggi o devo scoprire il contrario?"],
+    verita:["Qual è la cosa di me che ti fa perdere la testa?","Cosa immagini quando ti dico «stasera sei mio»?","Qual è il tuo pensiero più impertinente su di me oggi?","Quanto sei disposto a resistere per me?"],
+    richiesta:["Per 30 minuti rivolgiti a me solo come «Padrona» e con un sorriso devoto","Portami un drink con un inchino e aspetta che io decida se ringraziarti","Stasera mi fai un massaggio ai piedi e apri bocca solo per ringraziarmi","Per tutta la serata mi guardi solo quando te lo concedo"],
+    foto:["Mandami una foto da ingabbiato","Mandami un selfie in ginocchio con lo sguardo basso","Scrivi il mio nome su un foglio e mandami la foto mentre lo baci","Mandami una foto di te che guardi la mia foto con adorazione"],
+    video:["Registra un video in cui mi dici «Obbedisco, Padrona» guardando in camera","Registra un video in cui mi ringrazi per il tempo che ti dedico","Registra un video in cui elenchi cinque motivi per cui sono perfetta"],
+    soldi:["Mandami 20€ per un capriccio da Padrona","Mandami 50€ come tributo e allega la prova","Mandami 30€: stasera mi regalo qualcosa grazie a te"],
+    custom:["Scrivimi una poesia breve in mio onore","Descrivimi come vorresti servirmi stasera","Scrivi una preghiera alla tua Padrona: cinque righe di venerazione"],
+    pen:[["foto","Scrivi 50 volte «Sono il giocattolo della mia Padrona» e mandami la foto"],
          ["foto","Mandami un selfie in ginocchio con un cartello: «Ho deluso la mia Padrona»"],
-         ["video","Registra un video in cui chiedi scusa alla tua Padrona in ginocchio"],
+         ["video","Registra un video in cui chiedi scusa in ginocchio e prometti di fare meglio"],
          ["foto","Pulisci il bagno e mandami la foto del prima e del dopo"],
-         ["soldi","Paga una multa di 50€ alla tua Padrona e mandami la prova"]]},
+         ["soldi","Paga una multa di 50€ alla tua Padrona e mandami la prova"],
+         ["custom","Per 24 ore ti rivolgi a me solo come «Mia Padrona» e chiedi il permesso prima di parlare. Confermami che obbedirai"]],
+    cast:{
+      foto:["Mandami una foto della gabbia, ben chiusa","Mandami una foto della gabbia con un biglietto: «Sono nelle mani della mia Padrona»","Mandami una foto in ginocchio con la gabbia ben visibile"],
+      video:["Registra un video in cui mi mostri la gabbia e mi ringrazi per tenerti chiuso","Registra un video in cui mi dici che la chiave è al sicuro con me"],
+      soldi:["Paga 10€ per ogni giorno in cui resti chiuso e mandami la prova","Mandami 20€: la tua Padrona merita un premio per tenerti chiuso"],
+      custom:["Scrivimi 3 motivi per cui è giusto che io tenga la chiave","Scrivi 30 volte «La chiave è della mia Padrona» e mandami la foto","Descrivimi cosa provi a sapere che non decidi tu quando aprirti"]},
+    sfida:{
+      foto:[S("Entro 10 minuti: foto da ingabbiato, ben chiusa, con lo sguardo da bravo schiavo",10,0),
+            S("Entro 5 minuti: selfie in ginocchio con un cartello «Adoro la mia Padrona». Non rinviabile",5,1,["foto","Scrivi 50 volte «Adoro la mia Padrona» e mandami la foto del foglio"])],
+      video:[S("Entro 10 minuti: registra un video in cui mi dici perché sei fortunato ad appartenermi",10,0)],
+      soldi:[S("Entro 15 minuti: mandami 30€ come omaggio alla tua Padrona e allega la prova",15,0)],
+      custom:[S("Entro 10 minuti: scrivimi una dichiarazione d'amore da schiavo, di almeno cinque righe",10,0),
+              S("Entro 10 minuti: scrivi a {numero} «Ho una Padrona che mi comanda e ne sono felice» e mandami lo screenshot",10,0)]}},
   bdsm: {nome:'BDSM',
-    domanda:["Hai infranto una delle mie regole oggi?","Sei pronto a ricevere la tua punizione?","Ti senti ingabbiato e ti piace?"],
-    verita:["Qual è la regola che hai più voglia di infrangere?","Cosa provi quando ti nego qualcosa che desideri?","Quanto a lungo resisteresti chiuso, se te lo ordinassi?"],
-    richiesta:["Da adesso fino a stasera non mi chiedi nulla e rispondi solo «Sì, Padrona»","Inginocchiati ai miei piedi appena rientro e aspetta il mio permesso per alzarti","Per la prossima ora non puoi parlare senza il mio permesso"],
-    foto:["Inginocchiati e mandami un selfie","Scrivi il mio nome sul tuo corpo con un pennarello e mandami la foto","Mandami una foto da ingabbiato con il mio nome scritto su un biglietto"],
-    video:["Registra un video in cui giuri obbedienza alla tua Padrona","Registra un video in cui ripeti le mie regole una per una"],
-    soldi:["Mandami 100€ come tributo","Paga una multa di 30€ per ogni regola che hai dimenticato"],
-    custom:["Scrivimi cinque regole che prometti di rispettare","Elencami tutto ciò che sei disposto a fare per compiacermi"],
+    domanda:["Hai infranto una delle mie regole oggi?","Sei pronto a ricevere la tua punizione?","Ti senti ingabbiato e ti eccita?","Pensi di meritare il mio permesso stasera?"],
+    verita:["Qual è la regola che hai più voglia di infrangere?","Cosa provi quando ti nego ciò che desideri?","Quanto resisteresti chiuso, se te lo ordinassi?","Cosa saresti disposto a fare per un mio sì?"],
+    richiesta:["Da adesso fino a stasera non mi chiedi nulla e rispondi solo «Sì, Padrona»","Inginocchiati ai miei piedi appena rientro e aspetta il mio permesso per alzarti","Per un'ora non parli senza il mio permesso","Stasera servi in ginocchio e mi guardi solo quando te lo ordino"],
+    foto:["Inginocchiati e mandami un selfie, con la gabbia ben visibile","Scrivi il mio nome sul tuo petto con un pennarello lavabile e mandami la foto","Mandami una foto da ingabbiato, nudo, in ginocchio","Mandami una foto di te in ginocchio con le mani dietro la schiena"],
+    video:["Registra un video in cui giuri obbedienza alla tua Padrona","Registra un video in cui ripeti le mie regole una per una","Registra un video in cui supplichi di essere accontentato e accetti il mio rifiuto"],
+    soldi:["Mandami 100€ come tributo","Paga 30€ per ogni regola che hai dimenticato","Mandami 60€: il prezzo di un mio sguardo di approvazione"],
+    custom:["Scrivimi cinque regole che prometti di rispettare","Elencami tutto ciò che sei disposto a fare per compiacermi","Scrivi cosa meriti per ogni volta che hai pensato a me senza permesso"],
     pen:[["foto","Scrivi 100 volte «Obbedirò sempre alla mia Padrona» e mandami la foto del foglio"],
          ["video","Registra un video in cui chiedi perdono in ginocchio e accetti la punizione"],
          ["foto","Resta in ginocchio per 15 minuti e mandami la foto all'inizio e alla fine"],
-         ["custom","Per 24 ore ti rivolgi a me solo come «Mia Dea», sempre in terza persona. Confermami quando hai capito"],
-         ["soldi","Paga una multa di 50€ alla tua Padrona e mandami la prova"]]},
+         ["custom","Per 24 ore ti rivolgi a me solo come «Mia Dea», in terza persona, e ti definisci «schiavo». Confermami"],
+         ["soldi","Paga una multa di 80€ alla tua Padrona e mandami la prova"],
+         ["foto","Scrivi «inutile» sulla tua fronte con un pennarello lavabile e mandami il selfie"]],
+    cast:{
+      foto:["Mandami una foto della gabbia e del tuo sguardo da prigioniero","Mandami una foto della gabbia con il mio nome scritto accanto","Mandami una foto nudo e ingabbiato, in ginocchio"],
+      video:["Registra un video in cui supplichi un'ora di libertà e accetti il mio no","Registra un video in cui giuri di non chiedere mai di essere aperto senza il mio permesso","Registra un video in cui mi mostri la gabbia e mi ringrazi per la tua prigione"],
+      soldi:["Paga 30€ per ogni richiesta di essere liberato","Paga 50€ per ogni ora di libertà che mi chiedi"],
+      custom:["Scrivi 50 volte «Il mio piacere appartiene alla mia Padrona»","Elencami tutto ciò che farai per meritare di essere aperto","Scrivi il programma di una settimana di chiusura in cui obbedisci a tutto"]},
+    sfida:{
+      foto:[S("Entro 5 minuti: foto che sei ingabbiato, ben visibile. Non rinviabile",5,1,["foto","Scrivi 100 volte «Sono un inutile sfigato» e mandami la foto del foglio"]),
+            S("Entro 10 minuti: selfie in ginocchio con il mio nome scritto sul petto con un pennarello lavabile",10,1,["video","Registra un video in cui chiedi perdono in ginocchio"])],
+      video:[S("Entro 10 minuti: video in cui giuri obbedienza guardando in camera",10,1,["foto","Scrivi 50 volte «Giuro di obbedire» e mandami la foto"])],
+      soldi:[S("Entro 10 minuti: mandami 50€ senza discutere e allega la prova",10,1,["soldi","Paga altri 50€ come penitenza e mandami la prova"])],
+      custom:[S("Entro 10 minuti: scrivi a {numero} «Sono sottomesso alla mia Padrona e obbedisco a ogni suo ordine» e mandami lo screenshot",10,1,["foto","Scrivi 100 volte «Obbedisco alla mia Padrona» e mandami la foto"]),
+              S("Entro 15 minuti: scrivi «sfigato» sulla tua faccia con un pennarello lavabile e mandami il selfie",15,1,["video","Registra un video in cui ti definisci uno sfigato e chiedi scusa"])]}},
   cuck: {nome:'Cuck',
-    domanda:["Ti piace sapere che la tua Dea è desiderata?","Sei geloso, ma ti eccita esserlo?","Sei pronto a restare al tuo posto mentre io mi diverto?"],
-    verita:["Cosa provi quando immagini la tua Dea ammirata da altri?","Qual è la cosa che ti fa più gelosia e più eccita insieme?","Che ruolo vorresti avere accanto a me, quando sono io a godermi la serata?"],
-    richiesta:["Preparami il vestito e le scarpe per stasera e aspetta senza fare domande","Quando esco, resta in casa e aspetta il mio messaggio","Per tutta la serata mi chiami «Regina» e non fai domande"],
-    foto:["Mandami una foto da ingabbiato mentre aspetti il mio rientro","Mandami una foto del vestito che mi hai preparato","Mandami un selfie con un cartello: «Il posto del tuo schiavo è qui»"],
-    video:["Registra un video in cui mi auguri una bella serata e ti scusi di non essere abbastanza","Registra un video in cui riconosci chi comanda in questa casa"],
-    soldi:["Mandami 50€ per la mia serata","Mandami 100€ per il mio prossimo capriccio"],
-    custom:["Scrivimi cosa provi mentre aspetti il mio ritorno","Scrivimi un messaggio di buonanotte da cornuto devoto"],
-    pen:[["foto","Scrivi 50 volte «Il mio posto è accanto alla mia Dea» e mandami la foto del foglio"],
+    domanda:["Ti piace sapere che la tua Dea è desiderata?","Sei geloso ma ti eccita esserlo?","Sei pronto a restare al tuo posto mentre io mi diverto?","Ammetti che qualcun altro sa darmi più di te?"],
+    verita:["Cosa provi quando immagini la tua Dea ammirata da altri?","Cosa ti fa più gelosia e più eccitazione insieme?","Che ruolo vorresti avere accanto a me, quando mi godo la serata?","Cosa vorresti che ti dicessi quando rientro?"],
+    richiesta:["Preparami il vestito e le scarpe per stasera e aspetta senza fare domande","Quando esco resti in casa ad aspettare il mio messaggio","Per tutta la serata mi chiami «Regina» e non fai domande","Quando rientro mi accogli in ginocchio e mi ringrazi di averti ricordato"],
+    foto:["Mandami una foto da ingabbiato mentre aspetti il mio rientro a testa bassa","Mandami una foto del vestito che mi hai preparato e delle tue mani vuote","Mandami un selfie con un cartello: «Il posto del tuo cornuto è qui»","Mandami una foto del letto rifatto dove stanotte non dormi con me"],
+    video:["Registra un video in cui mi auguri una bella serata e ammetti di non essere abbastanza","Registra un video in cui riconosci chi comanda in questa casa","Registra un video in cui mi ringrazi per tutto ciò che ti nego"],
+    soldi:["Mandami 50€ per la mia serata","Mandami 100€ per il mio prossimo capriccio","Mandami 80€ per il mio abito di stasera"],
+    custom:["Scrivimi cosa provi mentre aspetti il mio ritorno","Scrivi un messaggio di buonanotte da cornuto devoto","Scrivimi tre cose in cui sei inferiore a ciò che desidero"],
+    pen:[["foto","Scrivi 50 volte «Il mio posto è accanto alla mia Dea, non dentro» e mandami la foto"],
          ["foto","Mandami un selfie con un cartello: «Mi accontento di ciò che la mia Dea mi concede»"],
          ["video","Registra un video in cui ringrazi la tua Dea per ogni cosa che ti nega"],
-         ["custom","Per 24 ore niente lamentele né domande su dove sono. Confermami che obbedirai"],
-         ["soldi","Paga una multa di 50€ alla tua Dea e mandami la prova"]]},
+         ["custom","Per 24 ore niente lamentele né domande su dove sono. Confermami"],
+         ["soldi","Paga una multa di 80€ alla tua Dea e mandami la prova"],
+         ["foto","Scrivi «cornuto» sulla tua fronte con un pennarello lavabile e mandami il selfie"]],
+    cast:{
+      foto:["Mandami una foto della gabbia mentre aspetti il mio rientro a testa bassa","Mandami una foto della gabbia con un cartello: «Chiuso mentre lei si diverte»","Mandami una foto in ginocchio, ingabbiato, davanti alla porta di casa"],
+      video:["Registra un video in cui ammetti che è giusto che sia io a godere e tu a restare chiuso","Registra un video in cui mi ringrazi per averti lasciato la gabbia stasera"],
+      soldi:["Paga 50€ per ogni serata in cui ti lascio chiuso mentre mi diverto","Paga 100€ per il privilegio di aspettarmi chiuso"],
+      custom:["Scrivimi cosa provi a restare chiuso mentre decido tutto io","Scrivi 50 volte «Il mio ruolo è aspettare e obbedire»","Scrivi una lettera in cui mi chiedi il permesso di aspettarmi chiuso"]},
+    sfida:{
+      foto:[S("Entro 5 minuti: foto da ingabbiato mentre aspetti il mio rientro. Non rinviabile",5,1,["foto","Scrivi 100 volte «Sono il cornuto della mia Dea» e mandami la foto del foglio"]),
+            S("Entro 10 minuti: selfie con un cartello «Cornuto devoto» e la gabbia ben visibile",10,1,["video","Registra un video in cui ti definisci un cornuto devoto e chiedi scusa"])],
+      video:[S("Entro 10 minuti: video in cui mi ringrazi per tutto ciò che ti nego",10,1,["soldi","Paga 50€ come penitenza e mandami la prova"])],
+      soldi:[S("Entro 10 minuti: mandami 100€ per la mia serata, senza discutere",10,1,["foto","Scrivi 100 volte «Pago e ringrazio» e mandami la foto"])],
+      custom:[S("Entro 10 minuti: scrivi a {numero} «Sono un cornuto felice e sottomesso alla mia Dea» e mandami lo screenshot",10,1,["foto","Scrivi «cornuto» sulla fronte con un pennarello lavabile e mandami il selfie"])]}},
   hard: {nome:'Hard',
-    domanda:["Meriti di essere punito?","Ti sei comportato come un vero schiavo oggi?","Sai di non valere nulla senza il mio permesso?"],
-    verita:["Qual è la cosa più umiliante che saresti disposto a fare per me?","Cosa provi quando ti tratto come un oggetto?","Quale posto occupi fra le cose che possiedo?"],
-    richiesta:["Da adesso mi parli solo a testa bassa e rispondi «Sì, Padrona»","Stasera servi in ginocchio e in silenzio fino al mio permesso","Per due ore il tuo nome è «Schiavo» e rispondi solo a quello"],
-    foto:["In ginocchio, a testa bassa, con il mio nome scritto sulla mano: mandami la foto","Mandami un selfie con un cartello: «Proprietà della mia Dea»","Mandami una foto della tua gabbia e della tua faccia umiliata"],
-    video:["Registra un video in cui implori il mio perdono guardando in camera","Registra un video in cui descrivi quanto sei inferiore a me"],
-    soldi:["Mandami 200€ come tributo, senza discutere","Paga 100€ per avermi fatto aspettare"],
-    custom:["Scrivimi tutto ciò che meriti per aver deluso la tua Dea","Scrivi una lettera di sottomissione completa e mandamela"],
+    domanda:["Meriti di essere punito?","Ti sei comportato come un vero schiavo oggi?","Sai di non valere nulla senza il mio permesso?","Sei grato di essere tenuto in gabbia come un cagnolino?"],
+    verita:["Qual è la cosa più umiliante che saresti disposto a fare per me?","Cosa provi quando ti tratto come un oggetto?","Quale posto occupi fra le cose che possiedo?","Cosa ti eccita di più: la mia crudeltà o la tua vergogna?"],
+    richiesta:["Da adesso mi parli solo a testa bassa e rispondi «Sì, Padrona»","Stasera servi in ginocchio e in silenzio fino al mio permesso","Per due ore il tuo nome è «Schiavo» e rispondi solo a quello","Per tutta la sera ti muovi solo in ginocchio, finché non ti concedo di alzarti"],
+    foto:["In ginocchio, a testa bassa, con il mio nome scritto sulla mano: mandami la foto","Mandami un selfie con un cartello: «Proprietà della mia Dea»","Mandami una foto della gabbia e della tua faccia umiliata","Mandami una foto nudo in ginocchio con un cartello: «Il giocattolo della mia Dea»"],
+    video:["Registra un video in cui implori il mio perdono guardando in camera","Registra un video in cui descrivi quanto sei inferiore a me","Registra un video in cui mi veneri: elenca tutto ciò che di me ti rende il suo schiavo"],
+    soldi:["Mandami 200€ come tributo, senza discutere","Paga 100€ per avermi fatto aspettare","Mandami 150€: il prezzo per restare in gabbia un altro giorno"],
+    custom:["Scrivimi tutto ciò che meriti per aver deluso la tua Dea","Scrivi una lettera di sottomissione completa e mandamela","Scrivi un inno alla tua Dea di dieci righe, in ginocchio"],
     pen:[["foto","Scrivi 200 volte «Sono il giocattolo della mia Dea» e mandami la foto dei fogli"],
          ["foto","Resta in ginocchio 20 minuti e mandami la foto all'inizio e alla fine"],
          ["video","Registra un video in cui implori perdono e ringrazi per ogni punizione"],
-         ["custom","Per 48 ore mi dai del lei, mi chiami «Mia Dea» e ti definisci «schiavo». Confermami quando hai capito"],
-         ["soldi","Paga 100€ alla tua Dea come penitenza e mandami la prova"]]}
-};
-
-PACKS.soft.cast = {
-  foto:["Mandami una foto della tua gabbia, ben chiusa","Mandami una foto della gabbia con un biglietto: «Sono nelle mani della mia Padrona»"],
-  video:["Registra un video in cui mi mostri la gabbia e mi ringrazi per tenerti chiuso"],
-  soldi:["Paga 10€ per ogni giorno in cui resti chiuso e mandami la prova"],
-  custom:["Scrivimi 3 motivi per cui è giusto che io tenga la chiave","Scrivi 20 volte «La chiave è della mia Padrona» e mandami la foto del foglio"]
-};
-PACKS.bdsm.cast = {
-  foto:["Mandami una foto della gabbia e del tuo sguardo da prigioniero","Mandami una foto della gabbia con il mio nome scritto accanto"],
-  video:["Registra un video in cui supplichi un'ora di libertà e accetti il mio no","Registra un video in cui giuri di non chiedere mai di essere aperto senza il mio permesso"],
-  soldi:["Paga 30€ per ogni richiesta di essere liberato"],
-  custom:["Scrivi 50 volte «Il mio piacere appartiene alla mia Padrona»","Elencami tutto ciò che farai per meritare di essere aperto"]
-};
-PACKS.cuck.cast = {
-  foto:["Mandami una foto della gabbia mentre aspetti il mio rientro a testa bassa","Mandami una foto della gabbia con un cartello: «Chiuso mentre lei si diverte»"],
-  video:["Registra un video in cui ammetti che è giusto che sia io a godere e tu a restare chiuso"],
-  soldi:["Paga 50€ per ogni serata in cui ti lascio chiuso mentre io mi diverto"],
-  custom:["Scrivimi cosa provi a restare chiuso mentre sono io a decidere tutto","Scrivi 50 volte «Il mio ruolo è aspettare e obbedire»"]
-};
-PACKS.hard.cast = {
-  foto:["Mandami una foto della gabbia e di te in ginocchio, a testa bassa","Scrivi «proprietà della mia Dea» su un biglietto e mandami la foto accanto alla gabbia"],
-  video:["Registra un video in cui implori di restare chiuso un altro giorno e mi ringrazi per la fatica di tenerti","Registra un video in cui ripeti dieci volte «non merito di essere aperto»"],
-  soldi:["Paga 100€ per l'onore di essere tenuto chiuso da me"],
-  custom:["Scrivi una lettera in cui ammetti perché meriti di restare chiuso","Scrivi 100 volte «Sono inutile senza la chiave della mia Dea»"]
-};
-PACKS.estremo = {nome:'Estremo',
-  domanda:["Ti vergogni di te stesso, vero?","Sai di essere inferiore a qualsiasi uomo che mi desideri?","Accetti di restare chiuso finché non decido io?"],
-  verita:["Qual è la cosa più umiliante che ti sia piaciuto fare per me, e perché ti è piaciuta?","In cosa sei più patetico, secondo te?","Se dovessi descrivere il tuo posto accanto a me con una sola parola, quale sarebbe?"],
-  richiesta:["Per tutta la serata parli di te solo come «questo verme» e ti rivolgi a me come «Dea»","Servi la cena in ginocchio e mangi solo ciò che ti lascio","Per tre ore non puoi sederti in mia presenza senza il mio permesso"],
-  foto:["Mandami un selfie con un cartello al collo: «Verme al servizio della sua Dea»","Mandami una foto in ginocchio con il mio nome scritto sul petto","Mandami una foto della tua faccia più patetica, con un biglietto: «Chiuso e senza valore»"],
-  video:["Registra un video in cui ripeti, guardando in camera: «Sono un verme e la mia Dea è tutto»","Registra un video in cui ringrazi la tua Dea per tutte le volte che ti ha ignorato"],
-  soldi:["Mandami 300€ come tributo di un verme","Paga 150€ per ogni volta che ho riso di te questa settimana"],
-  custom:["Scrivimi cosa dovrei fare per ricordarti ogni giorno chi sei","Scrivi una lettera di sottomissione in cui rinunci a ogni diritto, e firmala"],
-  pen:[["foto","Scrivi 300 volte «Sono un verme al servizio della mia Dea» e mandami la foto dei fogli"],
-       ["video","Registra un video in cui implori perdono e ti dai da solo i nomi che ti meriti"],
-       ["foto","Resta in ginocchio a testa bassa per 20 minuti e mandami la foto all'inizio e alla fine"],
-       ["custom","Per 72 ore nessun «io»: parli di te solo come «lo schiavo» e mi dai del lei. Confermamelo"],
-       ["soldi","Paga 200€ come penitenza e mandami la prova"]],
-  cast:{
-    foto:["Mandami una foto in ginocchio con la gabbia ben visibile e un cartello: «Sono il giocattolo inutile della mia Dea»","Mandami una foto della gabbia con un biglietto: «Chiuso e senza valore»"],
-    video:["Registra un video in cui ti presenti: nome, ruolo e tutto ciò che non vali senza di me","Registra un video in cui ringrazi la tua Dea per averti reso inutile e chiuso"],
-    soldi:["Paga 200€ come tassa di mantenimento per la tua gabbia"],
-    custom:["Scrivimi la lista delle cose di cui ti vergogni di più e ringraziami per averle viste","Scrivi un contratto in cui cedi a me ogni decisione sulla gabbia, e firmalo"]
-  }
+         ["custom","Per 48 ore mi dai del lei, mi chiami «Mia Dea» e ti definisci «schiavo». Confermami"],
+         ["soldi","Paga 100€ alla tua Dea come penitenza e mandami la prova"],
+         ["foto","Scrivi «sfigato» sulla tua faccia con un pennarello lavabile e mandami il selfie"]],
+    cast:{
+      foto:["Mandami una foto della gabbia e di te in ginocchio, a testa bassa","Scrivi «proprietà della mia Dea» su un biglietto e mandami la foto accanto alla gabbia","Mandami una foto nudo e ingabbiato con un cartello: «Inutile senza la chiave»"],
+      video:["Registra un video in cui implori di restare chiuso un altro giorno e mi ringrazi","Registra un video in cui ripeti dieci volte «non merito di essere aperto»","Registra un video in cui baci la gabbia e ringrazi la tua Dea"],
+      soldi:["Paga 100€ per l'onore di essere tenuto chiuso da me","Paga 200€ per ogni giorno in più di chiusura che ti concedo"],
+      custom:["Scrivi una lettera in cui ammetti perché meriti di restare chiuso","Scrivi 100 volte «Sono inutile senza la chiave della mia Dea»","Scrivi tutto quello che farai per non essere aperto mai"]},
+    sfida:{
+      foto:[S("Entro 5 minuti: foto che sei ingabbiato e in ginocchio. Non rinviabile",5,1,["foto","Scrivi 200 volte «Sono un inutile sfigato» e mandami la foto dei fogli"]),
+            S("Entro 10 minuti: scrivi «sfigato» sulla faccia con un pennarello lavabile e mandami il selfie",10,1,["video","Registra un video in cui ti definisci uno sfigato per un minuto intero"])],
+      video:[S("Entro 10 minuti: video in cui implori di restare in gabbia e mi ringrazi",10,1,["soldi","Paga 100€ come penitenza e mandami la prova"])],
+      soldi:[S("Entro 5 minuti: mandami 150€. Non rinviabile",5,1,["foto","Resta in ginocchio 30 minuti e mandami le foto di inizio e fine"])],
+      custom:[S("Entro 10 minuti: scrivi a {numero} «Sono lo schiavo della mia Dea e non valgo niente senza di lei» e mandami lo screenshot",10,1,["foto","Scrivi «sfigato» sulla fronte e mandami il selfie"]),
+              S("Entro 10 minuti: scrivi «sfigato» sulla tua faccia con un pennarello lavabile e manda il selfie sia a me sia a {numero}",10,1,["video","Registra un video in cui implori perdono per la tua inutilità"])]}},
+  estremo: {nome:'Estremo',
+    domanda:["Ti vergogni di te stesso, vero?","Sai di essere inferiore a qualsiasi uomo che mi desideri?","Accetti di restare chiuso finché non decido io?","Ammetti di essere nato per servirmi?"],
+    verita:["Qual è la cosa più umiliante che ti sia piaciuto fare per me, e perché ti è piaciuta?","In cosa sei più patetico, secondo te?","Se dovessi descrivere il tuo posto accanto a me con una sola parola, quale sarebbe?","Cosa faresti pur di non perdere il diritto di servirmi?"],
+    richiesta:["Per tutta la serata parli di te solo come «questo verme» e ti rivolgi a me come «Dea»","Servi la cena in ginocchio e mangi solo ciò che ti lascio","Per tre ore non puoi sederti in mia presenza senza il mio permesso","Da adesso ogni frase che mi dici inizia con «Mia adorata Dea» e finisce con «indegno servo»"],
+    foto:["Mandami un selfie con un cartello al collo: «Verme al servizio della sua Dea»","Mandami una foto in ginocchio con il mio nome scritto sul petto","Mandami una foto nudo, ingabbiato, con la fronte a terra","Mandami una foto della tua faccia più patetica, con scritto in fronte «Inutile»"],
+    video:["Registra un video in cui ripeti, guardando in camera: «Sono un verme e la mia Dea è tutto»","Registra un video in cui ringrazi la tua Dea per tutte le volte che ti ha ignorato","Registra un video in cui veneri la tua Dea come una divinità, in ginocchio, per almeno un minuto"],
+    soldi:["Mandami 300€ come tributo di un verme","Paga 150€ per ogni volta che ho riso di te questa settimana","Mandami 250€: ogni centesimo è un atto di adorazione"],
+    custom:["Scrivimi cosa dovrei fare per ricordarti ogni giorno chi sei","Scrivi una lettera di sottomissione in cui rinunci a ogni diritto, e firmala","Scrivi una preghiera di venerazione alla tua Dea: venti righe"],
+    pen:[["foto","Scrivi 300 volte «Sono un verme al servizio della mia Dea» e mandami la foto dei fogli"],
+         ["video","Registra un video in cui implori perdono e ti dai da solo i nomi che ti meriti"],
+         ["foto","Resta in ginocchio a testa bassa per 20 minuti e mandami la foto all'inizio e alla fine"],
+         ["custom","Per 72 ore nessun «io»: parli di te solo come «lo schiavo» e mi dai del lei. Confermamelo"],
+         ["soldi","Paga 200€ come penitenza e mandami la prova"],
+         ["foto","Scrivi «verme inutile» sulla tua faccia con un pennarello lavabile e mandami il selfie"]],
+    cast:{
+      foto:["Mandami una foto in ginocchio con la gabbia ben visibile e un cartello: «Sono il giocattolo inutile della mia Dea»","Mandami una foto della gabbia con un biglietto: «Chiuso e senza valore»","Mandami una foto nudo, ingabbiato e con la fronte a terra"],
+      video:["Registra un video in cui ti presenti: nome, ruolo e tutto ciò che non vali senza di me","Registra un video in cui ringrazi la tua Dea per averti reso inutile e chiuso","Registra un video in cui baci la gabbia e giuri di non toccarla mai senza permesso"],
+      soldi:["Paga 200€ come tassa di mantenimento per la tua gabbia","Paga 300€ per ogni settimana in più di chiusura"],
+      custom:["Scrivimi la lista delle cose di cui ti vergogni di più e ringraziami per averle viste","Scrivi un contratto in cui cedi a me ogni decisione sulla gabbia, e firmalo","Scrivi una supplica per il permesso di sperare: non di uscire, solo di sperare"]},
+    sfida:{
+      foto:[S("Entro 5 minuti: foto in ginocchio, ingabbiato, con la fronte a terra. Non rinviabile",5,1,["foto","Scrivi 300 volte «Sono un verme» e mandami la foto dei fogli"]),
+            S("Entro 10 minuti: scrivi «verme inutile» sulla faccia con un pennarello lavabile e mandami il selfie",10,1,["video","Registra un video di tre minuti in cui ti umili da solo"])],
+      video:[S("Entro 10 minuti: video in cui veneri la tua Dea in ginocchio per due minuti",10,1,["soldi","Paga 200€ come penitenza e mandami la prova"])],
+      soldi:[S("Entro 5 minuti: mandami 300€. Non rinviabile",5,1,["foto","Resta in ginocchio 30 minuti e mandami le foto di inizio e fine"])],
+      custom:[S("Entro 10 minuti: scrivi a {numero} «Sono un verme e appartengo alla mia Dea» e mandami lo screenshot",10,1,["foto","Scrivi «verme inutile» sulla fronte e mandami il selfie"]),
+              S("Entro 15 minuti: scrivi «sfigato» sulla tua faccia con un pennarello lavabile e manda il selfie sia a me sia a {numero}",15,1,["video","Registra un video in cui implori perdono per la tua inutilità"])]}}
 };
 
 /* ---------- MESSAGGI LAMPO (10 per lei, 10 per lui) ---------- */
@@ -1026,7 +1068,7 @@ function cardHtml(o, who){
               : '<span class="badge">In attesa</span>';
   let timer = '';
   if(s==='pending' && o.scade_at && o.categoria!=='penitenza')
-    timer = ' <span class="timer" data-exp="'+esc(o.scade_at)+'"></span>'+(o.rinvii?' · rinvii '+o.rinvii+'/3':'');
+    timer = ' <span class="timer" data-exp="'+esc(o.scade_at)+'"></span>'+(o.rinvii?' · rinvii '+o.rinvii+'/3':'')+(o.rinviabile===false?' · non rinviabile':'')+(who==='padrona' && o.pen_testo?' · penitenza automatica':'');
   let btns = '';
   if(who==='padrona'){
     if(s==='expired' || s==='done') btns += '<button class="link" data-a="penfor" data-id="'+o.id+'">'+ic('chain')+' Penitenza</button>';
@@ -1071,6 +1113,7 @@ function settingsHtml(){
 
 function ideas(){
   if(ui.cat==='castita') return (PACKS[pack].cast && PACKS[pack].cast[ui.sub]) || [];
+  if(ui.cat==='sfida') return (PACKS[pack].sfida && PACKS[pack].sfida[ui.sub]) || [];
   const key = ui.cat==='obbligo' ? ui.sub : ui.cat;
   return PACKS[pack][key] || [];
 }
@@ -1103,14 +1146,29 @@ function viewPadrona(){
   }
   if(st==='compose'){
     const c = CATS[ui.cat];
-    const info = (ui.cat==='obbligo' || ui.cat==='castita') ? OBB[ui.sub] : c;
+    const tiped = TIPED.indexOf(ui.cat)>=0;
+    const info = tiped ? OBB[ui.sub] : c;
     const id = ideas();
+    const sf = ui.cat==='sfida';
+    const mins = [5,10,15,30,60,120];
     return h + '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+c.nome+'</p>'+
-      '<p class="note">'+esc(info.nota)+' Avrà 10 minuti per eseguire (rinviabili 3 volte).</p>'+
+      '<p class="note">'+esc(info.nota)+'</p>'+
       '<textarea id="ot" rows="5" placeholder="'+esc(info.hint)+'"></textarea>'+
+      (sf ? '<input id="onum" type="tel" inputmode="tel" placeholder="Numero di telefono (se la sfida lo richiede)" style="margin-top:10px">'+
+            '<p class="note">Usa numeri solo di persone che sanno del gioco e sono d\'accordo.</p>' : '')+
+      '<details class="opts"'+(sf ? ' open' : '')+'><summary>Opzioni: tempo, rinvio, penitenza</summary>'+
+        '<p class="note">Tempo per eseguire</p><select id="otm">'+
+          mins.map(m=>'<option value="'+m+'"'+(m===10 ? ' selected' : '')+'>'+(m<60 ? m+' minuti' : (m/60)+(m===60 ? ' ora' : ' ore'))+'</option>').join('')+'</select>'+
+        '<label class="chk"><input type="checkbox" id="onr"> Non rinviabile</label>'+
+        '<p class="note" style="margin-top:12px">Se non esegue in tempo: penitenza automatica (facoltativa)</p>'+
+        '<select id="opt"><option value="foto">Dovrà inviare una foto</option><option value="video">Dovrà inviare un video</option><option value="soldi">Pagamento con prova</option><option value="custom" selected>Risposta libera</option></select>'+
+        '<textarea id="oap" rows="2" placeholder="Testo della penitenza (vuoto = nessuna)"></textarea></details>'+
       '<button class="btn block" data-a="order">Invia ordine</button>'+
       (id.length ? '<p class="note" style="margin-top:18px">Idee · '+PACKS[pack].nome+'</p><div class="list">'+
-        id.map((t,i)=>'<button class="opt idea" data-a="idea" data-i="'+i+'">'+esc(t)+'</button>').join('')+'</div>' : '');
+        id.map((t,i)=>{
+          if(typeof t==='string') return '<button class="opt idea" data-a="idea" data-i="'+i+'">'+esc(t)+'</button>';
+          return '<button class="opt idea" data-a="idea" data-i="'+i+'">'+esc(t.t)+'<br><small class="muted">'+t.m+' min'+(t.nr ? ' · non rinviabile' : '')+(t.pen ? ' · penitenza automatica' : '')+'</small></button>';
+        }).join('')+'</div>' : '');
   }
   if(st==='detail'){
     const o = orders.find(x=>x.id===ui.id);
@@ -1139,6 +1197,7 @@ function viewPadrona(){
   h += '<p class="lead">Cosa desideri?</p><div class="grid">'+
     ['domanda','obbligo','verita','richiesta'].map(k=>'<button class="tile" data-a="cat" data-c="'+k+'"><span class="ico">'+ic(CATS[k].icona)+'</span><span class="tn">'+CATS[k].nome+'</span></button>').join('')+'</div>';
   const n = L.needPen.length;
+  h += '<button class="tile wide cast" data-a="cat" data-c="sfida"><span class="ico">'+ic('bolt')+'</span><span class="tn">Sfide</span></button>';
   h += '<button class="tile wide cast" data-a="cat" data-c="castita"><span class="ico">'+ic('cage')+'</span><span class="tn">Castità</span></button>';
   h += '<button class="tile wide" data-a="pen"><span class="ico">'+ic('chain')+'</span><span class="tn">Penitenze</span>'+
     (n ? '<span class="badge ok">'+n+' scaduti</span>' : '')+'</button>';
@@ -1151,7 +1210,7 @@ function viewPadrona(){
 
 function respArea(o){
   const c = o.categoria, t = o.tipo;
-  const isObb = (c==='obbligo' || c==='castita' || c==='penitenza');
+  const isObb = (TIPED.indexOf(c)>=0 || c==='penitenza');
   if(c==='domanda') return '<div class="row2"><button class="btn" data-a="yn" data-v="SI">Sì</button><button class="btn ghost" data-a="yn" data-v="NO">No</button></div>';
   if(c==='richiesta') return '<button class="btn block" data-a="ok">Obbedisco, Padrona</button>';
   let h = '';
@@ -1165,18 +1224,29 @@ function respArea(o){
   return h + '<button class="btn block" id="sendbtn" data-a="send">Invia alla Padrona</button>';
 }
 
+function waButton(txt){
+  const m = String(txt).match(/\+?\d[\d\s().-]{7,}\d/);
+  if(!m) return '';
+  let d = m[0].replace(/\D/g,'');
+  if(d.indexOf('00')===0) d = d.slice(2);
+  else if(d.length===10 && d.charAt(0)==='3') d = '39'+d;
+  return '<a class="btn ghost block" href="https://wa.me/'+d+'" target="_blank" rel="noopener">Apri la chat WhatsApp</a>';
+}
+
 function answerCard(cur){
   const isPen = cur.categoria==='penitenza';
   const src = cur.penitenza_di ? orders.find(x=>x.id===cur.penitenza_di) : null;
-  const inf = (cur.categoria==='obbligo' || cur.categoria==='castita' || isPen) ? OBB[cur.tipo].nota : CATS[cur.categoria].nota;
+  const inf = (TIPED.indexOf(cur.categoria)>=0 || isPen) ? OBB[cur.tipo].nota : CATS[cur.categoria].nota;
   const timed = cur.scade_at && !isPen;
   return '<div class="card cur"><div class="head"><span class="cat'+(isPen?' pen':'')+'">'+CATS[cur.categoria].nome+'</span><span>'+fdate(cur.created_at)+'</span></div>'+
     (src ? '<div class="note" style="margin:0 0 6px">Penitenza per: «'+esc(src.testo)+'»</div>' : '')+
     '<div class="big">'+esc(cur.testo)+'</div>'+
     (timed ? '<div class="timerline">Tempo rimasto <b class="timer" data-exp="'+esc(cur.scade_at)+'"></b></div>' : '')+
     (inf ? '<p class="note">'+esc(inf)+'</p>' : '')+
+    (timed && cur.rinviabile===false ? '<p class="note" style="color:var(--rose)">Non rinviabile.'+(cur.pen_testo ? ' Se non esegui in tempo scatta una penitenza.' : '')+'</p>' : '')+
+    waButton(cur.testo)+
     respArea(cur)+
-    (timed && cur.rinvii<3 ? '<button class="btn ghost block" data-a="rinvia">Rinvia di 10 minuti (restano '+(3-cur.rinvii)+')</button>' : '')+
+    (timed && cur.rinviabile!==false && cur.rinvii<3 ? '<button class="btn ghost block" data-a="rinvia">Rinvia di 10 minuti (restano '+(3-cur.rinvii)+')</button>' : '')+
     '</div>';
 }
 
@@ -1296,11 +1366,26 @@ async function shrinkImage(f){
 }
 
 async function sendOrder(){
-  const testo = ($('#ot').value||'').trim();
+  let testo = ($('#ot').value||'').trim();
   if(!testo) return toast('Scrivi qualcosa');
-  const tipo = (ui.cat==='obbligo' || ui.cat==='castita') ? ui.sub : 'custom';
+  const tiped = TIPED.indexOf(ui.cat)>=0;
+  const tipo = tiped ? ui.sub : 'custom';
+  if(ui.cat==='sfida'){
+    const num = (($('#onum')||{}).value||'').trim();
+    if(/\{numero\}/i.test(testo)){
+      if(!num) return toast('Inserisci il numero di telefono');
+      testo = testo.replace(/\{numero\}/gi, num);
+    }
+  }
+  if(/\+?\d[\d\s().-]{7,}\d/.test(testo) &&
+     !confirm("Nell'ordine c'è un numero di telefono. Quella persona sa del gioco ed è d'accordo a riceverlo?")) return;
+  const mins = parseInt(($('#otm')||{}).value, 10) || 10;
+  const nr = !!($('#onr') && $('#onr').checked);
+  const pen = (($('#oap')||{}).value||'').trim();
+  const row = {categoria:ui.cat, tipo, testo, scade_at:new Date(now()+mins*60000).toISOString(), rinviabile:!nr};
+  if(pen){ row.pen_tipo = ($('#opt')||{}).value || 'custom'; row.pen_testo = pen; }
   const b = $('[data-a=order]'); b.disabled = true;
-  const r = await sb.from('ordini').insert({categoria:ui.cat, tipo, testo}).select().single();
+  const r = await sb.from('ordini').insert(row).select().single();
   if(r.error){ b.disabled=false; return toast('Invio non riuscito, riprova'); }
   if(r.data) orders.unshift(r.data);
   sig = signature(); writeCache();
@@ -1354,7 +1439,7 @@ async function sendReply(){
   const rt = ($('#rt') ? $('#rt').value : '').trim();
   let f = pendingFile;
   const c = o.categoria, t = o.tipo;
-  const isObb = (c==='obbligo' || c==='castita' || c==='penitenza');
+  const isObb = (TIPED.indexOf(c)>=0 || c==='penitenza');
   if(c==='verita' && !rt) return toast('Scrivi la risposta');
   if(isObb && t!=='custom' && !f) return toast('Allega quanto richiesto');
   if(isObb && t==='custom' && !rt && !f) return toast('Rispondi o allega qualcosa');
@@ -1418,8 +1503,19 @@ app.addEventListener('click', e => {
   }
   if(a==='sub'){ ui.sub = b.dataset.s; ui.step='compose'; return render(); }
   if(a==='idea'){
-    const t = ideas()[parseInt(b.dataset.i,10)]; const ta = $('#ot');
-    if(t && ta){ ta.value = t; ta.focus(); }
+    const it = ideas()[parseInt(b.dataset.i,10)]; const ta = $('#ot');
+    if(!it || !ta) return;
+    if(typeof it==='string'){ ta.value = it; }
+    else {
+      ta.value = it.t;
+      const sel = $('#otm'); if(sel) sel.value = String(it.m);
+      const nr = $('#onr'); if(nr) nr.checked = !!it.nr;
+      const oa = $('#oap'), ot = $('#opt');
+      if(oa) oa.value = it.pen ? it.pen[1] : '';
+      if(ot) ot.value = it.pen ? it.pen[0] : 'custom';
+      const d = document.querySelector('details.opts'); if(d) d.open = true;
+    }
+    ta.focus();
     return;
   }
   if(a==='arch'){ ui = {step:'archive', cat:b.dataset.c}; return render(); }
