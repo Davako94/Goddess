@@ -85,7 +85,7 @@ html[data-theme=latex] .tile .tn,html[data-theme=hard] .tile .tn{font-family:var
 .link{background:none;border:0;color:var(--steel);font:inherit;padding:6px 10px 6px 0;cursor:pointer}
 .link.red{color:var(--rose)}
 .gear{font-size:26px;padding:4px 0 4px 10px;color:var(--steel)}
-textarea,select,input[type=email],input[type=password]{width:100%;background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:14px;color:var(--ivory);font:inherit;font-size:17px;resize:vertical}
+textarea,select,input[type=email],input[type=password],input[type=text],input[type=number]{width:100%;background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:14px;color:var(--ivory);font:inherit;font-size:17px;resize:vertical}
 select{margin-bottom:10px}
 textarea:focus,input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
 .card{background:var(--plum);border:1px solid var(--plum2);border-radius:14px;padding:16px;margin-top:12px}
@@ -144,6 +144,25 @@ html[data-theme=latex] .ptext,html[data-theme=hard] .ptext{font-family:var(--san
 .bub.unread{border-color:var(--rose)}
 .tile.wide.cast,.tile.wide.msg{border-color:var(--gold)}
 .tile.wide.cast .tn,.tile.wide.cast .ico,.tile.wide.msg .tn,.tile.wide.msg .ico{color:var(--gold)}
+.tcard{background:var(--plum);border:1px solid var(--gold);border-radius:16px;padding:14px;margin-top:12px}
+.tcard.st-ritardo{border-color:var(--blood)}
+.tcard.st-libero{border-color:var(--steel)}
+.trow1{display:flex;gap:14px;align-items:center}
+.timg{width:64px;height:64px;flex:none;color:var(--gold);display:flex;align-items:center;justify-content:center}
+.tcard.st-ritardo .timg{color:var(--rose)}
+.cagepic{width:100%;height:100%}
+.tbody{flex:1;min-width:0}
+.tlab{font-family:var(--serif);font-size:22px;line-height:1.15;word-break:break-word}
+html[data-theme=latex] .tlab,html[data-theme=hard] .tlab{font-family:var(--sans);font-weight:800;font-size:16px;letter-spacing:.06em;text-transform:uppercase}
+.tcount{font-variant-numeric:tabular-nums;font-size:30px;font-weight:700;color:var(--gold);margin:4px 0}
+.tcount.late{color:var(--rose)}
+.tsub{color:var(--steel);font-size:13px}
+.trow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.trow input{width:74px;text-align:center}
+.trow span{color:var(--steel)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.chip2{background:transparent;border:1px solid var(--plum2);color:var(--ivory);border-radius:99px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
+.chip2:active{background:var(--plum2)}
 </style>
 </head>
 <body>
@@ -159,6 +178,7 @@ html[data-theme=latex] .ptext,html[data-theme=hard] .ptext{font-family:var(--san
     <symbol id="i-spade" viewBox="0 0 24 24"><g fill="currentColor" stroke="none"><path d="M12 2c3 4 8 6 8 10.5a4.2 4.2 0 0 1-7 3.1c.2 2-.4 4-1.8 5.4h-2.4c-1.4-1.4-2-3.4-1.8-5.4a4.2 4.2 0 0 1-7-3.1C4 8 9 6 12 2z"/></g></symbol>
     <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></g></symbol>
     <symbol id="i-bolt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></g></symbol>
+    <symbol id="i-cagepic" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="30" cy="46" rx="19" ry="6.5"/><path d="M14 42C13 26 20 14 30 12c10 2 17 14 16 30"/><path d="M22 44C21 30 25 20 30 17M30 52V17M38 44C39 30 35 20 30 17"/><rect x="44" y="34" width="14" height="12" rx="2.5"/><path d="M47 34v-4a4 4 0 0 1 8 0v4"/><circle cx="51" cy="40" r="1.4" fill="currentColor"/></g></symbol>
   </defs>
 </svg>
 
@@ -363,6 +383,9 @@ let theme = 'locktober', pack = 'soft';
 let openTarget = null, lastClock = 0, rtT = null, rtM = null;
 let openMsg = null, msgs = [], popupId = null;
 const shownMsgs = new Set();
+let timers = [], tsig = '', pendingTFile = null, tFlag = false, rtC = null;
+let seen = new Set();
+try{ seen = new Set(JSON.parse(localStorage.getItem('gd_seen') || '[]')); }catch(e){}
 try{ theme = localStorage.getItem('gd_theme') || 'locktober'; pack = localStorage.getItem('gd_pack') || 'soft'; }catch(e){}
 if(!THEMES[theme]) theme = 'locktober';
 if(!PACKS[pack]) pack = 'soft';
@@ -436,7 +459,7 @@ async function sha(s){
   const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('gd:'+s));
   return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
 }
-function typing(){ const a=document.activeElement; return !!(a && a.tagName==='TEXTAREA' && a.value.trim().length>0); }
+function typing(){ const a=document.activeElement; return !!(a && (a.tagName==='TEXTAREA' || (a.tagName==='INPUT' && a.type!=='file')) && a.value.trim().length>0); }
 
 /* ---------- PIN ---------- */
 function pinPad(title, cb){
@@ -561,13 +584,222 @@ async function syncClock(){
     lastClock = Date.now();
   }catch(e){}
 }
+/* ---------- TIMER CASTITA ---------- */
+function markSeen(id){
+  seen.add(id);
+  try{ localStorage.setItem('gd_seen', JSON.stringify(Array.from(seen).slice(-200))); }catch(e){}
+}
+async function loadTimers(){
+  const r = await sb.from('timer_cast').select('*').order('created_at',{ascending:false}).limit(20);
+  if(r.error) return false;
+  timers = r.data; return true;
+}
+function timersSignature(){
+  return timers.map(t=>[t.id,t.fase,t.scade_a,t.fine_at,t.frase_a,t.frase_b,t.foto_path].join(':')).join('|');
+}
+async function refreshTimers(notify){
+  const before = timers.map(t=>t.id+t.fase).join();
+  if(!await loadTimers()) return;
+  const sg = timersSignature();
+  if(sg===tsig) return;
+  tsig = sg;
+  if(notify && !locked && before!==timers.map(t=>t.id+t.fase).join()) buzz();
+  if(locked || ui.step==='timerform') return;
+  if(typing()){ pendingRender = true; return; }
+  render();
+}
+function tState(t){
+  const n = now();
+  if(t.fase==='attesa') return new Date(t.scade_a).getTime() > n ? 'attesa' : 'ritardo';
+  if(t.fase==='chiuso') return new Date(t.fine_at).getTime() > n ? 'chiuso' : 'libero';
+  return 'libero';
+}
+function fmtLong(ms){
+  const s = Math.max(0, Math.floor(ms/1000));
+  const d = Math.floor(s/86400), h = Math.floor(s%86400/3600), m = Math.floor(s%3600/60), x = s%60;
+  const p = n => String(n).padStart(2,'0');
+  return (d ? d+'g ' : '')+p(h)+':'+p(m)+':'+p(x);
+}
+function tickTimers(){
+  let exp = false;
+  document.querySelectorAll('.tcount').forEach(el=>{
+    const e = new Date(el.dataset.texp).getTime();
+    if(el.dataset.tmode==='down'){
+      const left = e - now();
+      if(left<=0){ el.textContent = '00:00:00'; exp = true; }
+      else el.textContent = fmtLong(left);
+    } else el.textContent = '+'+fmtLong(now()-e);
+  });
+  if(exp && !tFlag && !locked && ui.step!=='timerform'){
+    tFlag = true; setTimeout(()=>{ tFlag = false; }, 3000);
+    if(!typing()) render();
+  }
+}
+function cagePic(){ return '<svg class="cagepic" aria-hidden="true"><use href="#i-cagepic"/></svg>'; }
+
+function timerCard(t){
+  const st = tState(t), slave = role==='schiavo';
+  let lab = '', count = '', sub = '';
+  if(st==='attesa'){
+    lab = t.frase_a;
+    count = '<div class="tcount" data-texp="'+esc(t.scade_a)+'" data-tmode="down">--:--:--</div>';
+    sub = slave ? 'Quando sei chiuso, invia la foto per fermare il timer.' : 'In attesa che lui si ingabbi e invii la foto.';
+  } else if(st==='ritardo'){
+    lab = t.frase_a+' · tempo scaduto';
+    count = '<div class="tcount late" data-texp="'+esc(t.scade_a)+'" data-tmode="up">+00:00:00</div>';
+    sub = slave ? 'Sei in ritardo: ingabbiati e invia la foto subito.' : 'È in ritardo.';
+  } else if(st==='chiuso'){
+    lab = t.frase_b;
+    count = '<div class="tcount" data-texp="'+esc(t.fine_at)+'" data-tmode="down">--:--:--</div>';
+    sub = 'Chiuso dal '+fdate(t.chiuso_at)+'.';
+  } else {
+    lab = slave ? 'Puoi sgabbiarti' : 'Può sgabbiarsi';
+    sub = 'Il tempo della chiusura è finito.';
+  }
+  let h = '<div class="tcard st-'+st+'"><div class="trow1"><div class="timg">'+cagePic()+'</div><div class="tbody">'+
+    '<div class="tlab">'+esc(lab)+'</div>'+count+'<div class="tsub">'+sub+'</div></div></div>';
+  if(!slave && t.foto_path && (st==='chiuso' || st==='libero'))
+    h += '<div class="media" data-path="'+esc(t.foto_path)+'" data-tipo="image"></div>';
+  if(slave && (st==='attesa' || st==='ritardo')){
+    h += '<label class="btn ghost block">Scatta la foto con la gabbia<input type="file" id="tf" accept="image/*" capture hidden></label><div id="tprev"></div>'+
+      '<button class="btn block" data-a="tsend" data-id="'+t.id+'">Invia la foto alla Dea</button>';
+  }
+  if(slave && st==='chiuso') h += '<button class="link" data-a="temer" data-id="'+t.id+'">Emergenza: devo sgabbiarmi subito</button>';
+  if(!slave){
+    h += '<div><button class="link" data-a="tedit" data-id="'+t.id+'">Modifica</button>'+
+      (st==='chiuso' ? '<button class="link red" data-a="treject" data-id="'+t.id+'">Rifiuta la foto</button>' : '')+
+      '<button class="link red" data-a="tdel" data-id="'+t.id+'">'+(st==='libero' ? 'Concludi' : 'Elimina')+'</button></div>';
+  }
+  return h + '</div>';
+}
+function timersSection(){
+  if(role!=='padrona' && !timers.length) return '';
+  return '<p class="sec" style="margin-top:20px">Timer castità</p>'+timers.map(timerCard).join('')+
+    (role==='padrona' ? '<button class="btn ghost block" data-a="tnew">＋ Nuovo timer</button>' : '');
+}
+
+function timerFormHtml(){
+  const t = ui.tid ? timers.find(x=>x.id===ui.tid) : null;
+  if(ui.tid && !t){ ui = {step:'home'}; return ''; }
+  const st = t ? tState(t) : 'nuovo';
+  const closed = (st==='chiuso' || st==='libero');
+  let dh = 1, dm = 0;
+  if(t && !closed){
+    const left = Math.max(1, Math.round((new Date(t.scade_a).getTime()-now())/60000));
+    dh = Math.floor(left/60); dm = left%60;
+  }
+  const lockMin = t ? (closed ? Math.max(1, Math.round((new Date(t.fine_at).getTime()-now())/60000)) : t.durata_b_min) : 1440;
+  const ld = Math.floor(lockMin/1440), lh = Math.floor(lockMin%1440/60), lm = lockMin%60;
+  const chipsA = [[15,'15 min'],[30,'30 min'],[60,'1 ora'],[120,'2 ore'],[360,'6 ore']];
+  const chipsB = [[720,'12 ore'],[1440,'24 ore'],[2880,'48 ore'],[10080,'7 giorni']];
+  let h = '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+(t ? 'Modifica timer' : 'Nuovo timer')+'</p>';
+  if(!closed){
+    h += '<p class="note">Frase iniziale</p><input id="tfa" type="text" maxlength="80" value="'+esc(t ? t.frase_a : 'Preparati a ingabbiarti')+'">'+
+      '<p class="note" style="margin-top:16px">Tempo per ingabbiarsi (da adesso)</p>'+
+      '<div class="trow"><input id="tah" type="number" inputmode="numeric" min="0" value="'+dh+'"><span>ore</span><input id="tam" type="number" inputmode="numeric" min="0" value="'+dm+'"><span>min</span></div>'+
+      '<div class="chips">'+chipsA.map(c=>'<button class="chip2" data-a="tpa" data-m="'+c[0]+'">'+c[1]+'</button>').join('')+'</div>';
+  }
+  h += '<p class="note" style="margin-top:16px">Frase durante la chiusura</p><input id="tfb" type="text" maxlength="80" value="'+esc(t ? t.frase_b : 'Tra quanto potrai sgabbiarti')+'">'+
+    '<p class="note" style="margin-top:16px">'+(closed ? 'Tempo rimasto (da adesso)' : 'Durata della chiusura')+'</p>'+
+    '<div class="trow"><input id="tbd" type="number" inputmode="numeric" min="0" value="'+ld+'"><span>giorni</span><input id="tbh" type="number" inputmode="numeric" min="0" value="'+lh+'"><span>ore</span><input id="tbm" type="number" inputmode="numeric" min="0" value="'+lm+'"><span>min</span></div>'+
+    '<div class="chips">'+chipsB.map(c=>'<button class="chip2" data-a="tpb" data-m="'+c[0]+'">'+c[1]+'</button>').join('')+'</div>'+
+    '<p class="note">Per sicurezza: con dolore, gonfiore o intorpidimento la gabbia va tolta subito. Massimo 30 giorni.</p>'+
+    '<button class="btn block" data-a="tsave">Salva</button>';
+  return h;
+}
+
+async function saveTimer(){
+  const num = sel => Math.max(0, parseInt(($(sel)||{}).value, 10) || 0);
+  const t = ui.tid ? timers.find(x=>x.id===ui.tid) : null;
+  const st = t ? tState(t) : 'nuovo';
+  const closed = (st==='chiuso' || st==='libero');
+  const fb = (($('#tfb').value)||'').trim() || 'Tra quanto potrai sgabbiarti';
+  const mB = num('#tbd')*1440 + num('#tbh')*60 + num('#tbm');
+  if(mB<1 || mB>43200) return toast('Durata della chiusura: da 1 minuto a 30 giorni');
+  let row, mA = 0;
+  if(closed){
+    row = {frase_b:fb, fine_at:new Date(now()+mB*60000).toISOString(), notif_b:false};
+  } else {
+    const fa = (($('#tfa').value)||'').trim() || 'Preparati a ingabbiarti';
+    mA = num('#tah')*60 + num('#tam');
+    if(mA<1) return toast('Tempo per ingabbiarsi: almeno 1 minuto');
+    row = {frase_a:fa, frase_b:fb, scade_a:new Date(now()+mA*60000).toISOString(), durata_b_min:mB};
+    if(t) row.notif_a = false;
+  }
+  const btn = $('[data-a=tsave]'); btn.disabled = true;
+  const res = t ? await sb.from('timer_cast').update(row).eq('id', t.id).select().single()
+                : await sb.from('timer_cast').insert(row).select().single();
+  if(res.error){ btn.disabled = false; return toast('Non riuscito, riprova'); }
+  if(res.data){
+    const i = timers.findIndex(x=>x.id===res.data.id);
+    if(i>=0) timers[i] = res.data; else timers.unshift(res.data);
+  }
+  tsig = timersSignature(); ui = {step:'home'}; render(); toast('Timer salvato');
+}
+
+async function delTimer(id){
+  const t = timers.find(x=>x.id===id); if(!t) return;
+  if(!confirm('Eliminare questo timer?')) return;
+  timers = timers.filter(x=>x.id!==id); tsig = timersSignature(); render();
+  try{
+    if(t.foto_path) await sb.storage.from('media').remove([t.foto_path]);
+    const r = await sb.from('timer_cast').delete().eq('id', id);
+    if(r.error) throw r.error;
+  }catch(e){ toast('Eliminazione non riuscita'); refreshTimers(false); }
+}
+
+async function rejectTimer(id){
+  const t = timers.find(x=>x.id===id); if(!t) return;
+  if(!confirm('Rifiutare la foto? Il timer torna in attesa per 10 minuti.')) return;
+  const path = t.foto_path;
+  const r = await sb.from('timer_cast').update({fase:'attesa', foto_path:null, chiuso_at:null, fine_at:null,
+    scade_a:new Date(now()+10*60000).toISOString(), notif_a:false, notif_b:false}).eq('id', id).select().single();
+  if(r.error) return toast('Non riuscito, riprova');
+  if(path){ try{ await sb.storage.from('media').remove([path]); }catch(e){} }
+  const i = timers.findIndex(x=>x.id===id); if(i>=0 && r.data) timers[i] = r.data;
+  tsig = timersSignature(); render(); toast('Foto rifiutata');
+}
+
+async function sendTimerPhoto(id){
+  const t = timers.find(x=>x.id===id); if(!t) return;
+  let f = pendingTFile;
+  if(!f) return toast('Scatta prima la foto con la gabbia');
+  const b = $('[data-a=tsend]'); b.disabled = true; b.textContent = 'Invio in corso...';
+  try{
+    f = await shrinkImage(f);
+    if(f.size > MAX_BYTES){ b.disabled=false; b.textContent='Invia la foto alla Dea'; return toast('File troppo grande'); }
+    const ext = (f.type==='image/png') ? 'png' : 'jpg';
+    const path = 'timer/'+id+'/'+Date.now()+'.'+ext;
+    const up = await sb.storage.from('media').upload(path, f, {contentType: f.type || 'image/jpeg'});
+    if(up.error) throw up.error;
+    const r = await sb.rpc('timer_foto',{p_id:id, p_path:path});
+    if(r.error) throw r.error;
+    t.fase = 'chiuso'; t.foto_path = path; t.chiuso_at = new Date(now()).toISOString();
+    t.fine_at = new Date(now() + t.durata_b_min*60000).toISOString();
+    pendingTFile = null; tsig = timersSignature(); render(); toast('Foto inviata alla Dea');
+    refreshTimers(false);
+  }catch(e){
+    toast('Invio non riuscito, riprova'); b.disabled = false; b.textContent = 'Invia la foto alla Dea';
+  }
+}
+
+async function emerTimer(id){
+  const t = timers.find(x=>x.id===id); if(!t) return;
+  if(!confirm('Sgabbiarti adesso? La Dea viene avvisata subito.')) return;
+  const old = t.fine_at;
+  t.fine_at = new Date(now()).toISOString(); tsig = timersSignature(); render();
+  const r = await sb.rpc('timer_emergenza',{p_id:id});
+  if(r.error){ t.fine_at = old; tsig = timersSignature(); render(); toast('Non riuscito, riprova'); }
+  else toast('La Dea è stata avvisata');
+}
+
 /* ---------- MESSAGGI LAMPO ---------- */
 async function loadMsgs(){
   const r = await sb.from('messaggi').select('*').order('created_at',{ascending:false}).limit(60);
   if(r.error) return false;
   msgs = r.data; return true;
 }
-function unreadMsgs(){ return msgs.filter(m=>m.da!==role && !m.letto_at); }
+function unreadMsgs(){ return msgs.filter(m=>m.da!==role && !m.letto_at && !seen.has(m.id)); }
 
 async function refreshMsgs(notify){
   const before = {};
@@ -610,7 +842,13 @@ function popupReply(){
 }
 function closePopup(){
   const m = msgs.find(x=>x.id===popupId);
-  if(m && m.da!==role && !m.letto_at){ m.letto_at = new Date().toISOString(); sb.rpc('msg_letto',{p_id:m.id}); }
+  if(m && m.da!==role){
+    markSeen(m.id);
+    if(!m.letto_at){
+      m.letto_at = new Date().toISOString();
+      sb.rpc('msg_letto',{p_id:m.id}).then(()=>{}, ()=>{});
+    }
+  }
   const P = $('#popup'); P.hidden = true; P.innerHTML = '';
   popupId = null;
   if(!locked && ui.step==='msgs') render();
@@ -641,7 +879,7 @@ async function toggleLike(){
   const m = msgs.find(x=>x.id===popupId); if(!m) return;
   m.mi_piace = !m.mi_piace;
   showPopup(m);
-  sb.rpc('msg_mi_piace',{p_id:m.id, p_val:m.mi_piace});
+  sb.rpc('msg_mi_piace',{p_id:m.id, p_val:m.mi_piace}).then(r=>{ if(r && r.error) toast('Mi piace non inviato'); }, ()=>{});
 }
 $('#popup').addEventListener('click', async e => {
   const P = $('#popup');
@@ -735,8 +973,10 @@ function startLive(){
     clearTimeout(rtT); rtT = setTimeout(()=>refresh(true), 350);
   }).on('postgres_changes',{event:'*',schema:'public',table:'messaggi'},()=>{
     clearTimeout(rtM); rtM = setTimeout(()=>refreshMsgs(true), 300);
+  }).on('postgres_changes',{event:'*',schema:'public',table:'timer_cast'},()=>{
+    clearTimeout(rtC); rtC = setTimeout(()=>refreshTimers(true), 300);
   }).subscribe();
-  poll = setInterval(()=>{ if(!document.hidden && !locked){ refresh(true); refreshMsgs(true); } }, 25000);
+  poll = setInterval(()=>{ if(!document.hidden && !locked){ refresh(true); refreshMsgs(true); refreshTimers(true); } }, 25000);
 }
 function stopLive(){ if(channel){ sb.removeChannel(channel); channel=null; } if(poll){ clearInterval(poll); poll=null; } }
 
@@ -746,7 +986,7 @@ async function boot(){
   /* prima schermata subito, dai dati salvati; poi si aggiorna */
   const c = readCache();
   if(c && c.uid===uid && c.role){ role = c.role; orders = c.orders || []; sig = signature(); render(); }
-  const res = await Promise.all([sb.from('ruoli').select('ruolo').maybeSingle(), loadOrders(), loadMsgs()]);
+  const res = await Promise.all([sb.from('ruoli').select('ruolo').maybeSingle(), loadOrders(), loadMsgs(), loadTimers()]);
   const rl = res[0];
   if(rl.error){
     if(!role){ toast('Connessione assente, riprovo...'); setTimeout(boot, 4000); return; }
@@ -755,7 +995,7 @@ async function boot(){
   } else {
     role = rl.data.ruolo;
   }
-  sig = signature(); writeCache();
+  sig = signature(); tsig = timersSignature(); writeCache();
   startLive(); render();
   syncPush(); syncClock(); applyTarget(); checkPopups();
 }
@@ -850,6 +1090,7 @@ function viewPadrona(){
 
   if(st==='settings') return h + settingsHtml();
   if(st==='msgs') return h + msgsHtml();
+  if(st==='timerform'){ const tf = timerFormHtml(); return tf ? h + tf : viewPadrona(); }
   if(st==='archive'){
     const a = archiveView(L.archive, 'padrona');
     if(a===null) return viewPadrona();
@@ -894,6 +1135,7 @@ function viewPadrona(){
 
   /* home */
   h += pushBanner();
+  h += timersSection();
   h += '<p class="lead">Cosa desideri?</p><div class="grid">'+
     ['domanda','obbligo','verita','richiesta'].map(k=>'<button class="tile" data-a="cat" data-c="'+k+'"><span class="ico">'+ic(CATS[k].icona)+'</span><span class="tn">'+CATS[k].nome+'</span></button>').join('')+'</div>';
   const n = L.needPen.length;
@@ -958,6 +1200,7 @@ function viewSchiavo(){
 
   const cur = L.pending.slice().reverse()[0];
   h += pushBanner();
+  h += timersSection();
   if(cur){
     h += answerCard(cur);
     const others = L.pending.length - 1;
@@ -996,6 +1239,7 @@ async function hydrate(){
 
 /* ---------- TIMER ---------- */
 function tick(){
+  tickTimers();
   let expired = false;
   document.querySelectorAll('.timer').forEach(el=>{
     const left = new Date(el.dataset.exp).getTime() - now();
@@ -1154,6 +1398,15 @@ app.addEventListener('click', e => {
   if(a==='settings'){ ui = {step:'settings'}; return render(); }
   if(a==='theme'){ setTheme(b.dataset.t); return render(); }
   if(a==='pack'){ pack = b.dataset.p; try{ localStorage.setItem('gd_pack', pack); }catch(x){} toast('Livello: '+PACKS[pack].nome); return render(); }
+  if(a==='tnew'){ ui = {step:'timerform', tid:null}; return render(); }
+  if(a==='tedit'){ ui = {step:'timerform', tid:b.dataset.id}; return render(); }
+  if(a==='tsave') return saveTimer();
+  if(a==='tdel') return delTimer(b.dataset.id);
+  if(a==='treject') return rejectTimer(b.dataset.id);
+  if(a==='tsend') return sendTimerPhoto(b.dataset.id);
+  if(a==='temer') return emerTimer(b.dataset.id);
+  if(a==='tpa'){ const m = parseInt(b.dataset.m,10); $('#tah').value = Math.floor(m/60); $('#tam').value = m%60; return; }
+  if(a==='tpb'){ const m = parseInt(b.dataset.m,10); $('#tbd').value = Math.floor(m/1440); $('#tbh').value = Math.floor(m%1440/60); $('#tbm').value = m%60; return; }
   if(a==='msgs'){ ui = {step:'msgs'}; return render(); }
   if(a==='qm') return sendQuick(parseInt(b.dataset.i,10));
   if(a==='openmsg'){ const mm = msgs.find(x=>x.id===b.dataset.id); if(mm) showPopup(mm); return; }
@@ -1198,6 +1451,12 @@ app.addEventListener('click', e => {
 });
 
 app.addEventListener('change', e => {
+  if(e.target.id==='tf'){
+    const f0 = e.target.files[0]; pendingTFile = f0 || null;
+    const p0 = $('#tprev'); if(!p0) return;
+    p0.innerHTML = f0 ? '<img src="'+URL.createObjectURL(f0)+'" alt="">' : '';
+    return;
+  }
   if(e.target.id!=='rf') return;
   const f = e.target.files[0]; pendingFile = f || null;
   const p = $('#prev'); if(!p) return;
@@ -1216,8 +1475,8 @@ app.addEventListener('focusout', () => {
 document.addEventListener('visibilitychange', () => {
   if(document.hidden){ hiddenAt = Date.now(); return; }
   if(role && localStorage.getItem(PINKEY) && Date.now()-hiddenAt > LOCK_AFTER){
-    locked = true; lockHidePopup(); unlock(()=>{ locked=false; sig=''; refresh(false).then(render).then(applyTarget).then(()=>refreshMsgs(false)); });
-  } else if(role){ refresh(true); refreshMsgs(true); applyTarget(); if(Date.now()-lastClock > 300000) syncClock(); }
+    locked = true; lockHidePopup(); unlock(()=>{ locked=false; sig=''; refresh(false).then(render).then(applyTarget).then(()=>refreshMsgs(false)).then(()=>refreshTimers(false)); });
+  } else if(role){ refresh(true); refreshMsgs(true); refreshTimers(true); applyTarget(); if(Date.now()-lastClock > 300000) syncClock(); }
 });
 
 /* ---------- AVVIO ---------- */
