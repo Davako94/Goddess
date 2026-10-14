@@ -169,6 +169,42 @@ html[data-theme=latex] .tlab,html[data-theme=hard] .tlab{font-family:var(--sans)
 .chk input{width:auto}
 a.btn{text-decoration:none;display:block}
 .opt small{font-size:12px}
+.game{margin-top:34px;border-top:1px solid var(--plum2);padding-top:18px}
+.ghead{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:var(--plum);border:1px solid var(--gold);border-radius:14px;padding:16px;color:var(--gold);font-family:var(--serif);font-size:21px;font-weight:700;cursor:pointer;text-align:left}
+html[data-theme=latex] .ghead,html[data-theme=hard] .ghead{font-family:var(--sans);font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+.gdot{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--rose);white-space:nowrap}
+.gbody{display:none;margin-top:14px}
+.game.open .gbody{display:block}
+.gturn{text-align:center;font-family:var(--serif);font-size:26px;font-weight:700;color:var(--gold);margin:6px 0 2px}
+.gturn.me{color:var(--rose)}
+html[data-theme=latex] .gturn,html[data-theme=hard] .gturn{font-family:var(--sans);font-size:18px;font-weight:800;letter-spacing:.12em}
+.gmodetag{text-align:center;color:var(--steel);font-size:13px;letter-spacing:.18em;margin-bottom:4px}
+.gdice{width:84px;height:84px;margin:8px auto;display:flex;align-items:center;justify-content:center;font-size:62px;line-height:1;border:2px solid var(--gold);border-radius:18px;color:var(--gold);background:var(--plum)}
+.gdice.roll{animation:droll .22s linear infinite}
+@keyframes droll{0%{transform:rotate(0)}50%{transform:rotate(14deg) scale(1.06)}100%{transform:rotate(0)}}
+.glegend{display:flex;justify-content:center;gap:18px;margin:10px 0 0;font-size:14px}
+.lg{display:inline-flex;align-items:center;gap:6px}
+.lg.g{color:#ff5b79}.lg.s{color:#d4546a}
+.gboard{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:14px 0}
+.gc{position:relative;aspect-ratio:1;border:1.5px solid var(--plum2);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.gc.sp{border-width:2.5px}
+.gn{position:absolute;top:3px;left:5px;font-size:10px;color:var(--steel)}
+.gi{font-size:20px;line-height:1}
+.gtok{position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;z-index:3;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.55);transition:transform .6s cubic-bezier(.3,.8,.3,1)}
+.gtok.g{background:#dc143c;color:#fff;border:1.5px solid #ff8da1}
+.gtok.s{background:#6e0b1a;color:#ffd9d9;border:1.5px solid #c0394d}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gmenu{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.gmodal{position:fixed;inset:0;z-index:25;background:rgba(0,0,0,.78);display:flex;align-items:flex-end;justify-content:center}
+.gsheet{width:100%;max-width:520px;max-height:92vh;overflow:auto;background:var(--plum);border:1px solid var(--gold);border-radius:20px 20px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom))}
+.gsh1{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.gsi{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex:none}
+.gsc{font-weight:700;font-size:15px}
+.gst{font-family:var(--serif);font-size:28px;line-height:1.15;margin:4px 0 8px;word-break:break-word}
+html[data-theme=latex] .gst,html[data-theme=hard] .gst{font-family:var(--sans);font-size:21px;font-weight:800}
+.gsd{font-size:18px;white-space:pre-wrap;word-break:break-word;margin-bottom:8px}
+.gbtns{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.gbtns .btn{width:100%}
 </style>
 </head>
 <body>
@@ -423,7 +459,7 @@ let locked = false, hiddenAt = 0, tries = 0, channel = null, poll = null, urlCac
 let off = 0, expFlag = false, pendingRender = false;
 let theme = 'locktober', pack = 'soft';
 let openTarget = null, lastClock = 0, rtT = null, rtM = null;
-let openMsg = null, msgs = [], popupId = null;
+let openMsg = null, openGame = false, msgs = [], popupId = null;
 const shownMsgs = new Set();
 let timers = [], tsig = '', pendingTFile = null, tFlag = false, rtC = null;
 let seen = new Set();
@@ -478,15 +514,16 @@ applyTheme(); setTimeout(buildIcons, 1200);
 try{ if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){}); }catch(e){}
 /* Apertura diretta dell'ordine dalla notifica */
 try{
-  const u0 = new URL(location.href), o0 = u0.searchParams.get('o'), m0 = u0.searchParams.get('m');
+  const u0 = new URL(location.href), o0 = u0.searchParams.get('o'), m0 = u0.searchParams.get('m'), g0 = u0.searchParams.get('g');
   if(o0) openTarget = o0;
   if(m0) openMsg = m0;
-  if(o0 || m0) history.replaceState(null, '', u0.pathname);
+  if(g0) openGame = true;
+  if(o0 || m0 || g0) history.replaceState(null, '', u0.pathname);
 }catch(e){}
 try{
   if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', ev => {
     const d = ev.data;
-    if(d && d.type==='open' && (d.ordine || d.msg)){ if(d.ordine) openTarget = d.ordine; if(d.msg) openMsg = d.msg; applyTarget(); }
+    if(d && d.type==='open' && (d.ordine || d.msg || d.g)){ if(d.ordine) openTarget = d.ordine; if(d.msg) openMsg = d.msg; if(d.g) openGame = true; applyTarget(); }
   });
 }catch(e){}
 
@@ -593,7 +630,7 @@ function afterLogin(){
   if(localStorage.getItem(PINKEY)) boot(); else setPin(boot);
 }
 async function logout(){
-  stopLive();
+  stopLive(); gReset();
   try{
     if(pushOK()){
       const reg = await swReady();
@@ -1018,7 +1055,7 @@ function startLive(){
   }).on('postgres_changes',{event:'*',schema:'public',table:'timer_cast'},()=>{
     clearTimeout(rtC); rtC = setTimeout(()=>refreshTimers(true), 300);
   }).subscribe();
-  poll = setInterval(()=>{ if(!document.hidden && !locked){ refresh(true); refreshMsgs(true); refreshTimers(true); } }, 25000);
+  poll = setInterval(()=>{ if(!document.hidden && !locked){ refresh(true); refreshMsgs(true); refreshTimers(true); gRefresh(); } }, 25000);
 }
 function stopLive(){ if(channel){ sb.removeChannel(channel); channel=null; } if(poll){ clearInterval(poll); poll=null; } }
 
@@ -1039,7 +1076,7 @@ async function boot(){
   }
   sig = signature(); tsig = timersSignature(); writeCache();
   startLive(); render();
-  syncPush(); syncClock(); applyTarget(); checkPopups();
+  syncPush(); syncClock(); applyTarget(); checkPopups(); gInit();
 }
 
 /* ---------- RENDER ---------- */
@@ -1124,6 +1161,7 @@ function render(){
   app.innerHTML = role==='padrona' ? viewPadrona() : viewSchiavo();
   hydrate();
   tick();
+  mountGame();
 }
 
 function viewPadrona(){
@@ -1205,6 +1243,7 @@ function viewPadrona(){
   const open = L.pending.concat(L.needPen).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
   if(open.length) h += '<p class="sec">In attesa</p>'+open.map(o=>cardHtml(o,'padrona')).join('');
   h += archiveRows(L.archive);
+  h += '<div id="gameSlot"></div>';
   return h;
 }
 
@@ -1280,6 +1319,7 @@ function viewSchiavo(){
   }
   h += msgTile();
   h += archiveRows(arch);
+  h += '<div id="gameSlot"></div>';
   return h;
 }
 
@@ -1332,6 +1372,12 @@ function localDone(o, testo, path, tipo){
 
 async function applyTarget(){
   if(!role || locked) return;
+  if(openGame){
+    openGame = false; gOpen = true;
+    try{ localStorage.setItem('gd_gopen','1'); }catch(e){}
+    ui = {step:'home'}; render();
+    setTimeout(function(){ const el = document.getElementById('game'); if(el && el.scrollIntoView) el.scrollIntoView({behavior:'smooth'}); }, 150);
+  }
   if(openMsg){
     const mid = openMsg; openMsg = null;
     await loadMsgs();
@@ -1571,9 +1617,871 @@ app.addEventListener('focusout', () => {
 document.addEventListener('visibilitychange', () => {
   if(document.hidden){ hiddenAt = Date.now(); return; }
   if(role && localStorage.getItem(PINKEY) && Date.now()-hiddenAt > LOCK_AFTER){
-    locked = true; lockHidePopup(); unlock(()=>{ locked=false; sig=''; refresh(false).then(render).then(applyTarget).then(()=>refreshMsgs(false)).then(()=>refreshTimers(false)); });
-  } else if(role){ refresh(true); refreshMsgs(true); refreshTimers(true); applyTarget(); if(Date.now()-lastClock > 300000) syncClock(); }
+    locked = true; lockHidePopup(); unlock(()=>{ locked=false; sig=''; refresh(false).then(render).then(applyTarget).then(()=>refreshMsgs(false)).then(()=>refreshTimers(false)).then(()=>gRefresh()); });
+  } else if(role){ refresh(true); refreshMsgs(true); refreshTimers(true); gRefresh(); applyTarget(); if(Date.now()-lastClock > 300000) syncClock(); }
 });
+
+/* ---------- IL GIOCO DELLA DEA: DATI ---------- */
+const G_SIZE = 40;
+const G_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+const G_FINALS = ["Il finale scelto dalla Dea: un rituale conclusivo concordato","Complimenti e ringraziamenti reciproci, poi la partita si chiude","Una richiesta finale della Dea, entro i limiti concordati"];
+const GCAT = {
+  domanda:{n:'Domanda',i:'❓',c:'#5aa9e6'}, verita:{n:'Verità',i:'🗝',c:'#c9a24b'}, obbligo:{n:'Obbligo',i:'🔥',c:'#e8743b'},
+  richiesta:{n:'Richiesta della Dea',i:'👑',c:'#d94f70'}, sfida:{n:'Sfida',i:'⚡',c:'#f2c14e'}, castita:{n:'Castità',i:'🔒',c:'#9aa0ae'},
+  penitenza:{n:'Penitenza',i:'⛓',c:'#b0254a'}, devozione:{n:'Devozione',i:'🙏',c:'#b79cff'}, fetish:{n:'Fetish',i:'👠',c:'#e05fa8'},
+  umiliazione:{n:'Umiliazione consensuale',i:'😈',c:'#8e1b3a'}, imprevisto:{n:'Imprevisto',i:'🎴',c:'#4fb3a5'}, bonus:{n:'Bonus narrativo',i:'🎁',c:'#6fcf97'},
+  scambio:{n:'Scambio di posizione',i:'🔄',c:'#7aa2f7'}, turno:{n:'Turno speciale',i:'🎲',c:'#f2994a'}, decreto:{n:'Decreto',i:'📜',c:'#c0392b'},
+  vuota:{n:'Casella vuota',i:'·',c:'#6b6b78'}, arrivo:{n:'Arrivo',i:'🏁',c:'#ffd700'}
+};
+const G_SYSTEM = ['bonus','scambio','turno','vuota'];
+const G_NAMES = {1:'PARTENZA',12:'DECRETO DELLA DEA',18:'TRONO',25:'SEGRETO',31:'IMPREVISTO',40:'IL TRONO FINALE'};
+const G_BASE = ['vuota','domanda','obbligo','devozione','bonus','verita','fetish','sfida','turno','umiliazione',
+  'castita','decreto','domanda','scambio','obbligo','richiesta','verita','richiesta','sfida','imprevisto',
+  'devozione','penitenza','bonus','fetish','verita','umiliazione','turno','castita','domanda','vuota',
+  'imprevisto','sfida','scambio','devozione','penitenza','obbligo','umiliazione','bonus','richiesta','arrivo'];
+const G_OVR = {
+  bdsm:{},
+  extreme:{2:'umiliazione',4:'castita',7:'fetish',10:'umiliazione',13:'verita',16:'sfida',22:'penitenza',26:'umiliazione',29:'castita',32:'sfida',34:'umiliazione',36:'sfida',37:'umiliazione',39:'penitenza'},
+  cuck:{2:'verita',3:'richiesta',6:'domanda',7:'imprevisto',10:'umiliazione',11:'castita',15:'umiliazione',19:'verita',21:'devozione',24:'imprevisto',28:'castita',29:'verita',32:'umiliazione',36:'devozione',37:'umiliazione'}
+};
+const G_MODES = {
+  bdsm:{nome:'BDSM', ico:'⛓',
+    desc:"Dea e schiavo: obbedienza e disciplina, verità e confessioni, servizio, castità concordata, fetish dei piedi, umiliazione consensuale. Difficoltà variabile, con progressione.",
+    rule:"Tutto ciò che compare è fantasia o attività già concordata. Ogni prova si può sospendere, saltare o cambiare in qualsiasi momento."},
+  extreme:{nome:'EXTREME', ico:'🔥',
+    desc:"Devozione assoluta nella finzione: ordini severi, prove di disciplina e resistenza, umiliazione verbale, rituali di sottomissione. Psicologicamente più intenso.",
+    rule:"Le prove sono più intense ma non lesive. Nessuna carta ordina colpi o azioni rischiose: le pratiche di sensazione partono solo dopo il «Concordo» di entrambi e si possono cambiare con una versione più leggera con il tasto «Cambia»."},
+  cuck:{nome:'CUCKOLD', ico:'♠',
+    desc:"Gelosia recitata: confessioni, fantasie, dialoghi di ruolo, confronti immaginari e umiliazione narrativa, con dichiarazioni di devozione alla Dea.",
+    rule:"La gelosia è recitata: tutto resta fantasia, racconto o dialogo di ruolo. Le carte non coinvolgono persone reali e non chiedono di contattare o inviare nulla a terzi."}
+};
+const G_RULES = "Regole generali: nessun pagamento parte da solo; ogni contributo ha un tetto impostato prima della partita e la conferma è sempre manuale. Rifiutare una richiesta di pagamento non ha mai conseguenze. Entrambi possono sospendere o terminare quando vogliono. La pausa non diventa mai una penitenza automatica: decide la Dea se assegnarla.";
+const G_CRIT = {domanda:"Risposta sincera data a voce o per iscritto.",verita:"Risposta sincera data a voce o per iscritto.",obbligo:"Compito eseguito e confermato.",richiesta:"Richiesta eseguita e confermata.",sfida:"Sfida completata entro il tempo.",castita:"Prova inviata o dichiarazione consegnata.",penitenza:"Penitenza svolta o concordata.",devozione:"Dichiarazione consegnata alla Dea.",fetish:"Prova svolta entro i limiti concordati.",umiliazione:"Parte recitata entro i limiti concordati.",imprevisto:"Carta svolta o sostituita.",decreto:"Decreto assegnato o ascoltato.",arrivo:"Finale presentato."};
+
+/* Formato carta: [titolo, descrizione, difficoltà 1-5, minuti, flag]
+   flag: m = richiesta economica, o = può diventare un ordine, p = pratica di sensazione (serve il «Concordo» di entrambi), i = solo immaginario */
+const D = {};
+D.bdsm = {
+  domanda:{g:[["Domanda della Dea","La Dea sceglie una domanda dal mazzo Verità e la pone allo schiavo, che risponde sinceramente.",1,5],["Interrogatorio breve","La Dea pone tre domande rapide sul servizio di oggi. Lo schiavo risponde a testa bassa.",2,5]],
+           s:[["Domanda alla Dea","Descrivi quale protocollo di obbedienza ti mette più in soggezione.",2,5],["Confessione di servizio","Racconta il momento di oggi in cui hai servito meno bene di quanto volevi.",2,5]]},
+  verita:{g:[["Verità imposta","La Dea sceglie la verità su cui lo schiavo non può tacere, entro i limiti concordati.",2,5],["Specchio","Lo schiavo descrive ad alta voce come lo vede la Dea in questo momento.",2,5]],
+          s:[["Confessione","Confessa alla Dea una cosa che ammiri di lei e che non hai detto abbastanza.",1,5],["Un desiderio","Descrivi un accessorio fetish che ti piacerebbe includere in una futura sessione.",2,5]]},
+  obbligo:{g:[["Obbligo domestico","La Dea assegna un compito domestico concordato e ne stabilisce il tempo.",2,20,"o"],["Rituale di servizio","La Dea sceglie un rituale di servizio concordato; lo schiavo lo esegue e ne registra il completamento.",2,15,"o"]],
+           s:[["Il tuo rituale","Scegli un rituale di servizio concordato e proponilo alla Dea: lo esegui se approva.",2,15],["Presentazione","Completa un rituale di presentazione concordato davanti alla Dea.",2,10]]},
+  richiesta:{g:[["Richiesta della Dea","La Dea formula una richiesta speciale: lo schiavo può solo eseguire.",2,15,"o"],["Capriccio","La Dea esprime un capriccio, piccolo o grande, entro i limiti concordati.",2,20,"o"]],
+             s:[["Supplica","Scrivi con cura una richiesta rivolta alla Dea, in forma di supplica rispettosa. Decide lei.",1,10],["Offerta","Proponi alla Dea un'offerta di servizio per domani e attendi la sua risposta.",1,10]]},
+  sfida:{g:[["Sfida a tempo","La Dea lancia una sfida a tempo: 5 minuti, senza rinvii.",3,5,"o"],["Prova di precisione","La Dea sceglie una prova di precisione: piegare, allineare o ordinare qualcosa con cura.",2,10,"o"]],
+         s:[["Sfida accettata","Completa entro 5 minuti un compito scelto dalla Dea.",3,5],["Prova di pazienza","Resta in silenzio e fermo per 5 minuti in posizione di attesa concordata.",2,5]]},
+  castita:{g:[["Foto della gabbia","La Dea richiede una foto della gabbia, ben chiusa, entro 5 minuti.",2,5,"o"],["Verifica","La Dea decide se e per quanto tempo prolungare la chiusura, entro il limite concordato.",3,0,"o"]],
+           s:[["Gabbia e gratitudine","Scrivi tre motivi per cui è giusto che sia la Dea a tenere la chiave.",2,10],["Dichiarazione di chiusura","Dichiara alla Dea per quanto tempo ti sentiresti pronto a restare chiuso e attendi la sua decisione.",2,5]]},
+  penitenza:{g:[["Penitenza da assegnare","La Dea sceglie una penitenza simbolica e la assegna allo schiavo.",2,15,"o"],["Contributo simbolico","La Dea propone una ricompensa simbolica o un contributo concordato, fino a {budget}.",2,0,"m"]],
+             s:[["Penitenza scritta","Scrivi 30 volte una frase decisa dalla Dea e consegnala attraverso l'app.",2,15],["Scuse in ginocchio","Chiedi scusa alla Dea per qualcosa di piccolo, in ginocchio e con parole tue.",2,5]]},
+  devozione:{g:[["Omaggio alla Dea","La Dea riceve un omaggio: lo schiavo le dedica un elogio di tre righe.",1,5],["Preghiera","La Dea sceglie un verso di devozione che lo schiavo recita ad alta voce.",1,5]],
+             s:[["Qualità della Dea","Descrivi tre qualità della Dea che ammiri maggiormente.",1,5],["Lettera di devozione","Scrivi una dichiarazione di devozione di almeno cinque righe.",1,10]]},
+  fetish:{g:[["Piedi della Dea","La Dea concede allo schiavo un omaggio concordato ai suoi piedi: massaggio, cura o ricerca delle pantofole ideali.",2,15,"o"],["Rituale estetico","La Dea sceglie un rituale estetico concordato per presentarsi.",2,10,"o"]],
+          s:[["Desiderio fetish","Descrivi un accessorio fetish che ti piacerebbe includere in una futura sessione.",2,5],["Devozione ai piedi","Scrivi come immagini un rituale di devozione ai piedi della Dea, solo come fantasia da concordare.",2,10]]},
+  umiliazione:{g:[["Titolo da schiavo","La Dea assegna allo schiavo un titolo umiliante concordato da usare fino a fine partita.",2,0,"o"],["Presentazione","La Dea chiede allo schiavo di presentarsi con nome e ruolo, in ginocchio.",2,5]],
+               s:[["Ammissione","Ammetti ad alta voce una tua debolezza nel servizio e ringrazia la Dea per averla notata.",2,5],["Auto-descrizione","Descriviti in tre parole come ti vede la Dea e scegli quella che ti pesa di più.",2,5]]},
+  imprevisto:{g:[["Carta imprevisto","La Dea pesca una carta imprevisto tra quelle autorizzate.",2,5],["Cambio di rotta","La Dea inventa una regola temporanea per i prossimi due turni, entro i limiti concordati.",2,0]],
+              s:[["Carta confessione","Pesca una carta confessione dal mazzo BDSM: la Dea la legge, tu rispondi.",2,5],["Rituale a sorpresa","La Dea sceglie al volo un rituale breve concordato.",2,5]]},
+  decreto:{g:[["Decreto","La Dea emana un decreto: scegli un obbligo dalla categoria Disciplina e assegnalo allo schiavo.",2,10,"o"],["Editto","La Dea scrive un editto di una riga che lo schiavo rispetterà fino a fine partita, entro i limiti concordati.",2,0,"o"]],
+           s:[["Decreto ascoltato","Confessa alla Dea quale prova di disciplina ti mette maggiormente in soggezione.",2,5],["Ascolto","Ripeti a voce alta le regole che hai promesso di rispettare in questa partita.",1,5]]}
+};
+D.extreme = {
+  domanda:{g:[["Domanda senza scampo","La Dea pone la domanda più scomoda che ha in mente, entro i limiti concordati. Risposta sincera, senza giri di parole.",3,5],["Verdetto","La Dea chiede: «Meriti di essere qui?». Lo schiavo risponde con una motivazione di tre frasi.",3,5]],
+           s:[["Domanda a testa bassa","Rispondi senza alzare lo sguardo: quale umiliazione di ruolo temi di più e perché ti attira?",3,5],["Limite","Descrivi un limite che ti è difficile comunicare e come preferisci che venga rispettato.",2,5]]},
+  verita:{g:[["Interrogatorio","La Dea interroga lo schiavo su una fantasia intima. Se la risposta è evasiva, ripete la domanda.",3,10],["Confessione guidata","La Dea detta tre domande intime concordate; lo schiavo risponde per iscritto.",3,10]],
+          s:[["Confessione di ruolo","Scrivi una confessione di ruolo su una tua fantasia di umiliazione.",3,10],["Ammissione totale","Dichiara in cosa vuoi essere trattato come nulla davanti alla Dea, solo nella finzione.",3,5]]},
+  obbligo:{g:[["Disciplina","La Dea assegna una prova di disciplina concordata, con tempo e criteri chiari.",3,20,"o"],["Rituale severo","La Dea sceglie un rituale di disciplina concordato: posizione, parole e durata.",3,15,"o"]],
+           s:[["Prova di pazienza","Completa una prova di pazienza non lesiva per la durata stabilita dalla Dea.",3,10],["Ordine perfetto","Esegui un compito assegnato dalla Dea con precisione assoluta, ripetendo se necessario.",3,15]]},
+  richiesta:{g:[["Ordine severo","La Dea impartisce un ordine severo ma non lesivo. Lo schiavo risponde solo «Sì, mia Dea».",3,15,"o"],["Rinuncia","La Dea impone una rinuncia temporanea concordata (un piacere, un comfort) fino al prossimo turno.",3,0,"o"]],
+             s:[["Implorazione","Scrivi una supplica in cui chiedi alla Dea il permesso di una cosa piccola. Lei può negarlo.",2,10],["Rinuncia offerta","Offri alla Dea una rinuncia temporanea di tua scelta, entro i limiti concordati.",3,5]]},
+  sfida:{g:[["Sfida lampo","La Dea lancia una sfida: 5 minuti, senza rinvii. Se fallisce, decide la Dea se assegnare una penitenza.",3,5,"o"],["Resistenza non lesiva","La Dea sceglie una prova di resistenza non lesiva: restare immobile, in silenzio o in attesa per il tempo stabilito.",3,10,"o"],["Prova di sensazione","Fra le pratiche già concordate, la Dea ne sceglie una di sensazione. Parte solo dopo il «Concordo» di entrambi; con «Cambia» si passa a una versione più leggera.",4,10,"op"]],
+         s:[["Sfida di resistenza","Resta in posizione di attesa concordata per 5 minuti, senza parlare e senza muoverti.",3,5],["Sfida di memoria","Recita senza errori le regole di servizio imparate in questa partita.",3,5]]},
+  castita:{g:[["Prolungamento","La Dea decide se prolungare la chiusura di un periodo scelto, entro il limite concordato.",4,0,"o"],["Prova di chiusura","La Dea richiede una foto della gabbia e della postura richiesta entro 5 minuti.",3,5,"o"]],
+           s:[["Giuramento di castità","Scrivi un giuramento di castità nella finzione e consegnalo alla Dea.",3,10],["Supplica di apertura","Scrivi una supplica per essere aperto: la Dea risponde sì, no o «non ancora».",3,10]]},
+  penitenza:{g:[["Penitenza severa","La Dea assegna una penitenza severa ma non lesiva dal mazzo concordato.",3,20,"o"],["Tributo","La Dea propone un contributo concordato entro il budget massimo: {budget}.",3,0,"m"]],
+             s:[["Scuse solenni","Scrivi una lettera di scuse solenni alla Dea e leggila ad alta voce in ginocchio.",3,15],["Autodenuncia","Elenca tre mancanze di servizio e proponi tu la penitenza per ciascuna. Decide la Dea.",3,10]]},
+  devozione:{g:[["Venerazione","La Dea riceve venerazione: lo schiavo compone un inno di dieci righe in sua lode.",2,15],["Culto","La Dea detta una formula di devozione da ripetere dieci volte con tono solenne.",2,5]],
+             s:[["Voto di devozione","Pronuncia un voto di devozione assoluta alla Dea, nella finzione, e scrivilo.",3,10],["Preghiera notturna","Scrivi una preghiera alla Dea da leggere ogni sera fino a fine partita.",2,10]]},
+  fetish:{g:[["Rituale dei piedi","La Dea sceglie un rituale concordato di devozione ai suoi piedi: venerazione, cura, lucidatura.",3,20,"o"],["Accessorio","La Dea sceglie un accessorio concordato che lo schiavo indosserà o presenterà per la prova.",3,10,"o"]],
+          s:[["Fetish dichiarato","Descrivi un fetish concordato che desideri esplorare e come vorresti che la Dea lo usasse.",3,10],["Inventario","Elenca tre fetish concordati in ordine di desiderio, spiegando perché.",2,10]]},
+  umiliazione:{g:[["Nomi da schiavo","La Dea conia un nome umiliante concordato per lo schiavo e lo userà per il resto della partita.",3,0,"o"],["Platea immaginaria","La Dea descrive una platea immaginaria che osserva lo schiavo; lui recita la parte guardando in basso.",3,10,"i"]],
+               s:[["Verdetto della platea","Immagina una platea che ti giudica: scrivi cosa direbbero e come ti farebbe sentire.",3,10,"i"],["Segno segreto","Scegli un segno segreto concordato (un biglietto, un gesto) da portare con te fino alla prossima uscita, senza coinvolgere nessuno.",3,0]]},
+  imprevisto:{g:[["Carta severa","La Dea pesca una carta imprevisto severa tra quelle autorizzate.",3,5],["Variante","La Dea cambia una regola della partita per due turni, entro i limiti concordati.",3,0]],
+              s:[["Carta rituale","Pesca una carta rituale: la Dea decide se è adatta o la sostituisce.",3,5],["Sorpresa","La Dea inventa una prova di un minuto e lo schiavo la esegue.",3,2]]},
+  decreto:{g:[["Decreto severo","Emana un decreto severo ma non lesivo: scegli un obbligo dalla categoria Disciplina e assegnalo.",3,15,"o"],["Sentenza","La Dea pronuncia una sentenza simbolica su una mancanza, reale o inventata, a sua scelta.",3,10]],
+           s:[["Ascolto della sentenza","Dichiara in quale ambito la disciplina ti mette più in soggezione e perché.",3,5],["Obbedienza dichiarata","Giura alla Dea di rispettare il prossimo decreto senza discutere.",2,5]]}
+};
+D.cuck = {
+  domanda:{g:[["Gelosia a comando","La Dea chiede: «Cosa ti darebbe più gelosia, nel nostro gioco di ruolo?». Risposta sincera.",2,5],["Domanda di confronto","La Dea domanda come si sente lo schiavo a immaginare di non essere l'unico, nella sua fantasia.",3,5,"i"]],
+           s:[["Domanda di ruolo","Rispondi: quale tipo di dialogo di gelosia recitata preferisci?",2,5],["Quanto ti pesa","Quanto ti pesa, da 1 a 10, l'idea immaginaria di essere messo da parte? Spiega.",2,5,"i"]]},
+  verita:{g:[["Fantasia richiesta","La Dea chiede allo schiavo di raccontare una fantasia di gelosia che non ha mai detto ad alta voce.",3,10,"i"],["Verità scomoda","La Dea pone una domanda intima concordata sul ruolo che lo schiavo ha accanto a lei.",3,5]],
+          s:[["Fantasia raccontata","Racconta una fantasia che desideri condividere con la Dea, restando nella finzione.",3,10,"i"],["Gelosia confessata","Descrivi una situazione immaginaria che suscita gelosia nella dinamica di ruolo.",2,10,"i"]]},
+  obbligo:{g:[["Ordine di servizio","La Dea assegna un servizio domestico concordato mentre «si prepara per la sua serata immaginaria».",2,20,"o"],["Attesa","La Dea ordina allo schiavo di attendere in silenzio per cinque minuti, in posizione concordata.",2,5,"o"]],
+           s:[["Servizio d'ospite","Prepara per la Dea un servizio concordato (bevanda, musica, luce) come per una sua serata.",2,15],["Preparativi","Prepara il vestito e le scarpe che la Dea indosserebbe per la sua serata immaginaria.",2,15]]},
+  richiesta:{g:[["Richiesta di Regina","La Dea chiede di essere chiamata «Regina» fino alla prossima casella.",2,0,"o"],["Messaggio di ruolo","La Dea detta un messaggio che lo schiavo scrive come se fosse suo e leggerà a voce alta.",3,10,"o"]],
+             s:[["Richiesta da cornuto","Scrivi alla Dea una richiesta umile: puoi chiederle solo di raccontarti una fantasia.",2,10,"i"],["Permesso di attesa","Chiedi alla Dea il permesso di aspettarla ai suoi piedi mentre lei «si diverte», nella finzione.",3,5,"i"]]},
+  sfida:{g:[["Sfida della gelosia","La Dea lancia una sfida narrativa: lo schiavo recita due minuti di gelosia, senza giustificarsi.",3,5,"o"],["Sfida di sicurezza","La Dea descrive il proprio potere in modo seducente; lo schiavo resta fermo e zitto per 5 minuti.",3,5,"o"]],
+         s:[["Sfida di recitazione","Recita per due minuti la parte di chi viene messo da parte, guardando in basso.",3,5],["Sfida del dialogo","Scrivi un dialogo immaginario in cui la Dea descrive la propria sicurezza e il proprio potere.",3,10,"i"]]},
+  castita:{g:[["Chiave della Dea","La Dea mostra la chiave e decide per quanto tempo la gabbia resta chiusa mentre lei «esce», nella finzione.",3,0,"o"],["Prova di chiusura","La Dea richiede una foto della gabbia con un cartello deciso da lei, entro 5 minuti.",3,5,"o"]],
+           s:[["Chiuso mentre lei vince","Scrivi come ti senti a restare chiuso mentre la Dea è la protagonista della sua serata immaginaria.",3,10,"i"],["Gratitudine amara","Ringrazia la Dea per ogni cosa che ti nega, in quattro righe.",3,10]]},
+  penitenza:{g:[["Penitenza di ruolo","La Dea assegna una penitenza narrativa: lo schiavo scrive la sua «umiliazione di ruolo» più amara.",3,15,"o"],["Contributo","La Dea propone un contributo simbolico entro il budget massimo: {budget}.",2,0,"m"]],
+             s:[["Scuse da cornuto","Scrivi alla Dea una lettera di scuse in cui ammetti di non essere all'altezza, nella finzione.",3,10],["Ripetizione","Scrivi 40 volte «Il mio posto è ai suoi piedi» e consegna il foglio.",2,15]]},
+  devozione:{g:[["Dichiarazione richiesta","La Dea chiede una dichiarazione di devozione che metta in luce quanto è superiore, nella finzione.",2,10],["Elogio","La Dea ascolta un elogio di cinque qualità che nessun altro, immaginario, possiede.",2,10,"i"]],
+             s:[["Dichiarazione di devozione","Scrivi una dichiarazione di devozione che descriva perché la Dea è unica per te.",2,10],["Inno a lei","Scrivi un breve inno alla Dea, come se fossi il suo cantore più devoto.",2,10]]},
+  fetish:{g:[["Fetish di gelosia","La Dea sceglie un oggetto simbolico concordato che rappresenta la serata immaginaria e lo schiavo lo presenta.",2,10,"o"],["Rituale di preparazione","La Dea ordina un rituale di preparazione estetico concordato mentre lo schiavo la assiste.",2,15,"o"]],
+          s:[["Simbolo della gelosia","Descrivi un oggetto o accessorio concordato che per te simboleggia la gelosia recitata.",2,5],["Preferenza","Scrivi quali elementi di ruolo (luci, abiti, parole) aumentano di più la tensione per te.",2,10]]},
+  umiliazione:{g:[["Confronto immaginario","La Dea descrive un confronto immaginario in cui lo schiavo perde su tutta la linea; lui ascolta e ringrazia.",3,10,"i"],["Titolo da cornuto","La Dea conia un titolo umiliante concordato da usare fino a fine partita.",3,0,"o"]],
+               s:[["Sfigato dichiarato","Scrivi in tre frasi perché, nella finzione, sei lo sfigato della storia, e ringrazia la Dea di ricordartelo.",3,10,"i"],["Autoritratto","Descrivi come ti vede la Dea quando immagina chi la merita davvero.",3,10,"i"]]},
+  imprevisto:{g:[["Carta scenario","La Dea sceglie una carta scenario dal mazzo Cuckold.",2,5],["Colpo di scena","La Dea inventa un colpo di scena immaginario in cui lo schiavo viene escluso dalla serata.",3,5,"i"]],
+              s:[["Carta confessione","Pesca una carta confessione dal mazzo Cuckold e rispondi.",2,5],["Colpo di scena subìto","Racconta come reagiresti a un colpo di scena immaginario deciso dalla Dea.",3,10,"i"]]},
+  decreto:{g:[["Decreto di Regina","La Dea decreta una regola di ruolo valida fino al prossimo turno dello schiavo.",2,0,"o"],["Ordine di ruolo","La Dea assegna un ordine di ruolo di sua scelta, entro i limiti concordati.",2,15,"o"]],
+           s:[["Decreto subìto","Dichiara quale regola di ruolo ti metterebbe più in difficoltà e perché.",2,5],["Accettazione","Accetta ad alta voce, guardando in basso, il prossimo decreto della Dea.",2,5]]}
+};
+/* Caselle fisse (stesso numero in ogni modalità, contenuti diversi) */
+const FIX = {
+  bdsm:{
+    12:{g:[["DECRETO DELLA DEA","La Dea emana un decreto. Scegli un obbligo dalla categoria Disciplina e assegnalo allo schiavo.",2,10,"o"]],s:[["DECRETO","Confessa alla Dea quale tipo di prova di disciplina ti mette maggiormente in soggezione.",2,5]]},
+    18:{g:[["TRONO","La Dea sceglie una richiesta speciale dal proprio mazzo.",2,15,"o"]],s:[["TRONO","Scrivi una dichiarazione di devozione alla Dea e consegnala attraverso l'app.",1,10]]},
+    25:{g:[["SEGRETO","La Dea sceglie una domanda a cui lo schiavo deve rispondere sinceramente, entro i limiti concordati.",2,5]],s:[["SEGRETO","Confessa una fantasia di ruolo che desideri esplorare con la Dea.",2,10]]},
+    31:{g:[["IMPREVISTO","Pesca una carta imprevisto tra quelle autorizzate dalla Dea.",2,5]],s:[["IMPREVISTO","Pesca una carta confessione o rituale dal mazzo della modalità attiva.",2,5]]},
+    40:{g:[["IL TRONO FINALE","La Dea decide il finale della partita tra le opzioni concordate.",2,0]],s:[["IL TRONO FINALE","Lo schiavo presenta il riepilogo della propria partita e attende la decisione narrativa finale della Dea.",2,5]]}
+  },
+  extreme:{
+    12:{g:[["DECRETO SEVERO","La Dea emana un decreto severo. Scegli un obbligo dalla categoria Disciplina e assegnalo allo schiavo.",3,15,"o"]],s:[["DECRETO","Confessa quale prova di disciplina ti mette più in soggezione e come speri di superarla.",3,5]]},
+    18:{g:[["TRONO","La Dea siede sul trono e sceglie una richiesta speciale dal proprio mazzo: lo schiavo obbedisce.",3,15,"o"]],s:[["TRONO","In ginocchio, scrivi una dichiarazione di devozione assoluta e consegnala attraverso l'app.",2,10]]},
+    25:{g:[["SEGRETO","La Dea sceglie una domanda intima: lo schiavo risponde sinceramente, entro i limiti concordati.",3,5]],s:[["SEGRETO","Confessa una fantasia di umiliazione di ruolo che desideri esplorare, entro i limiti concordati.",3,10]]},
+    31:{g:[["IMPREVISTO","Pesca una carta imprevisto severa tra quelle autorizzate dalla Dea.",3,5]],s:[["IMPREVISTO","Pesca una carta confessione o rituale dal mazzo EXTREME.",3,5]]},
+    40:{g:[["IL TRONO FINALE","La Dea decide il finale della partita tra le opzioni concordate, e lo schiavo lo accoglie in ginocchio.",3,0]],s:[["IL TRONO FINALE","Lo schiavo presenta il riepilogo della propria partita, in ginocchio, e attende la decisione finale della Dea.",3,5]]}
+  },
+  cuck:{
+    12:{g:[["DECRETO DI REGINA","La Dea emana un decreto di ruolo: scegli un ordine di gelosia recitata e assegnalo allo schiavo.",3,10,"o"]],s:[["DECRETO","Confessa alla Dea quale scenario di gelosia recitata ti mette maggiormente in soggezione.",3,5]]},
+    18:{g:[["TRONO","La Dea sceglie una richiesta speciale dal proprio mazzo Cuckold.",3,15,"o"]],s:[["TRONO","Scrivi una dichiarazione di devozione alla Dea: lei è il trono, tu lo scendiletto.",3,10]]},
+    25:{g:[["SEGRETO","La Dea sceglie una domanda intima sulla gelosia: lo schiavo risponde con sincerità, nei limiti concordati.",3,5]],s:[["SEGRETO","Confessa una fantasia di gelosia recitata che desideri esplorare con la Dea.",3,10,"i"]]},
+    31:{g:[["IMPREVISTO","La Dea pesca una carta scenario dal mazzo Cuckold.",3,5]],s:[["IMPREVISTO","Pesca una carta confessione dal mazzo Cuckold e rispondi.",3,5]]},
+    40:{g:[["IL TRONO FINALE","La Dea decide il finale della partita tra le opzioni concordate: la serata è sua.",3,0]],s:[["IL TRONO FINALE","Lo schiavo presenta il riepilogo della propria partita da spettatore devoto e attende la decisione finale della Dea.",3,5]]}
+  }
+};
+/* Caselle con effetto automatico (uguali in tutte le modalità) */
+const SYS = {
+  bonus:{g:[["BONUS NARRATIVO","La Dea avanza di 2 caselle e si concede un premio narrativo a scelta: un complimento, un capriccio o un momento di tenerezza.",1,0]],
+         s:[["BONUS NARRATIVO","Lo schiavo avanza di 2 caselle. La Dea può concedergli un permesso simbolico, a sua scelta.",1,0]]},
+  scambio:{g:[["SCAMBIO DI POSIZIONE","Le pedine si scambiano di posto. Se sono sulla stessa casella non cambia nulla.",1,0]],
+           s:[["SCAMBIO DI POSIZIONE","Le pedine si scambiano di posto. Se sono sulla stessa casella non cambia nulla.",1,0]]},
+  turno:{g:[["TURNO SPECIALE","La Dea tira ancora il dado. Il turno extra vale una sola volta di seguito.",1,0]],
+         s:[["TURNO SPECIALE","Lo schiavo tira ancora il dado. Il turno extra vale una sola volta di seguito.",1,0]]},
+  vuota:{g:[["CASELLA DI RIPOSO","Nessuna prova. Respirate, bevete un sorso d'acqua e passate al turno successivo.",1,0]],
+         s:[["CASELLA DI RIPOSO","Nessuna prova. Respirate, bevete un sorso d'acqua e passate al turno successivo.",1,0]]}
+};
+
+/* ---------- IL GIOCO DELLA DEA: LOGICA ---------- */
+const GCARDS = [];
+(function buildCards(){
+  const T0 = '2026-10-14T00:00:00.000Z';
+  function add(mode, cat, actor, rows, sq){
+    rows.forEach(function(r, i){
+      const fl = r[4] || '';
+      GCARDS.push({
+        id: mode+'-'+(sq ? 'q'+sq : cat)+'-'+(actor==='goddess_roll' ? 'g' : 'b'===actor ? 'b' : 's')+i,
+        mode: mode, squareNumber: sq || null, category: cat, actor: actor,
+        title: r[0], description: r[1], difficulty: r[2], estimatedDuration: r[3] || null,
+        completionCriteria: G_CRIT[cat] || 'Prova completata.', enabled: true,
+        tags: [cat, mode].concat(fl.indexOf('i')>=0 ? ['immaginario'] : []),
+        createdAt: T0, updatedAt: T0,
+        money: fl.indexOf('m')>=0, order: fl.indexOf('o')>=0, physical: fl.indexOf('p')>=0, imaginary: fl.indexOf('i')>=0
+      });
+    });
+  }
+  Object.keys(D).forEach(function(mode){
+    Object.keys(D[mode]).forEach(function(cat){
+      add(mode, cat, 'goddess_roll', D[mode][cat].g || []);
+      add(mode, cat, 'slave_roll', D[mode][cat].s || []);
+    });
+    Object.keys(SYS).forEach(function(cat){
+      add(mode, cat, 'goddess_roll', SYS[cat].g);
+      add(mode, cat, 'slave_roll', SYS[cat].s);
+    });
+    Object.keys(FIX[mode]).forEach(function(sq){
+      const n = parseInt(sq, 10);
+      const cat = n===40 ? 'arrivo' : gBoardOf(mode)[n-1];
+      add(mode, cat, 'goddess_roll', FIX[mode][sq].g, n);
+      add(mode, cat, 'slave_roll', FIX[mode][sq].s, n);
+    });
+  });
+})();
+
+function gBoardOf(mode){
+  const b = G_BASE.slice(), o = G_OVR[mode] || {};
+  Object.keys(o).forEach(function(k){ b[parseInt(k,10)-1] = o[k]; });
+  return b;
+}
+function gRand(n){
+  const max = Math.floor(0x100000000 / n) * n, a = new Uint32Array(1);
+  do { crypto.getRandomValues(a); } while(a[0] >= max);
+  return a[0] % n;
+}
+function gDie(){ return gRand(6) + 1; }
+function gFill(s, text){ return String(text).replace(/\{budget\}/g, ((s.settings && s.settings.budgetMax) || 0) + '€'); }
+function gOther(w){ return w==='goddess' ? 'slave' : 'goddess'; }
+function gDb(w){ return w==='goddess' ? 'padrona' : 'schiavo'; }
+
+function gPick(s, square, cat, who, excludeId){
+  const budget = (s.settings && s.settings.budgetMax) || 0;
+  const all = GCARDS.concat((s.settings && s.settings.customCards) || []);
+  const actors = who==='goddess' ? ['goddess_roll','both'] : ['slave_roll','both'];
+  function pool(fn){
+    return all.filter(function(c){
+      return c.enabled && (c.mode===s.mode || c.mode==='any') && actors.indexOf(c.actor)>=0 &&
+             (!c.money || budget>0) && c.id!==excludeId && fn(c);
+    });
+  }
+  let list = pool(function(c){ return c.squareNumber===square; });
+  if(!list.length) list = pool(function(c){ return c.squareNumber==null && c.category===cat; });
+  if(!list.length) list = pool(function(c){ return c.squareNumber==null && c.category==='vuota'; });
+  const used = s.usedCards || [];
+  const fresh = list.filter(function(c){ return used.indexOf(c.id) < 0; });
+  const src = fresh.length ? fresh : list;
+  return src[gRand(src.length)];
+}
+
+function gMakeChallenge(s, card, square, who, cat, note){
+  const sys = G_SYSTEM.indexOf(cat) >= 0;
+  let desc = gFill(s, card.description);
+  if(note){
+    if(cat==='scambio') desc += ' Nuove posizioni: Dea '+s.goddessPosition+', schiavo '+s.slavePosition+'.';
+    if(cat==='bonus' && /\+/.test(note)) desc += ' ('+note+')';
+  }
+  return {
+    id: 'c'+Date.now()+'-'+gRand(1000), cardId: card.id, square: square, squareName: G_NAMES[square] || '',
+    category: cat, roller: who, mode: s.mode, title: card.title, description: desc,
+    difficulty: card.difficulty, duration: card.estimatedDuration, criteria: card.completionCriteria,
+    money: !!card.money, order: !!card.order, physical: !!card.physical, imaginary: !!card.imaginary, system: sys,
+    status: 'assegnata', agree: {goddess:false, slave:false}, changes: 0, ordered: false, note: note || ''
+  };
+}
+
+function gApplyRoll(s, die){
+  const who = s.currentTurn;
+  const key = who==='goddess' ? 'goddessPosition' : 'slavePosition';
+  const okey = who==='goddess' ? 'slavePosition' : 'goddessPosition';
+  const from = s[key];
+  s.undo = {gp:s.goddessPosition, sp:s.slavePosition, turn:s.currentTurn, phase:s.phase,
+    extraPending:!!s.extraPending, extraUsed:!!s.extraUsed, hist:s.turnHistory.length, dice:s.diceHistory.length,
+    used:(s.usedCards||[]).length, vg:s.visited.goddess.length, vs:s.visited.slave.length, persistent:false};
+  let to = from + die;
+  if(to > G_SIZE) to = G_SIZE - (to - G_SIZE);
+  s[key] = to;
+  const cat = gBoardOf(s.mode)[to-1];
+  let note = '';
+  const wasExtra = !!s.extraUsed;
+  s.extraUsed = false;
+  if(cat==='scambio'){
+    const t = s[key]; s[key] = s[okey]; s[okey] = t; note = 'scambio'; s.undo.persistent = true;
+  } else if(cat==='bonus'){
+    const nt = Math.min(to + 2, G_SIZE - 1);
+    if(nt !== s[key]){ s[key] = nt; note = 'bonus +'+(nt-to); }
+    s.undo.persistent = true;
+  } else if(cat==='turno'){
+    if(!wasExtra){ s.extraPending = true; note = 'tira ancora'; s.undo.persistent = true; }
+  }
+  const card = gPick(s, to, cat, who);
+  const at = new Date().toISOString();
+  s.diceHistory.push({who:who, die:die, at:at});
+  s.turnHistory.push({at:at, who:who, die:die, from:from, to:s[key], square:to, category:cat, mode:s.mode,
+    cardId:card.id, title:card.title, status:'assegnata', note:note});
+  s.visited[who].push(to);
+  s.usedCards = (s.usedCards||[]).concat([card.id]);
+  s.currentChallenge = gMakeChallenge(s, card, to, who, cat, note);
+  s.phase = 'challenge';
+  s.lastResult = null;
+  return s;
+}
+
+function gAdvance(s, status){
+  const ch = s.currentChallenge;
+  if(!ch) return s;
+  ch.status = status;
+  const h = s.turnHistory[s.turnHistory.length-1];
+  if(h) h.status = status;
+  s.lastResult = {who:ch.roller, title:ch.title, category:ch.category, square:ch.square, status:status};
+  s.currentChallenge = null;
+  s.undo = null;
+  if(ch.category==='arrivo'){ s.phase = 'finale'; s.winner = ch.roller; return s; }
+  if(s.extraPending){ s.extraPending = false; s.extraUsed = true; }
+  else s.currentTurn = gOther(s.currentTurn);
+  s.phase = 'roll';
+  return s;
+}
+
+function gChangeCard(s){
+  const ch = s.currentChallenge;
+  if(!ch || ch.system || ch.category==='arrivo') return false;
+  const budget = (s.settings && s.settings.budgetMax) || 0;
+  const all = GCARDS.concat((s.settings && s.settings.customCards) || []);
+  const actors = ch.roller==='goddess' ? ['goddess_roll','both'] : ['slave_roll','both'];
+  let list = all.filter(function(c){
+    return c.enabled && (c.mode===s.mode || c.mode==='any') && actors.indexOf(c.actor)>=0 && c.squareNumber==null &&
+      c.category===ch.category && c.id!==ch.cardId && (!c.money || budget>0);
+  });
+  if(!list.length) return false;
+  /* se la carta era intensa, preferisci una versione più leggera e non fisica */
+  const lighter = list.filter(function(c){ return !c.physical && c.difficulty <= Math.max(1, ch.difficulty) ; });
+  if((ch.physical || ch.difficulty>=3) && lighter.length) list = lighter;
+  const fresh = list.filter(function(c){ return (s.usedCards||[]).indexOf(c.id) < 0; });
+  const src = fresh.length ? fresh : list;
+  const card = src[gRand(src.length)];
+  ch.cardId = card.id; ch.title = card.title; ch.description = gFill(s, card.description);
+  ch.difficulty = card.difficulty; ch.duration = card.estimatedDuration; ch.criteria = card.completionCriteria;
+  ch.money = !!card.money; ch.order = !!card.order; ch.physical = !!card.physical; ch.imaginary = !!card.imaginary;
+  ch.agree = {goddess:false, slave:false}; ch.changes = (ch.changes||0) + 1; ch.ordered = false;
+  const h = s.turnHistory[s.turnHistory.length-1];
+  if(h){ h.cardId = card.id; h.title = card.title; h.note = (h.note ? h.note+'; ' : '') + 'carta cambiata'; }
+  s.usedCards = (s.usedCards||[]).concat([card.id]);
+  if(s.undo) s.undo.persistent = true;
+  return true;
+}
+
+function gCanUndo(s){
+  const ch = s.currentChallenge;
+  return !!(s.gameStatus==='attiva' && s.phase==='challenge' && ch && ch.status==='assegnata' && s.undo && !s.undo.persistent &&
+            !ch.ordered && !ch.changes && !ch.agree.goddess && !ch.agree.slave);
+}
+function gUndo(s){
+  const u = s.undo;
+  s.goddessPosition = u.gp; s.slavePosition = u.sp; s.currentTurn = u.turn; s.phase = u.phase;
+  s.extraPending = u.extraPending; s.extraUsed = u.extraUsed;
+  s.turnHistory = s.turnHistory.slice(0, u.hist); s.diceHistory = s.diceHistory.slice(0, u.dice);
+  s.usedCards = (s.usedCards||[]).slice(0, u.used);
+  s.visited.goddess = s.visited.goddess.slice(0, u.vg); s.visited.slave = s.visited.slave.slice(0, u.vs);
+  s.currentChallenge = null; s.undo = null;
+  return s;
+}
+
+function gStats(s){
+  const th = s.turnHistory || [];
+  const uniq = function(a){ return a.filter(function(x,i){ return a.indexOf(x)===i; }).length; };
+  const end = s.gameStatus==='terminata' ? new Date(s.updatedAt) : new Date();
+  const ms = Math.max(0, end - new Date(s.createdAt));
+  return {
+    turni: th.length,
+    visitateDea: uniq(s.visited.goddess), visitateSchiavo: uniq(s.visited.slave),
+    completate: th.filter(function(t){ return t.status==='completata'; }).length,
+    saltate: th.filter(function(t){ return t.status==='saltata'; }).length,
+    minuti: Math.round(ms/60000),
+    modalita: G_MODES[s.mode] ? G_MODES[s.mode].nome : s.mode
+  };
+}
+
+function gNewState(cfg){
+  const t = new Date().toISOString();
+  let start = cfg.start;
+  if(start==='random') start = gRand(2) ? 'goddess' : 'slave';
+  return {
+    gameId:'g'+Date.now(), participants:{goddess:'padrona', slave:'schiavo'}, mode:cfg.mode, boardSize:G_SIZE,
+    goddessPosition:1, slavePosition:1, currentTurn:start, gameStatus:'attiva', phase:'roll',
+    diceHistory:[], turnHistory:[], currentChallenge:null, lastResult:null, pendingPenalty:null, undo:null,
+    usedCards:[], visited:{goddess:[1], slave:[1]}, extraPending:false, extraUsed:false,
+    pausedBy:null, endReason:null, winner:null, finale:null,
+    settings:{startRule:cfg.start, budgetMax:Math.max(0, cfg.budget||0), finalOptions:(cfg.finals && cfg.finals.length) ? cfg.finals : G_FINALS.slice(), customCards:[]},
+    createdAt:t, updatedAt:t
+  };
+}
+
+/* ---------- IL GIOCO DELLA DEA: INTERFACCIA E SINCRONIZZAZIONE ---------- */
+let G = null, gErr = false, gBusy = false, gPanel = '', gModalOpen = true, gSeenCh = null;
+let gSetup = {mode:'bdsm', start:'random', budget:0, finals:G_FINALS.join('\n')};
+let gEl = null, gChannel = null, gT = null, gBoardMode = null, gOpen = false, gRuleOpen = false, gEditing = false;
+let gForceSetup = false, gPendingRender = false, gPlacedOnce = false;
+try{ gOpen = localStorage.getItem('gd_gopen')==='1'; }catch(e){}
+
+function gMe(){ return role==='padrona' ? 'goddess' : 'slave'; }
+function gWho(w){ return w==='goddess' ? 'la Dea' : 'lo schiavo'; }
+function gClone(){ return JSON.parse(JSON.stringify(G.stato)); }
+function gTypingIn(){
+  const a = document.activeElement;
+  return !!(gEl && a && gEl.contains(a) && (a.tagName==='TEXTAREA' || a.tagName==='INPUT') && String(a.value||'').trim());
+}
+
+/* ---------- Dati e sincronizzazione ---------- */
+async function gLoad(){
+  const r = await sb.from('partite').select('*').eq('attiva', true).order('created_at',{ascending:false}).limit(1);
+  if(r.error){ gErr = true; return false; }
+  gErr = false;
+  G = (r.data && r.data[0]) ? {id:r.data[0].id, versione:r.data[0].versione, stato:r.data[0].stato} : null;
+  try{ localStorage.setItem('gd_game', JSON.stringify(G)); }catch(e){}
+  return true;
+}
+async function gSave(ns, evento, destWho){
+  if(!G) return false;
+  ns.updatedAt = new Date().toISOString();
+  const r = await sb.rpc('gioco_salva',{p_id:G.id, p_ver:G.versione, p_stato:ns, p_evento:evento||null, p_dest:destWho ? gDb(destWho) : null});
+  if(r.error){
+    const msg = String(r.error.message||'');
+    if(/conflitto/.test(msg)) toast("La partita è stata aggiornata dall'altro telefono");
+    else if(/turno/.test(msg)) toast("Non è il tuo turno");
+    else toast('Salvataggio non riuscito, riprova');
+    await gLoad(); gameRender(); return false;
+  }
+  G.stato = ns; G.versione = r.data;
+  try{ localStorage.setItem('gd_game', JSON.stringify(G)); }catch(e){}
+  gameRender();
+  return true;
+}
+async function gRefresh(){
+  const prev = G ? G.versione : 0;
+  if(!await gLoad()){ gameRender(); return; }
+  if(G && G.versione!==prev){
+    const s = G.stato;
+    if(prev && s.gameStatus==='attiva' && s.phase==='roll' && s.currentTurn===gMe() && !document.hidden){ toast('È il tuo turno'); buzz(); }
+  }
+  if(gTypingIn()){ gPendingRender = true; return; }
+  gameRender();
+}
+function gInit(){
+  try{ const c = JSON.parse(localStorage.getItem('gd_game')||'null'); if(c && c.stato) G = c; }catch(e){}
+  gameRender();
+  gLoad().then(function(){ gameRender(); });
+  if(gChannel) sb.removeChannel(gChannel);
+  gChannel = sb.channel('partite-live').on('postgres_changes',{event:'*',schema:'public',table:'partite'},function(){
+    clearTimeout(gT); gT = setTimeout(gRefresh, 250);
+  }).subscribe();
+}
+function gReset(){
+  if(gChannel){ sb.removeChannel(gChannel); gChannel = null; }
+  G = null; gErr = false; gPanel = ''; gForceSetup = false;
+  try{ localStorage.removeItem('gd_game'); }catch(e){}
+}
+
+/* ---------- Montaggio nella pagina ---------- */
+function gEnsureEl(){
+  if(gEl) return;
+  gEl = document.createElement('section');
+  gEl.id = 'game';
+  gEl.className = 'game' + (gOpen ? ' open' : '');
+  gEl.innerHTML = '<button class="ghead" data-g="toggle"><span>♟ IL GIOCO DELLA DEA</span><span id="gHint"></span></button>'+
+    '<div class="gbody"><div id="gTop"></div><div class="gboard" id="gBoard"></div><div id="gBottom"></div></div><div id="gModal"></div>';
+  gEl.addEventListener('click', gClick);
+  gEl.addEventListener('focusout', function(){
+    if(!gPendingRender) return;
+    setTimeout(function(){ if(gPendingRender && !gTypingIn()){ gPendingRender = false; gameRender(); } }, 300);
+  });
+}
+function mountGame(){
+  const slot = document.getElementById('gameSlot');
+  if(!slot) return;
+  gEnsureEl();
+  slot.appendChild(gEl);
+  gameRender();
+  requestAnimationFrame(function(){ gPlaceTokens(false); });
+}
+
+/* ---------- Disegno ---------- */
+function gHint(s){
+  if(!s) return '';
+  const m = gMe();
+  if(s.gameStatus==='attiva' && ((s.phase==='roll' && s.currentTurn===m) || (s.phase==='finale' && m==='goddess')))
+    return '<span class="gdot">● tocca a te</span>';
+  if(s.gameStatus==='pausa') return '<span class="gdot">pausa</span>';
+  return '';
+}
+
+function gSetupHtml(){
+  let h = '<p class="note">Scegli la modalità, chi comincia e il tetto per le richieste economiche. Lo schiavo vedrà la partita sul suo telefono.</p><div class="list">';
+  Object.keys(G_MODES).forEach(function(k){
+    const m = G_MODES[k];
+    h += '<button class="opt'+(gSetup.mode===k ? ' sel' : '')+'" data-g="mode" data-m="'+k+'"><b>'+m.ico+' '+m.nome+'</b><br><small class="muted">'+esc(m.desc)+'</small></button>';
+  });
+  h += '</div><p class="note" style="margin-top:14px">Chi comincia</p><div class="row3">';
+  [['goddess','La Dea'],['slave','Lo schiavo'],['random','Sorteggio']].forEach(function(o){
+    h += '<button class="opt'+(gSetup.start===o[0] ? ' sel' : '')+'" data-g="start" data-s="'+o[0]+'" style="text-align:center;padding:12px 6px">'+o[1]+'</button>';
+  });
+  h += '</div><p class="note" style="margin-top:14px">Tetto massimo per le richieste economiche (€). Con 0 non compaiono. Nessun pagamento parte da solo.</p>'+
+    '<input id="gbud" type="number" inputmode="numeric" min="0" value="'+esc(gSetup.budget||0)+'">'+
+    '<p class="note" style="margin-top:14px">Finali possibili (uno per riga): li sceglie la Dea alla fine</p>'+
+    '<textarea id="gfin" rows="4">'+esc(gSetup.finals)+'</textarea>'+
+    '<button class="btn block" data-g="newgame">Inizia la partita</button>';
+  return h;
+}
+
+function gTopHtml(s){
+  if(gErr) return '<p class="note">Il gioco richiede lo script SQL v7: eseguilo su Supabase e riapri l\'app.</p>';
+  if(!s || (gForceSetup && role==='padrona')){
+    if(role==='padrona') return gSetupHtml();
+    return '<p class="note">Nessuna partita in corso. Attendi che la Dea ne avvii una.</p>';
+  }
+  const m = gMe();
+  let h = '';
+  if(s.gameStatus==='terminata') h += '<div class="gturn">PARTITA TERMINATA</div>';
+  else if(s.gameStatus==='pausa') h += '<div class="gturn">PARTITA IN PAUSA</div><p class="note" style="text-align:center">In pausa per scelta di '+gWho(s.pausedBy)+'.</p>';
+  else h += '<div class="gturn'+(s.currentTurn===m ? ' me' : '')+'">'+(s.currentTurn==='goddess' ? 'TURNO DELLA DEA' : 'TURNO DELLO SCHIAVO')+'</div>';
+  h += '<p class="gmodetag">'+G_MODES[s.mode].ico+' '+G_MODES[s.mode].nome+'</p>';
+  const last = s.diceHistory[s.diceHistory.length-1];
+  h += '<div class="gdice" id="gDice"><span id="gDiceFace">'+(last ? G_FACES[last.die-1] : '🎲')+'</span></div>';
+  if(s.gameStatus==='attiva'){
+    if(s.phase==='roll' && s.currentTurn===m)
+      h += '<button class="btn block" data-g="roll"'+(gBusy ? ' disabled' : '')+'>🎲 TIRA IL DADO</button>';
+    else if(s.phase==='roll') h += '<p class="note" style="text-align:center">Attendi: tocca all\'altro giocatore.</p>';
+    else if(s.phase==='challenge') h += '<p class="note" style="text-align:center">Prova in corso: risolvetela per passare il turno.</p>';
+    else if(s.phase==='finale') h += '<p class="note" style="text-align:center">Arrivo raggiunto: attende il finale deciso dalla Dea.</p>';
+  }
+  h += '<div class="glegend"><span class="lg g">'+ic('crown')+' Dea: '+s.goddessPosition+'</span><span class="lg s">'+ic('lock')+' Schiavo: '+s.slavePosition+'</span></div>';
+  return h;
+}
+
+function gStatsHtml(s){
+  const t = gStats(s);
+  return '<p class="sec">Statistiche</p><div class="card"><div class="txt">Turni: '+t.turni+'<br>Caselle visitate: Dea '+t.visitateDea+', schiavo '+t.visitateSchiavo+
+    '<br>Prove completate: '+t.completate+'<br>Prove saltate: '+t.saltate+'<br>Durata: '+t.minuti+' minuti<br>Modalità: '+esc(t.modalita)+'</div></div>';
+}
+function gHistoryHtml(s){
+  const rows = s.turnHistory.slice().reverse().slice(0,40);
+  if(!rows.length) return '<p class="sec">Storico</p><p class="note">Nessun tiro ancora.</p>';
+  return '<p class="sec">Storico</p>'+rows.map(function(t){
+    const c = GCAT[t.category] || GCAT.vuota;
+    return '<div class="card" style="padding:12px"><div class="head"><span>'+(t.who==='goddess' ? 'Dea' : 'Schiavo')+' · 🎲 '+t.die+'</span><span>'+fdate(t.at)+'</span></div>'+
+      '<div class="txt" style="font-size:16px">'+t.from+' → '+t.to+' · casella '+t.square+' · '+c.i+' '+esc(c.n)+'<br>'+esc(t.title)+'</div>'+
+      '<div style="margin-top:6px"><span class="badge'+(t.status==='completata' ? ' ok' : t.status==='saltata' ? ' red' : '')+'">'+esc(t.status)+'</span> <span class="muted">'+esc(G_MODES[t.mode] ? G_MODES[t.mode].nome : t.mode)+(t.note ? ' · '+esc(t.note) : '')+'</span></div></div>';
+  }).join('');
+}
+function gRulesHtml(s){
+  return '<p class="sec">Regole e limiti</p><div class="card"><div class="txt" style="font-size:16px">'+esc(G_MODES[s.mode].rule)+'<br><br>'+esc(G_RULES)+'</div></div>';
+}
+function gSettingsHtml(s){
+  const cats = ['domanda','verita','obbligo','richiesta','sfida','castita','penitenza','devozione','fetish','umiliazione','imprevisto','decreto'];
+  const list = (s.settings.customCards||[]).map(function(c,i){
+    return '<div class="card" style="padding:12px"><div class="txt" style="font-size:16px"><b>'+esc(c.title)+'</b> · '+esc(GCAT[c.category].n)+' · '+(c.actor==='both' ? 'chiunque tiri' : c.actor==='goddess_roll' ? 'se tira la Dea' : 'se tira lo schiavo')+'<br>'+esc(c.description)+'</div>'+
+      '<button class="link red" data-g="delcard" data-i="'+i+'">Elimina</button></div>';
+  }).join('');
+  return '<p class="sec">Impostazioni della Dea</p>'+
+    '<p class="note">Tetto per le richieste economiche (€)</p><input id="gsbud" type="number" inputmode="numeric" min="0" value="'+esc(s.settings.budgetMax||0)+'">'+
+    '<p class="note" style="margin-top:12px">Finali possibili (uno per riga)</p><textarea id="gsfin" rows="4">'+esc((s.settings.finalOptions||[]).join('\n'))+'</textarea>'+
+    '<button class="btn block" data-g="savesettings">Salva impostazioni</button>'+
+    '<p class="sec">Le tue prove</p>'+(list || '<p class="note">Nessuna prova personalizzata.</p>')+
+    '<p class="note" style="margin-top:12px">Nuova prova</p><input id="gcT" type="text" maxlength="60" placeholder="Titolo">'+
+    '<textarea id="gcD" rows="3" maxlength="400" placeholder="Descrizione della prova" style="margin-top:8px"></textarea>'+
+    '<select id="gcC" style="margin-top:8px">'+cats.map(function(k){ return '<option value="'+k+'">'+esc(GCAT[k].n)+'</option>'; }).join('')+'</select>'+
+    '<select id="gcA"><option value="both">Chiunque tiri</option><option value="goddess_roll">Solo se tira la Dea</option><option value="slave_roll">Solo se tira lo schiavo</option></select>'+
+    '<select id="gcF"><option value="1">Difficoltà 1</option><option value="2" selected>Difficoltà 2</option><option value="3">Difficoltà 3</option><option value="4">Difficoltà 4</option></select>'+
+    '<button class="btn ghost block" data-g="addcard">Aggiungi la prova al mazzo</button>';
+}
+function gPenHtml(s){
+  const opts = GCARDS.filter(function(c){ return c.mode===s.mode && c.category==='penitenza' && c.actor==='goddess_roll' && !c.money && c.squareNumber==null; });
+  const pp = s.pendingPenalty;
+  return '<p class="sec">Penitenza</p><p class="note">'+(pp ? 'Lo schiavo ha saltato «'+esc(pp.title)+'». ' : '')+'Scegli una penitenza simbolica o scrivi la tua. Verrà inviata come ordine.</p><div class="list">'+
+    opts.map(function(c,i){ return '<button class="opt" data-g="penpick" data-i="'+i+'"><b>'+esc(c.title)+'</b><br><small class="muted">'+esc(gFill(s,c.description))+'</small></button>'; }).join('')+'</div>'+
+    '<textarea id="gpen" rows="3" placeholder="Oppure scrivi la penitenza" style="margin-top:10px"></textarea>'+
+    '<button class="btn block" data-g="pencustom">Assegna la mia penitenza</button>';
+}
+
+function gBottomHtml(s){
+  if(!s || gErr || (gForceSetup && role==='padrona')) return '';
+  const m = gMe();
+  let h = '';
+  if(gPanel==='storico') h += gHistoryHtml(s);
+  else if(gPanel==='stat') h += gStatsHtml(s);
+  else if(gPanel==='regole') h += gRulesHtml(s);
+  else if(gPanel==='imp' && m==='goddess') h += gSettingsHtml(s);
+  else if(gPanel==='pen' && m==='goddess') h += gPenHtml(s);
+  else if(gPanel==='term'){
+    h += '<p class="sec">Terminare la partita</p><p class="note">Entrambi potete chiudere quando volete. La Dea potrà ripristinarla.</p>'+
+      '<div class="row2"><button class="btn ghost" data-g="end1">Abbandono</button><button class="btn ghost" data-g="end2">Chiusura anticipata</button></div>';
+  }
+  if(gPanel){ return h + '<button class="link" data-g="panel" data-p="" style="margin-top:12px">‹ Chiudi</button>'; }
+
+  if(s.lastResult && s.phase==='roll' && s.gameStatus==='attiva'){
+    const lr = s.lastResult;
+    h += '<div class="card" style="border-color:var(--gold)"><div class="head"><span>Riepilogo</span><span>casella '+lr.square+'</span></div><div class="txt" style="font-size:16px">'+
+      esc(lr.title)+'<br><span class="badge'+(lr.status==='completata' ? ' ok' : ' red')+'">'+esc(lr.status)+'</span> · tirava '+gWho(lr.who)+'</div></div>';
+  }
+  if(s.currentChallenge){
+    const ch = s.currentChallenge, c = GCAT[ch.category] || GCAT.vuota;
+    h += '<button class="opt" data-g="openmodal" style="width:100%;margin-top:12px;border-color:'+c.c+'"><b>'+c.i+' '+esc(ch.title)+'</b><br><small class="muted">Casella '+ch.square+' · tocca per aprire la scheda</small></button>';
+  }
+  if(s.pendingPenalty && m==='goddess'){
+    h += '<div class="card" style="border-color:var(--blood)"><b>Penitenza?</b><p class="note" style="margin:6px 0">Lo schiavo ha saltato «'+esc(s.pendingPenalty.title)+'». Decidi tu se assegnarla.</p>'+
+      '<div class="row2"><button class="btn" data-g="penopen">Scegli penitenza</button><button class="btn ghost" data-g="pennone">Nessuna</button></div></div>';
+  }
+  if(s.phase==='finale' && s.gameStatus==='attiva'){
+    if(m==='goddess'){
+      h += '<div class="card" style="border-color:var(--gold)"><b>Il finale è tuo</b><p class="note" style="margin:6px 0">Scegli come si conclude la partita.</p><div class="list">'+
+        (s.settings.finalOptions||[]).map(function(f,i){ return '<button class="opt" data-g="finpick" data-i="'+i+'">'+esc(f)+'</button>'; }).join('')+'</div></div>';
+    } else h += '<p class="note" style="text-align:center;margin-top:12px">Attendi la decisione finale della Dea.</p>';
+  }
+  if(s.gameStatus==='terminata'){
+    const t = gStats(s);
+    h += '<div class="card" style="border-color:var(--gold)"><div class="txt" style="font-size:16px">'+(s.endReason==='finale' ? 'Finale: '+esc(s.finale||'') : 'Chiusa per '+esc(s.endReason||'scelta'))+
+      '<br>Turni '+t.turni+' · completate '+t.completate+' · saltate '+t.saltate+' · '+t.minuti+' min</div></div>';
+    if(m==='goddess'){
+      h += '<div class="row2">'+(s.endReason!=='finale' ? '<button class="btn ghost" data-g="restore">Ripristina</button>' : '')+'<button class="btn" data-g="newsetup">Nuova partita</button></div>';
+    }
+  }
+  /* menu */
+  const b = [];
+  if(s.gameStatus==='attiva') b.push(['pause','⏸ Pausa']);
+  if(s.gameStatus==='pausa' && (m==='goddess' || s.pausedBy===m)) b.push(['resume','▶ Riprendi']);
+  if(gCanUndo(s) && (m===s.currentTurn || m==='goddess')) b.push(['undo','↩ Annulla ultimo tiro']);
+  if(m==='goddess' && s.currentChallenge && s.gameStatus==='attiva') b.push(['skipsq','⏭ Salta la casella']);
+  b.push(['panel:regole','Regole']); b.push(['panel:storico','Storico']); b.push(['panel:stat','Statistiche']);
+  if(m==='goddess') b.push(['panel:imp','Impostazioni e prove']);
+  if(s.gameStatus!=='terminata') b.push(['panel:term','Termina']);
+  h += '<div class="gmenu">'+b.map(function(x){
+    const p = x[0].split(':');
+    return p[0]==='panel' ? '<button class="chip2" data-g="panel" data-p="'+p[1]+'">'+x[1]+'</button>' : '<button class="chip2" data-g="'+p[0]+'">'+x[1]+'</button>';
+  }).join('')+'</div>';
+  return h;
+}
+
+function gModalHtml(s){
+  const ch = s && s.currentChallenge;
+  if(!ch || !gModalOpen || s.gameStatus!=='attiva' || gForceSetup) return '';
+  const c = GCAT[ch.category] || GCAT.vuota, m = gMe();
+  let h = '<div class="gmodal"><div class="gsheet" style="border-color:'+c.c+'">';
+  h += '<div class="gsh1"><span class="gsi" style="background:'+c.c+'33;color:'+c.c+'">'+c.i+'</span><div><div class="gsc">'+esc(c.n)+(ch.squareName ? ' · '+esc(ch.squareName) : '')+'</div>'+
+    '<div class="muted">Casella '+ch.square+' · ha tirato '+gWho(ch.roller)+' · '+esc(G_MODES[ch.mode].nome)+'</div></div></div>';
+  h += '<div class="gst">'+esc(ch.title)+'</div>';
+  if(gEditing && m==='goddess'){
+    h += '<textarea id="gedit" rows="4">'+esc(ch.description)+'</textarea><div class="row2"><button class="btn" data-g="saveedit">Salva</button><button class="btn ghost" data-g="canceledit">Annulla</button></div>';
+  } else h += '<p class="gsd">'+esc(ch.description)+'</p>';
+  const meta = [];
+  if(ch.difficulty) meta.push('Intensità '+'●'.repeat(ch.difficulty)+'○'.repeat(Math.max(0,5-ch.difficulty)));
+  if(ch.duration) meta.push('circa '+ch.duration+' min');
+  meta.push('Stato: '+ch.status);
+  h += '<p class="note">'+meta.join(' · ')+'</p>';
+  if(ch.physical) h += '<p class="note" style="color:var(--rose)">Pratica di sensazione: serve il «Concordo» di entrambi. «Cambia» propone una versione più leggera.<br>Dea '+(ch.agree.goddess ? '✓' : '✗')+' · Schiavo '+(ch.agree.slave ? '✓' : '✗')+'</p>';
+  else if(!ch.system) h += '<p class="note">Conferme: Dea '+(ch.agree.goddess ? '✓' : '·')+' · Schiavo '+(ch.agree.slave ? '✓' : '·')+'</p>';
+  if(gRuleOpen) h += '<div class="card" style="margin-top:6px"><div class="txt" style="font-size:15px">'+esc(G_MODES[ch.mode].rule)+'<br><br>Condizione di completamento: '+esc(ch.criteria||'')+'<br><br>'+esc(G_RULES)+'</div></div>';
+  const mine = ch.agree[m];
+  h += '<div class="gbtns">';
+  if(!ch.system) h += '<button class="btn ghost" data-g="agree">'+(mine ? '✓ ' : '')+(ch.physical ? 'Concordo' : 'Conferma')+'</button>';
+  h += '<button class="btn" data-g="complete"'+(ch.physical && !(ch.agree.goddess && ch.agree.slave) ? ' disabled' : '')+'>'+
+    (ch.system ? 'Avanti' : ch.money ? 'Pagamento fatto (conferma manuale)' : 'Completata')+'</button>';
+  if(!ch.system) h += '<button class="btn ghost" data-g="skip">'+(ch.money ? 'Rifiuta' : 'Sospendi o salta')+'</button>';
+  if(!ch.system && ch.category!=='arrivo') h += '<button class="btn ghost" data-g="change">Cambia</button>';
+  h += '<button class="btn ghost" data-g="rule">'+(gRuleOpen ? 'Nascondi regola' : 'Limite e regola')+'</button>';
+  if(m==='goddess' && !ch.system){
+    h += '<button class="btn ghost" data-g="edit">Modifica testo</button>';
+    if(ch.order && ch.roller==='goddess' && !ch.ordered) h += '<button class="btn ghost" data-g="gorder">Invia come ordine</button>';
+  }
+  h += '<button class="link" data-g="closemodal">Chiudi la scheda</button></div></div></div>';
+  return h;
+}
+
+function gBuildBoard(mode){
+  const b = gEl.querySelector('#gBoard'), cats = gBoardOf(mode);
+  let h = '';
+  for(let r=0; r<8; r++){
+    for(let c=0; c<5; c++){
+      const n = r%2===0 ? r*5+c+1 : r*5+(5-c);
+      const k = GCAT[cats[n-1]] || GCAT.vuota;
+      const special = G_NAMES[n] ? ' sp' : '';
+      const ico = n===1 ? '▶' : n===40 ? '🏁' : k.i;
+      h += '<div class="gc'+special+'" data-sq="'+n+'" style="border-color:'+k.c+';background:'+k.c+'22" title="'+esc(k.n)+'"><span class="gn">'+n+'</span><span class="gi">'+ico+'</span></div>';
+    }
+  }
+  b.innerHTML = h + '<div class="gtok g" id="tokG">'+ic('crown')+'</div><div class="gtok s" id="tokS">'+ic('lock')+'</div>';
+  gBoardMode = mode; gPlacedOnce = false;
+}
+function gPlaceTokens(animate){
+  if(!gEl || !G || !gOpen) return;
+  const b = gEl.querySelector('#gBoard');
+  if(!b || !b.offsetWidth) return;
+  const s = G.stato, same = s.goddessPosition===s.slavePosition;
+  [['tokG',s.goddessPosition,-1],['tokS',s.slavePosition,1]].forEach(function(t){
+    const tok = b.querySelector('#'+t[0]), cell = b.querySelector('[data-sq="'+t[1]+'"]');
+    if(!tok || !cell) return;
+    const tw = tok.offsetWidth || 28;
+    const x = cell.offsetLeft + (cell.offsetWidth - tw)/2 + (same ? t[2]*tw*0.55 : 0);
+    const y = cell.offsetTop + (cell.offsetHeight - tw)/2;
+    const anim = animate && gPlacedOnce;
+    if(!anim) tok.style.transition = 'none';
+    tok.style.transform = 'translate('+x+'px,'+y+'px)';
+    if(!anim){ void tok.offsetWidth; tok.style.transition = ''; }
+  });
+  gPlacedOnce = true;
+}
+
+function gameRender(){
+  if(!gEl) return;
+  gEl.classList.toggle('open', gOpen);
+  const s = G && G.stato;
+  gEl.querySelector('#gHint').innerHTML = gHint(s);
+  if(s && s.currentChallenge && s.currentChallenge.id!==gSeenCh){ gSeenCh = s.currentChallenge.id; gModalOpen = true; gRuleOpen = false; gEditing = false; }
+  if(!gOpen) return;
+  gEl.querySelector('#gTop').innerHTML = gTopHtml(s);
+  const showBoard = !!s && !gErr && !(gForceSetup && role==='padrona');
+  const bd = gEl.querySelector('#gBoard');
+  bd.style.display = showBoard ? '' : 'none';
+  if(showBoard){
+    if(gBoardMode!==s.mode || !bd.querySelector('[data-sq]')) gBuildBoard(s.mode);
+    gPlaceTokens(true);
+  }
+  gEl.querySelector('#gBottom').innerHTML = gBottomHtml(s);
+  gEl.querySelector('#gModal').innerHTML = gModalHtml(s);
+}
+
+/* ---------- Azioni ---------- */
+function gReadSetup(){
+  const b = $('#gbud'), f = $('#gfin');
+  if(b) gSetup.budget = Math.max(0, parseInt(b.value,10) || 0);
+  if(f) gSetup.finals = f.value;
+}
+async function gDo(fn){
+  if(gBusy || !G) return;
+  gBusy = true; gameRender();
+  try{ await fn(); } finally { gBusy = false; gameRender(); }
+}
+function gAnimateDice(die){
+  return new Promise(function(res){
+    const el = gEl && gEl.querySelector('#gDice'), face = gEl && gEl.querySelector('#gDiceFace');
+    if(!el || !face){ res(); return; }
+    el.classList.add('roll');
+    let n = 0;
+    const iv = setInterval(function(){
+      face.textContent = G_FACES[gRand(6)];
+      if(++n >= 9){ clearInterval(iv); el.classList.remove('roll'); face.textContent = G_FACES[die-1]; setTimeout(res, 350); }
+    }, 90);
+  });
+}
+function gRoll(){
+  gDo(async function(){
+    const s = G.stato, m = gMe();
+    if(s.gameStatus!=='attiva' || s.phase!=='roll' || s.currentTurn!==m) return;
+    const die = gDie();
+    await gAnimateDice(die);
+    const ns = gClone();
+    gApplyRoll(ns, die);
+    if(await gSave(ns, 'tirato', gOther(m))){ gModalOpen = true; gSeenCh = null; }
+  });
+}
+function gComplete(status, noPen){
+  gDo(async function(){
+    const s = G.stato, ch = s.currentChallenge, m = gMe();
+    if(!ch) return;
+    if(ch.physical && status==='completata' && !(ch.agree.goddess && ch.agree.slave)){ toast('Serve il «Concordo» di entrambi'); return; }
+    const ns = gClone();
+    if(status==='saltata' && m==='slave' && !noPen && !ch.money && !ch.system && ch.category!=='arrivo')
+      ns.pendingPenalty = {title:ch.title, square:ch.square, at:new Date().toISOString()};
+    gAdvance(ns, status);
+    const dest = gOther(m);
+    const ev = ns.phase==='finale' ? 'completato' : (ns.currentTurn===dest ? 'turno' : 'completato');
+    if(await gSave(ns, ev, dest)){ gPanel = ''; gRuleOpen = false; gEditing = false; }
+  });
+}
+function gSimple(mut, ev, dest){
+  gDo(async function(){ const ns = gClone(); if(mut(ns)===false) return; await gSave(ns, ev||null, dest||null); });
+}
+async function gClick(e){
+  const b = e.target.closest('[data-g]');
+  if(!b || !gEl.contains(b)) return;
+  const a = b.dataset.g, m = gMe();
+  if(a==='toggle'){
+    gOpen = !gOpen;
+    try{ localStorage.setItem('gd_gopen', gOpen ? '1' : '0'); }catch(x){}
+    gameRender();
+    if(gOpen) requestAnimationFrame(function(){ gPlaceTokens(false); });
+    return;
+  }
+  if(a==='mode'){ gReadSetup(); gSetup.mode = b.dataset.m; return gameRender(); }
+  if(a==='start'){ gReadSetup(); gSetup.start = b.dataset.s; return gameRender(); }
+  if(a==='newsetup'){ gForceSetup = true; return gameRender(); }
+  if(a==='newgame'){
+    gReadSetup();
+    const finals = String(gSetup.finals||'').split('\n').map(function(x){ return x.trim(); }).filter(Boolean).slice(0,8);
+    const st = gNewState({mode:gSetup.mode, start:gSetup.start, budget:gSetup.budget, finals:finals});
+    b.disabled = true;
+    const r = await sb.rpc('gioco_nuova',{p_stato:st});
+    if(r.error){ b.disabled = false; return toast('Non riuscito, riprova'); }
+    gForceSetup = false; gPanel = ''; gSeenCh = null;
+    await gLoad(); gameRender(); toast('Partita avviata');
+    return;
+  }
+  if(!G) return;
+  if(a==='roll') return gRoll();
+  if(a==='openmodal'){ gModalOpen = true; return gameRender(); }
+  if(a==='closemodal'){ gModalOpen = false; return gameRender(); }
+  if(a==='rule'){ gRuleOpen = !gRuleOpen; return gameRender(); }
+  if(a==='edit'){ gEditing = true; return gameRender(); }
+  if(a==='canceledit'){ gEditing = false; return gameRender(); }
+  if(a==='saveedit'){
+    const t = (($('#gedit')||{}).value||'').trim();
+    if(!t) return toast('Il testo non può essere vuoto');
+    gEditing = false;
+    return gSimple(function(ns){ ns.currentChallenge.description = t; ns.currentChallenge.agree = {goddess:false, slave:false}; if(ns.undo) ns.undo.persistent = true; }, 'prova', gOther(m));
+  }
+  if(a==='agree') return gSimple(function(ns){ const ag = ns.currentChallenge.agree; ag[m] = !ag[m]; if(ns.undo) ns.undo.persistent = true; });
+  if(a==='complete') return gComplete('completata');
+  if(a==='skip') return gComplete('saltata');
+  if(a==='skipsq') return gComplete('saltata', true);
+  if(a==='change') return gSimple(function(ns){ if(!gChangeCard(ns)){ toast('Nessuna alternativa disponibile'); return false; } }, 'prova', gOther(m));
+  if(a==='gorder'){
+    const ch = G.stato.currentChallenge;
+    if(!ch || ch.ordered) return;
+    const mins = Math.max(5, ch.duration || 10);
+    const r = await sb.from('ordini').insert({categoria:'obbligo', tipo:'custom', testo:ch.description, scade_at:new Date(now()+mins*60000).toISOString()}).select().single();
+    if(r.error) return toast('Invio non riuscito, riprova');
+    if(r.data){ orders.unshift(r.data); sig = signature(); }
+    toast('Ordine inviato allo schiavo');
+    return gSimple(function(ns){ ns.currentChallenge.ordered = true; if(ns.undo) ns.undo.persistent = true; });
+  }
+  if(a==='pause') return gSimple(function(ns){ ns.gameStatus = 'pausa'; ns.pausedBy = m; }, 'pausa', gOther(m));
+  if(a==='resume') return gSimple(function(ns){ ns.gameStatus = 'attiva'; ns.pausedBy = null; }, 'pausa', gOther(m));
+  if(a==='undo'){
+    if(!confirm("Annullare l'ultimo tiro?")) return;
+    return gSimple(function(ns){ if(!gCanUndo(ns)){ toast('Non più annullabile'); return false; } gUndo(ns); }, 'modificato', gOther(m));
+  }
+  if(a==='panel'){ gPanel = b.dataset.p || ''; return gameRender(); }
+  if(a==='end1' || a==='end2'){
+    if(!confirm('Terminare la partita?')) return;
+    const why = a==='end1' ? 'abbandono' : 'chiusura anticipata';
+    gPanel = '';
+    return gSimple(function(ns){ ns.gameStatus = 'terminata'; ns.endReason = why; ns.phase = 'fine'; }, 'fine', gOther(m));
+  }
+  if(a==='restore' && m==='goddess') return gSimple(function(ns){ ns.gameStatus = 'pausa'; ns.pausedBy = 'goddess'; ns.endReason = null; ns.phase = ns.currentChallenge ? 'challenge' : 'roll'; }, 'pausa', 'slave');
+  if(a==='finpick' && m==='goddess'){
+    const i = parseInt(b.dataset.i, 10);
+    return gSimple(function(ns){ ns.finale = (ns.settings.finalOptions||[])[i] || ''; ns.gameStatus = 'terminata'; ns.endReason = 'finale'; ns.phase = 'fine'; }, 'fine', 'slave');
+  }
+  if(a==='penopen'){ gPanel = 'pen'; return gameRender(); }
+  if(a==='pennone') return gSimple(function(ns){ ns.pendingPenalty = null; });
+  if(a==='penpick' || a==='pencustom'){
+    const s = G.stato;
+    let testo = '';
+    if(a==='penpick'){
+      const opts = GCARDS.filter(function(c){ return c.mode===s.mode && c.category==='penitenza' && c.actor==='goddess_roll' && !c.money && c.squareNumber==null; });
+      const c = opts[parseInt(b.dataset.i,10)]; if(c) testo = gFill(s, c.description);
+    } else testo = (($('#gpen')||{}).value||'').trim();
+    if(!testo) return toast('Scrivi o scegli la penitenza');
+    const r = await sb.rpc('assegna_penitenza',{p_scaduto:null, p_tipo:'custom', p_testo:testo});
+    if(r.error) return toast('Non riuscito, riprova');
+    toast('Penitenza assegnata allo schiavo');
+    gPanel = '';
+    return gSimple(function(ns){ ns.pendingPenalty = null; });
+  }
+  if(a==='savesettings'){
+    const bud = Math.max(0, parseInt((($('#gsbud')||{}).value),10) || 0);
+    const fin = String((($('#gsfin')||{}).value)||'').split('\n').map(function(x){ return x.trim(); }).filter(Boolean).slice(0,8);
+    toast('Impostazioni salvate');
+    return gSimple(function(ns){ ns.settings.budgetMax = bud; ns.settings.finalOptions = fin.length ? fin : G_FINALS.slice(); });
+  }
+  if(a==='addcard'){
+    const t = (($('#gcT')||{}).value||'').trim(), d = (($('#gcD')||{}).value||'').trim();
+    if(!t || !d) return toast('Titolo e descrizione sono obbligatori');
+    const cat = $('#gcC').value, actor = $('#gcA').value, diff = parseInt($('#gcF').value,10) || 2;
+    const stamp = new Date().toISOString();
+    toast('Prova aggiunta al mazzo');
+    return gSimple(function(ns){
+      ns.settings.customCards = (ns.settings.customCards||[]).concat([{id:'custom-'+Date.now(), mode:'any', squareNumber:null, category:cat, actor:actor,
+        title:t, description:d, difficulty:diff, estimatedDuration:null, completionCriteria:G_CRIT[cat]||'Prova completata.', enabled:true,
+        tags:['custom'], createdAt:stamp, updatedAt:stamp, money:false, order:false, physical:false, imaginary:false}]);
+    });
+  }
+  if(a==='delcard'){
+    const i = parseInt(b.dataset.i,10);
+    return gSimple(function(ns){ ns.settings.customCards.splice(i,1); });
+  }
+}
+window.addEventListener('resize', function(){ gPlaceTokens(false); });
 
 /* ---------- AVVIO ---------- */
 (async function init(){

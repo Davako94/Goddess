@@ -6,7 +6,7 @@ self.addEventListener('push', function(e){
   try{ if(e.data){ d = Object.assign(d, e.data.json()); } }catch(x){}
   e.waitUntil(self.registration.showNotification(d.title, {
     body: d.body,
-    data: {url: d.url || './', ordine: d.ordine || null, msg: d.msg || null}
+    data: {url: d.url || './', ordine: d.ordine || null, msg: d.msg || null, g: !!d.g}
   }));
 });
 
@@ -18,7 +18,7 @@ self.addEventListener('notificationclick', function(e){
     self.clients.matchAll({type:'window', includeUncontrolled:true}).then(function(list){
       for(var i = 0; i < list.length; i++){
         if('focus' in list[i]){
-          try{ list[i].postMessage({type:'open', ordine:data.ordine, msg:data.msg}); }catch(x){}
+          try{ list[i].postMessage({type:'open', ordine:data.ordine, msg:data.msg, g:data.g}); }catch(x){}
           return list[i].focus();
         }
       }
