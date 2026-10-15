@@ -169,34 +169,90 @@ html[data-theme=latex] .tlab,html[data-theme=hard] .tlab{font-family:var(--sans)
 .chk input{width:auto}
 a.btn{text-decoration:none;display:block}
 .opt small{font-size:12px}
-.game{margin-top:34px;border-top:1px solid var(--plum2);padding-top:18px}
-.ghead{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:var(--plum);border:1px solid var(--gold);border-radius:14px;padding:16px;color:var(--gold);font-family:var(--serif);font-size:21px;font-weight:700;cursor:pointer;text-align:left}
+.gteaser{display:flex;align-items:center;gap:12px;width:100%;margin-top:14px;padding:14px;border-radius:16px;border:1px solid var(--gold);background:linear-gradient(135deg,var(--plum2),var(--plum));color:var(--ivory);font:inherit;text-align:left;cursor:pointer}
+.gteaser.hot{border-color:var(--rose);animation:teaserglow 1.6s ease-in-out infinite}
+.gtic{font-size:30px;color:var(--gold);flex:none;line-height:1}
+.gtx{flex:1;min-width:0;line-height:1.3}
+.gtx b{font-family:var(--serif);font-size:18px;letter-spacing:.04em;color:var(--gold)}
+html[data-theme=latex] .gtx b,html[data-theme=hard] .gtx b{font-family:var(--sans);font-size:13px;letter-spacing:.14em;font-weight:800}
+.gtx span{font-size:14px}
+.gtx small{color:var(--steel);font-size:12px}
+.gtgo{font-weight:800;font-size:12px;letter-spacing:.1em;color:var(--onacc);background:var(--gold);border-radius:99px;padding:7px 13px;flex:none}
+.gteaser:not(.hot) .gtgo{background:transparent;color:var(--gold);font-size:24px;padding:0 4px}
+@keyframes teaserglow{0%,100%{box-shadow:0 0 0 0 rgba(255,143,171,0)}50%{box-shadow:0 0 20px 3px rgba(255,143,171,.4)}}
+.gfab{position:fixed;right:16px;bottom:calc(22px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;border:0;background:var(--gold);color:var(--onacc);font-size:28px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.55);z-index:15;cursor:pointer}
+.gfab.hot{animation:fabpulse 1.3s ease-in-out infinite}
+@keyframes fabpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+.game{margin-top:34px;border-top:1px solid var(--plum2);padding-top:18px;scroll-margin-top:12px}
+.ghead{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:linear-gradient(135deg,var(--plum2),var(--plum));border:1px solid var(--gold);border-radius:16px;padding:16px;color:var(--gold);font-family:var(--serif);font-size:21px;font-weight:700;cursor:pointer;text-align:left}
 html[data-theme=latex] .ghead,html[data-theme=hard] .ghead{font-family:var(--sans);font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
-.gdot{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--rose);white-space:nowrap}
+.gh1{flex:1;display:flex;align-items:center;gap:10px}
+.gh-ic{font-size:26px;line-height:1}
+.gchev{transition:transform .25s;font-size:16px;color:var(--steel)}
+.game.open .gchev{transform:rotate(180deg)}
+.gdot{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--rose);white-space:nowrap}
 .gbody{display:none;margin-top:14px}
-.game.open .gbody{display:block}
-.gturn{text-align:center;font-family:var(--serif);font-size:26px;font-weight:700;color:var(--gold);margin:6px 0 2px}
-.gturn.me{color:var(--rose)}
-html[data-theme=latex] .gturn,html[data-theme=hard] .gturn{font-family:var(--sans);font-size:18px;font-weight:800;letter-spacing:.12em}
-.gmodetag{text-align:center;color:var(--steel);font-size:13px;letter-spacing:.18em;margin-bottom:4px}
-.gdice{width:84px;height:84px;margin:8px auto;display:flex;align-items:center;justify-content:center;font-size:62px;line-height:1;border:2px solid var(--gold);border-radius:18px;color:var(--gold);background:var(--plum)}
-.gdice.roll{animation:droll .22s linear infinite}
-@keyframes droll{0%{transform:rotate(0)}50%{transform:rotate(14deg) scale(1.06)}100%{transform:rotate(0)}}
-.glegend{display:flex;justify-content:center;gap:18px;margin:10px 0 0;font-size:14px}
-.lg{display:inline-flex;align-items:center;gap:6px}
-.lg.g{color:#ff5b79}.lg.s{color:#d4546a}
-.gboard{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:14px 0}
-.gc{position:relative;aspect-ratio:1;border:1.5px solid var(--plum2);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.game.open .gbody{display:block;animation:gfade .3s ease-out}
+@keyframes gfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.gturn{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px auto 4px;padding:10px 16px;border-radius:99px;border:1px solid var(--plum2);background:var(--plum);font-family:var(--serif);font-size:22px;font-weight:700;color:var(--gold);width:fit-content;max-width:100%}
+.gturn.me{border-color:var(--rose);color:var(--rose);animation:teaserglow 1.6s ease-in-out infinite}
+html[data-theme=latex] .gturn,html[data-theme=hard] .gturn{font-family:var(--sans);font-size:15px;font-weight:800;letter-spacing:.12em}
+.gturn-ic{display:inline-flex;font-size:20px}
+.gmodetag{text-align:center;color:var(--steel);font-size:13px;letter-spacing:.18em;margin-bottom:2px}
+.gdice{width:88px;height:88px;margin:10px auto;display:flex;align-items:center;justify-content:center;font-size:64px;line-height:1;border:2px solid var(--gold);border-radius:20px;color:var(--gold);background:radial-gradient(circle at 30% 25%,var(--plum2),var(--plum))}
+.gdice.roll{animation:droll .45s linear infinite}
+.gdice.pop{animation:dpop .42s cubic-bezier(.2,1.6,.4,1)}
+@keyframes droll{0%{transform:rotate(0) scale(1)}25%{transform:rotate(90deg) scale(1.14)}50%{transform:rotate(180deg) scale(1)}75%{transform:rotate(270deg) scale(1.14)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes dpop{0%{transform:scale(.7)}100%{transform:scale(1)}}
+
+.gprog{display:grid;gap:6px;margin:10px 0 0}
+.pr{display:flex;align-items:center;gap:8px;font-size:13px}
+.pr .pri{display:inline-flex;width:22px;height:22px;border-radius:50%;align-items:center;justify-content:center;font-size:13px;flex:none}
+.pr.g .pri{background:#dc143c;color:#fff}.pr.s .pri{background:#6e0b1a;color:#ffd9d9;border:1px solid #c0394d}
+.pr .bar{flex:1;height:8px;border-radius:99px;background:var(--plum2);overflow:hidden}
+.pr .bar i{display:block;height:100%;border-radius:99px;transition:width .6s ease}
+.pr.g .bar i{background:linear-gradient(90deg,#8e0f2a,#ff5b79)}.pr.s .bar i{background:linear-gradient(90deg,#4a0710,#d4546a)}
+.pr b{width:24px;text-align:right;font-variant-numeric:tabular-nums}
+
+.gboard{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:14px 0;padding:8px;border-radius:18px;background:var(--plum);border:1px solid var(--plum2)}
+.gc{position:relative;aspect-ratio:1;border:1.5px solid var(--plum2);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;background-image:linear-gradient(160deg,rgba(255,255,255,.08),rgba(0,0,0,.2))}
+.gc:active{filter:brightness(1.3)}
 .gc.sp{border-width:2.5px}
+.gc.hg{box-shadow:inset 0 0 0 2px #dc143c}
+.gc.hs{box-shadow:inset 0 0 0 2px #c0394d}
+.gc.hg.hs{box-shadow:inset 0 0 0 2px #dc143c,inset 0 0 0 4px #c0394d}
+.gc.land{animation:land 1s ease-out}
+@keyframes land{0%{transform:scale(1);filter:brightness(1)}20%{transform:scale(1.14);filter:brightness(1.9)}100%{transform:scale(1);filter:brightness(1)}}
 .gn{position:absolute;top:3px;left:5px;font-size:10px;color:var(--steel)}
+.gstar{position:absolute;top:2px;right:4px;font-size:9px;color:var(--gold)}
 .gi{font-size:20px;line-height:1}
-.gtok{position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;z-index:3;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.55);transition:transform .6s cubic-bezier(.3,.8,.3,1)}
+.gtok{position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;z-index:3;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.55);transition-property:transform;transition-duration:.6s;transition-timing-function:cubic-bezier(.3,.8,.3,1)}
+.gti{display:inline-flex}
+.gtok.hop .gti{animation:hop .17s ease-out}
+@keyframes hop{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-9px) scale(1.2)}100%{transform:translateY(0) scale(1)}}
 .gtok.g{background:#dc143c;color:#fff;border:1.5px solid #ff8da1}
 .gtok.s{background:#6e0b1a;color:#ffd9d9;border:1.5px solid #c0394d}
+.gtok.act::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid currentColor;animation:ring 1.3s ease-out infinite}
+@keyframes ring{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+
+.glegbtn{display:flex;justify-content:space-between;align-items:center;width:100%;background:transparent;border:1px solid var(--plum2);border-radius:12px;padding:12px 14px;color:var(--ivory);font:inherit;font-size:15px;cursor:pointer}
+.gleg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.gli{display:flex;align-items:center;gap:8px;background:var(--plum);border:1px solid var(--plum2);border-radius:12px;padding:8px}
+.gli>div{min-width:0;line-height:1.2}
+.gli b{display:block;font-size:12px}
+.gli small{display:block;font-size:11px;color:var(--steel)}
+.gls{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex:none}
+.gmini{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px}
+.gmini.g{background:#dc143c;color:#fff;border:1.5px solid #ff8da1}
+.gmini.s{background:#6e0b1a;color:#ffd9d9;border:1.5px solid #c0394d}
+
 .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .gmenu{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-.gmodal{position:fixed;inset:0;z-index:25;background:rgba(0,0,0,.78);display:flex;align-items:flex-end;justify-content:center}
-.gsheet{width:100%;max-width:520px;max-height:92vh;overflow:auto;background:var(--plum);border:1px solid var(--gold);border-radius:20px 20px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom))}
+.gmodal{position:fixed;inset:0;z-index:25;background:rgba(0,0,0,.78);display:flex;align-items:flex-end;justify-content:center;animation:gfade .2s ease-out}
+.gsheet{width:100%;max-width:520px;max-height:92vh;overflow:auto;background:var(--plum);border:1px solid var(--gold);border-radius:20px 20px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom));animation:sheetup .3s cubic-bezier(.2,.9,.3,1)}
+@keyframes sheetup{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
 .gsh1{display:flex;gap:12px;align-items:center;margin-bottom:10px}
 .gsi{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex:none}
 .gsc{font-weight:700;font-size:15px}
@@ -205,6 +261,8 @@ html[data-theme=latex] .gst,html[data-theme=hard] .gst{font-family:var(--sans);f
 .gsd{font-size:18px;white-space:pre-wrap;word-break:break-word;margin-bottom:8px}
 .gbtns{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .gbtns .btn{width:100%}
+.btn:active,.opt:active,.tile:active,.chip2:active{transform:scale(.98)}
+@media (prefers-reduced-motion:reduce){.gteaser.hot,.gturn.me,.gfab.hot,.gtok.act::after,.gdice.roll,.gdice.pop,.gc.land,.gsheet,.gmodal,.game.open .gbody,.gtok.hop .gti{animation:none}.gtok{transition-duration:.01s!important}}
 </style>
 </head>
 <body>
@@ -1231,6 +1289,7 @@ function viewPadrona(){
 
   /* home */
   h += pushBanner();
+  h += gTeaser();
   h += timersSection();
   h += '<p class="lead">Cosa desideri?</p><div class="grid">'+
     ['domanda','obbligo','verita','richiesta'].map(k=>'<button class="tile" data-a="cat" data-c="'+k+'"><span class="ico">'+ic(CATS[k].icona)+'</span><span class="tn">'+CATS[k].nome+'</span></button>').join('')+'</div>';
@@ -1309,6 +1368,7 @@ function viewSchiavo(){
 
   const cur = L.pending.slice().reverse()[0];
   h += pushBanner();
+  h += gTeaser();
   h += timersSection();
   if(cur){
     h += answerCard(cur);
@@ -1538,6 +1598,7 @@ app.addEventListener('click', e => {
   if(a==='temer') return emerTimer(b.dataset.id);
   if(a==='tpa'){ const m = parseInt(b.dataset.m,10); $('#tah').value = Math.floor(m/60); $('#tam').value = m%60; return; }
   if(a==='tpb'){ const m = parseInt(b.dataset.m,10); $('#tbd').value = Math.floor(m/1440); $('#tbh').value = Math.floor(m%1440/60); $('#tbm').value = m%60; return; }
+  if(a==='gopen') return gGoto();
   if(a==='msgs'){ ui = {step:'msgs'}; return render(); }
   if(a==='qm') return sendQuick(parseInt(b.dataset.i,10));
   if(a==='openmsg'){ const mm = msgs.find(x=>x.id===b.dataset.id); if(mm) showPopup(mm); return; }
@@ -1633,6 +1694,7 @@ const GCAT = {
   scambio:{n:'Scambio di posizione',i:'🔄',c:'#7aa2f7'}, turno:{n:'Turno speciale',i:'🎲',c:'#f2994a'}, decreto:{n:'Decreto',i:'📜',c:'#c0392b'},
   vuota:{n:'Casella vuota',i:'·',c:'#6b6b78'}, arrivo:{n:'Arrivo',i:'🏁',c:'#ffd700'}
 };
+const G_DESC = {domanda:'Rispondi con sincerità.',verita:'Una verità da confessare.',obbligo:'Un compito da eseguire.',richiesta:'Una richiesta della Dea.',sfida:'Una prova a tempo.',castita:'Prove legate alla gabbia.',penitenza:'Una penitenza da scontare.',devozione:'Parole o gesti di devozione.',fetish:'Un rituale concordato.',umiliazione:'Umiliazione recitata e concordata.',imprevisto:'Si pesca una carta a sorpresa.',bonus:'Avanzi di 2 caselle e un premio.',scambio:'Le pedine si scambiano di posto.',turno:'Si tira ancora il dado.',decreto:'La Dea emana un decreto.',vuota:'Riposo, nessuna prova.',arrivo:'Il Trono finale.'};
 const G_SYSTEM = ['bonus','scambio','turno','vuota'];
 const G_NAMES = {1:'PARTENZA',12:'DECRETO DELLA DEA',18:'TRONO',25:'SEGRETO',31:'IMPREVISTO',40:'IL TRONO FINALE'};
 const G_BASE = ['vuota','domanda','obbligo','devozione','bonus','verita','fetish','sfida','turno','umiliazione',
@@ -1989,11 +2051,11 @@ function gNewState(cfg){
 }
 
 /* ---------- IL GIOCO DELLA DEA: INTERFACCIA E SINCRONIZZAZIONE ---------- */
-let G = null, gErr = false, gBusy = false, gPanel = '', gModalOpen = true, gSeenCh = null;
+let G = null, gErr = false, gBusy = false, gPanel = '', gModalOpen = true, gSeenCh = null, gLoaded = false;
 let gSetup = {mode:'bdsm', start:'random', budget:0, finals:G_FINALS.join('\n')};
-let gEl = null, gChannel = null, gT = null, gBoardMode = null, gOpen = false, gRuleOpen = false, gEditing = false;
-let gForceSetup = false, gPendingRender = false, gPlacedOnce = false;
-try{ gOpen = localStorage.getItem('gd_gopen')==='1'; }catch(e){}
+let gEl = null, gChannel = null, gT = null, gBoardMode = null, gOpen = true, gRuleOpen = false, gEditing = false, gLegendOpen = true;
+let gForceSetup = false, gPendingRender = false, gPlacedOnce = false, gAnimating = false, gHistSeen = 0, gFab = null, gVisible = false, gIO = null;
+try{ gOpen = localStorage.getItem('gd_gopen')!=='0'; gLegendOpen = localStorage.getItem('gd_gleg')!=='0'; }catch(e){}
 
 function gMe(){ return role==='padrona' ? 'goddess' : 'slave'; }
 function gWho(w){ return w==='goddess' ? 'la Dea' : 'lo schiavo'; }
@@ -2006,6 +2068,7 @@ function gTypingIn(){
 /* ---------- Dati e sincronizzazione ---------- */
 async function gLoad(){
   const r = await sb.from('partite').select('*').eq('attiva', true).order('created_at',{ascending:false}).limit(1);
+  gLoaded = true;
   if(r.error){ gErr = true; return false; }
   gErr = false;
   G = (r.data && r.data[0]) ? {id:r.data[0].id, versione:r.data[0].versione, stato:r.data[0].stato} : null;
@@ -2059,29 +2122,70 @@ function gEnsureEl(){
   gEl = document.createElement('section');
   gEl.id = 'game';
   gEl.className = 'game' + (gOpen ? ' open' : '');
-  gEl.innerHTML = '<button class="ghead" data-g="toggle"><span>♟ IL GIOCO DELLA DEA</span><span id="gHint"></span></button>'+
-    '<div class="gbody"><div id="gTop"></div><div class="gboard" id="gBoard"></div><div id="gBottom"></div></div><div id="gModal"></div>';
+  gEl.innerHTML = '<button class="ghead" data-g="toggle"><span class="gh1"><span class="gh-ic">♟</span><span>IL GIOCO DELLA DEA</span></span><span id="gHint"></span><span class="gchev">▾</span></button>'+
+    '<div class="gbody"><div id="gTop"></div><div class="gboard" id="gBoard"></div><div id="gLegend"></div><div id="gBottom"></div></div><div id="gModal"></div>';
   gEl.addEventListener('click', gClick);
   gEl.addEventListener('focusout', function(){
     if(!gPendingRender) return;
     setTimeout(function(){ if(gPendingRender && !gTypingIn()){ gPendingRender = false; gameRender(); } }, 300);
   });
+  if('IntersectionObserver' in window){
+    gIO = new IntersectionObserver(function(en){ gVisible = en[0].isIntersecting; gFabUpdate(); }, {threshold:0.15});
+    gIO.observe(gEl);
+  }
 }
 function mountGame(){
   const slot = document.getElementById('gameSlot');
-  if(!slot) return;
+  if(!slot){ gFabUpdate(); return; }
   gEnsureEl();
   slot.appendChild(gEl);
   gameRender();
   requestAnimationFrame(function(){ gPlaceTokens(false); });
 }
+function gGoto(){
+  gOpen = true;
+  try{ localStorage.setItem('gd_gopen','1'); }catch(e){}
+  if(!gEl) return;
+  gameRender();
+  requestAnimationFrame(function(){ gPlaceTokens(false); if(gEl.scrollIntoView) gEl.scrollIntoView({behavior:'smooth', block:'start'}); });
+}
+function gFabUpdate(){
+  if(!gFab){
+    gFab = document.createElement('button');
+    gFab.className = 'gfab'; gFab.setAttribute('aria-label','Apri il Gioco della Dea'); gFab.textContent = '♟';
+    gFab.style.display = 'none';
+    gFab.addEventListener('click', gGoto);
+    document.body.appendChild(gFab);
+  }
+  const s = G && G.stato;
+  const active = !!s && (s.gameStatus==='attiva' || s.gameStatus==='pausa');
+  const hot = !!s && s.gameStatus==='attiva' && gHot(s);
+  const onHome = !!document.getElementById('gameSlot');
+  gFab.style.display = (onHome && role && !locked && active && !gVisible) ? '' : 'none';
+  gFab.classList.toggle('hot', hot);
+}
+function gHot(s){
+  const m = gMe();
+  return (s.phase==='roll' && s.currentTurn===m) || (s.phase==='finale' && m==='goddess');
+}
+function gTeaser(){
+  const s = G && G.stato, m = gMe();
+  let t = 'Nessuna partita in corso', sub = role==='padrona' ? 'Avviane una quando vuoi' : 'Attendi che la Dea la avvii', hot = false;
+  if(gErr){ t = 'Gioco non ancora attivo'; sub = 'Serve lo script SQL v7'; }
+  else if(!gLoaded && !s){ t = 'Caricamento…'; sub = ''; }
+  else if(s && s.gameStatus==='attiva'){
+    hot = gHot(s);
+    t = hot ? 'Tocca a te!' : (s.phase==='challenge' ? 'Prova in corso' : 'Turno '+(s.currentTurn==='goddess' ? 'della Dea' : 'dello schiavo'));
+    sub = G_MODES[s.mode].nome+' · Dea '+s.goddessPosition+' · schiavo '+s.slavePosition+' su 40';
+  } else if(s && s.gameStatus==='pausa'){ t = 'Partita in pausa'; sub = 'Riprendete quando volete'; }
+  else if(s && s.gameStatus==='terminata'){ t = 'Partita terminata'; sub = 'Apri il riepilogo'; }
+  return '<button class="gteaser'+(hot ? ' hot' : '')+'" data-a="gopen"><span class="gtic">♟</span><span class="gtx"><b>IL GIOCO DELLA DEA</b><br><span>'+esc(t)+(sub ? ' · <small>'+esc(sub)+'</small>' : '')+'</span></span><span class="gtgo">'+(hot ? 'GIOCA' : '›')+'</span></button>';
+}
 
 /* ---------- Disegno ---------- */
 function gHint(s){
   if(!s) return '';
-  const m = gMe();
-  if(s.gameStatus==='attiva' && ((s.phase==='roll' && s.currentTurn===m) || (s.phase==='finale' && m==='goddess')))
-    return '<span class="gdot">● tocca a te</span>';
+  if(s.gameStatus==='attiva' && gHot(s)) return '<span class="gdot">● tocca a te</span>';
   if(s.gameStatus==='pausa') return '<span class="gdot">pausa</span>';
   return '';
 }
@@ -2104,8 +2208,15 @@ function gSetupHtml(){
   return h;
 }
 
+function gProg(s){
+  const pr = function(cls, icon, pos){
+    return '<div class="pr '+cls+'"><span class="pri">'+ic(icon)+'</span><div class="bar"><i style="width:'+Math.round((pos-1)/(G_SIZE-1)*100)+'%"></i></div><b>'+pos+'</b></div>';
+  };
+  return '<div class="gprog">'+pr('g','crown',s.goddessPosition)+pr('s','lock',s.slavePosition)+'</div>';
+}
 function gTopHtml(s){
   if(gErr) return '<p class="note">Il gioco richiede lo script SQL v7: eseguilo su Supabase e riapri l\'app.</p>';
+  if(!s && !gLoaded) return '<p class="note">Caricamento della partita…</p>';
   if(!s || (gForceSetup && role==='padrona')){
     if(role==='padrona') return gSetupHtml();
     return '<p class="note">Nessuna partita in corso. Attendi che la Dea ne avvii una.</p>';
@@ -2114,21 +2225,47 @@ function gTopHtml(s){
   let h = '';
   if(s.gameStatus==='terminata') h += '<div class="gturn">PARTITA TERMINATA</div>';
   else if(s.gameStatus==='pausa') h += '<div class="gturn">PARTITA IN PAUSA</div><p class="note" style="text-align:center">In pausa per scelta di '+gWho(s.pausedBy)+'.</p>';
-  else h += '<div class="gturn'+(s.currentTurn===m ? ' me' : '')+'">'+(s.currentTurn==='goddess' ? 'TURNO DELLA DEA' : 'TURNO DELLO SCHIAVO')+'</div>';
+  else {
+    const me = s.currentTurn===m;
+    h += '<div class="gturn'+(me ? ' me' : '')+'"><span class="gturn-ic">'+ic(s.currentTurn==='goddess' ? 'crown' : 'lock')+'</span>'+
+      (s.currentTurn==='goddess' ? 'TURNO DELLA DEA' : 'TURNO DELLO SCHIAVO')+(me && s.phase==='roll' ? ' · TOCCA A TE' : '')+'</div>';
+  }
   h += '<p class="gmodetag">'+G_MODES[s.mode].ico+' '+G_MODES[s.mode].nome+'</p>';
   const last = s.diceHistory[s.diceHistory.length-1];
   h += '<div class="gdice" id="gDice"><span id="gDiceFace">'+(last ? G_FACES[last.die-1] : '🎲')+'</span></div>';
   if(s.gameStatus==='attiva'){
     if(s.phase==='roll' && s.currentTurn===m)
-      h += '<button class="btn block" data-g="roll"'+(gBusy ? ' disabled' : '')+'>🎲 TIRA IL DADO</button>';
+      h += '<button class="btn block" data-g="roll"'+(gBusy ? ' disabled' : '')+'>'+(gBusy ? 'Lancio…' : '🎲 TIRA IL DADO')+'</button>';
     else if(s.phase==='roll') h += '<p class="note" style="text-align:center">Attendi: tocca all\'altro giocatore.</p>';
     else if(s.phase==='challenge') h += '<p class="note" style="text-align:center">Prova in corso: risolvetela per passare il turno.</p>';
     else if(s.phase==='finale') h += '<p class="note" style="text-align:center">Arrivo raggiunto: attende il finale deciso dalla Dea.</p>';
   }
-  h += '<div class="glegend"><span class="lg g">'+ic('crown')+' Dea: '+s.goddessPosition+'</span><span class="lg s">'+ic('lock')+' Schiavo: '+s.slavePosition+'</span></div>';
+  h += gProg(s);
   return h;
 }
-
+function gLegendHtml(s){
+  const item = function(sw, name, desc, color){
+    return '<div class="gli"><span class="gls"'+(color ? ' style="background:'+color+'33;color:'+color+'"' : '')+'>'+sw+'</span><div><b>'+esc(name)+'</b><small>'+esc(desc)+'</small></div></div>';
+  };
+  const cats = gBoardOf(s.mode), seen = [];
+  cats.forEach(function(c){ if(seen.indexOf(c)<0) seen.push(c); });
+  let h = '<button class="glegbtn" data-g="legend"><span>Legenda dei simboli</span><span>'+(gLegendOpen ? '▴' : '▾')+'</span></button>';
+  if(gLegendOpen){
+    h += '<div class="gleg">'+
+      item('<span class="gmini g">'+ic('crown')+'</span>','Pedina della Dea','Corona cremisi')+
+      item('<span class="gmini s">'+ic('lock')+'</span>','Pedina dello schiavo','Lucchetto rosso scuro')+
+      item('▶','Partenza','Casella 1')+
+      item('🏁','Arrivo','Casella 40, il Trono finale','#ffd700')+
+      item('★','Casella con nome','12, 18, 25, 31 e 40')+
+      item('👆','Tocca una casella','Per leggerne il significato');
+    Object.keys(GCAT).forEach(function(k){
+      if(seen.indexOf(k)<0 || k==='arrivo') return;
+      h += item(GCAT[k].i, GCAT[k].n, G_DESC[k], GCAT[k].c);
+    });
+    h += '</div>';
+  }
+  return h;
+}
 function gStatsHtml(s){
   const t = gStats(s);
   return '<p class="sec">Statistiche</p><div class="card"><div class="txt">Turni: '+t.turni+'<br>Caselle visitate: Dea '+t.visitateDea+', schiavo '+t.visitateSchiavo+
@@ -2276,29 +2413,97 @@ function gBuildBoard(mode){
       const k = GCAT[cats[n-1]] || GCAT.vuota;
       const special = G_NAMES[n] ? ' sp' : '';
       const ico = n===1 ? '▶' : n===40 ? '🏁' : k.i;
-      h += '<div class="gc'+special+'" data-sq="'+n+'" style="border-color:'+k.c+';background:'+k.c+'22" title="'+esc(k.n)+'"><span class="gn">'+n+'</span><span class="gi">'+ico+'</span></div>';
+      h += '<div class="gc'+special+'" data-sq="'+n+'" style="border-color:'+k.c+';background-color:'+k.c+'22" title="'+esc(k.n)+'"><span class="gn">'+n+'</span>'+
+        (G_NAMES[n] && n!==1 && n!==40 ? '<span class="gstar">★</span>' : '')+'<span class="gi">'+ico+'</span></div>';
     }
   }
-  b.innerHTML = h + '<div class="gtok g" id="tokG">'+ic('crown')+'</div><div class="gtok s" id="tokS">'+ic('lock')+'</div>';
+  b.innerHTML = h + '<div class="gtok g" id="tokG"><span class="gti">'+ic('crown')+'</span></div><div class="gtok s" id="tokS"><span class="gti">'+ic('lock')+'</span></div>';
   gBoardMode = mode; gPlacedOnce = false;
 }
+function gSleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+function gXY(n, off){
+  const b = gEl.querySelector('#gBoard'), cell = b.querySelector('[data-sq="'+n+'"]'), tok = b.querySelector('#tokG');
+  if(!cell || !tok) return null;
+  const tw = tok.offsetWidth || 28;
+  return {x: cell.offsetLeft + (cell.offsetWidth - tw)/2 + (off||0)*tw*0.55, y: cell.offsetTop + (cell.offsetHeight - tw)/2};
+}
+function gMoveTok(who, n, off, ms){
+  const b = gEl.querySelector('#gBoard'), tok = b.querySelector(who==='goddess' ? '#tokG' : '#tokS'), p = gXY(n, off);
+  if(!tok || !p) return;
+  tok.style.transitionDuration = (ms||0)+'ms';
+  tok.style.transform = 'translate('+p.x+'px,'+p.y+'px)';
+  if(!ms){ void tok.offsetWidth; }
+}
+function gMarkCells(s){
+  const b = gEl.querySelector('#gBoard');
+  Array.prototype.forEach.call(b.querySelectorAll('.gc.hg,.gc.hs'), function(c){ c.classList.remove('hg','hs'); });
+  const cg = b.querySelector('[data-sq="'+s.goddessPosition+'"]'), cs = b.querySelector('[data-sq="'+s.slavePosition+'"]');
+  if(cg) cg.classList.add('hg');
+  if(cs) cs.classList.add('hs');
+  const tg = b.querySelector('#tokG'), ts = b.querySelector('#tokS'), act = s.gameStatus==='attiva';
+  if(tg) tg.classList.toggle('act', act && s.currentTurn==='goddess');
+  if(ts) ts.classList.toggle('act', act && s.currentTurn==='slave');
+}
+function gPlaceNow(s, ms){
+  const same = s.goddessPosition===s.slavePosition;
+  gMoveTok('goddess', s.goddessPosition, same ? -1 : 0, ms);
+  gMoveTok('slave', s.slavePosition, same ? 1 : 0, ms);
+  gMarkCells(s);
+}
+function gPathSteps(from, die){
+  const p = []; let pos = from, dir = 1;
+  for(let i=0; i<die; i++){
+    pos += dir;
+    if(pos===G_SIZE && i<die-1) dir = -1;
+    p.push(pos);
+  }
+  return p;
+}
+function gLandFx(n){
+  const c = gEl && gEl.querySelector('[data-sq="'+n+'"]');
+  if(!c) return;
+  c.classList.add('land');
+  setTimeout(function(){ c.classList.remove('land'); }, 1000);
+  try{ if(navigator.vibrate) navigator.vibrate(35); }catch(e){}
+}
+async function gAnimateRoll(s){
+  const h = s.turnHistory[s.turnHistory.length-1];
+  if(!h){ gPlaceNow(s, 0); return; }
+  gAnimating = true;
+  const md = gEl.querySelector('#gModal'); if(md) md.innerHTML = '';
+  if(h.who!==gMe()){ toast((h.who==='goddess' ? 'La Dea' : 'Lo schiavo')+' ha tirato: '+h.die); buzz(); }
+  const tok = gEl.querySelector(h.who==='goddess' ? '#tokG' : '#tokS');
+  try{
+    const steps = gPathSteps(h.from, h.die);
+    for(let i=0; i<steps.length; i++){
+      gMoveTok(h.who, steps[i], 0, 150);
+      if(tok){ tok.classList.add('hop'); setTimeout(function(){ tok.classList.remove('hop'); }, 170); }
+      await gSleep(170);
+    }
+    gLandFx(h.square);
+    await gSleep(260);
+    const cur = G ? G.stato : s;
+    gPlaceNow(cur, 460);
+    await gSleep(h.to!==h.square || h.note==='scambio' ? 520 : 120);
+  } finally {
+    gAnimating = false;
+    gameRender();
+  }
+}
 function gPlaceTokens(animate){
-  if(!gEl || !G || !gOpen) return;
+  if(!gEl || !G || !gOpen || gAnimating) return;
   const b = gEl.querySelector('#gBoard');
   if(!b || !b.offsetWidth) return;
-  const s = G.stato, same = s.goddessPosition===s.slavePosition;
-  [['tokG',s.goddessPosition,-1],['tokS',s.slavePosition,1]].forEach(function(t){
-    const tok = b.querySelector('#'+t[0]), cell = b.querySelector('[data-sq="'+t[1]+'"]');
-    if(!tok || !cell) return;
-    const tw = tok.offsetWidth || 28;
-    const x = cell.offsetLeft + (cell.offsetWidth - tw)/2 + (same ? t[2]*tw*0.55 : 0);
-    const y = cell.offsetTop + (cell.offsetHeight - tw)/2;
-    const anim = animate && gPlacedOnce;
-    if(!anim) tok.style.transition = 'none';
-    tok.style.transform = 'translate('+x+'px,'+y+'px)';
-    if(!anim){ void tok.offsetWidth; tok.style.transition = ''; }
-  });
-  gPlacedOnce = true;
+  const s = G.stato, hl = s.turnHistory.length;
+  if(!gPlacedOnce || !animate){ gPlaceNow(s, 0); gHistSeen = hl; gPlacedOnce = true; return; }
+  if(hl > gHistSeen){ gHistSeen = hl; gAnimateRoll(s); return; }
+  gHistSeen = hl;
+  gPlaceNow(s, 450);
+}
+function gCellInfo(n){
+  if(!G) return;
+  const cat = gBoardOf(G.stato.mode)[n-1], k = GCAT[cat] || GCAT.vuota;
+  toast(n+' · '+(G_NAMES[n] || k.n)+' — '+G_DESC[cat]);
 }
 
 function gameRender(){
@@ -2307,6 +2512,7 @@ function gameRender(){
   const s = G && G.stato;
   gEl.querySelector('#gHint').innerHTML = gHint(s);
   if(s && s.currentChallenge && s.currentChallenge.id!==gSeenCh){ gSeenCh = s.currentChallenge.id; gModalOpen = true; gRuleOpen = false; gEditing = false; }
+  gFabUpdate();
   if(!gOpen) return;
   gEl.querySelector('#gTop').innerHTML = gTopHtml(s);
   const showBoard = !!s && !gErr && !(gForceSetup && role==='padrona');
@@ -2316,8 +2522,9 @@ function gameRender(){
     if(gBoardMode!==s.mode || !bd.querySelector('[data-sq]')) gBuildBoard(s.mode);
     gPlaceTokens(true);
   }
+  gEl.querySelector('#gLegend').innerHTML = showBoard ? gLegendHtml(s) : '';
   gEl.querySelector('#gBottom').innerHTML = gBottomHtml(s);
-  gEl.querySelector('#gModal').innerHTML = gModalHtml(s);
+  gEl.querySelector('#gModal').innerHTML = gAnimating ? '' : gModalHtml(s);
 }
 
 /* ---------- Azioni ---------- */
@@ -2335,12 +2542,16 @@ function gAnimateDice(die){
   return new Promise(function(res){
     const el = gEl && gEl.querySelector('#gDice'), face = gEl && gEl.querySelector('#gDiceFace');
     if(!el || !face){ res(); return; }
-    el.classList.add('roll');
+    el.classList.remove('pop'); el.classList.add('roll');
     let n = 0;
     const iv = setInterval(function(){
       face.textContent = G_FACES[gRand(6)];
-      if(++n >= 9){ clearInterval(iv); el.classList.remove('roll'); face.textContent = G_FACES[die-1]; setTimeout(res, 350); }
-    }, 90);
+      if(++n >= 11){
+        clearInterval(iv); el.classList.remove('roll'); face.textContent = G_FACES[die-1]; el.classList.add('pop');
+        try{ if(navigator.vibrate) navigator.vibrate(40); }catch(e){}
+        setTimeout(res, 420);
+      }
+    }, 80);
   });
 }
 function gRoll(){
@@ -2372,6 +2583,8 @@ function gSimple(mut, ev, dest){
   gDo(async function(){ const ns = gClone(); if(mut(ns)===false) return; await gSave(ns, ev||null, dest||null); });
 }
 async function gClick(e){
+  const cell = e.target.closest('.gc');
+  if(cell && gEl.contains(cell)){ gCellInfo(parseInt(cell.dataset.sq,10)); return; }
   const b = e.target.closest('[data-g]');
   if(!b || !gEl.contains(b)) return;
   const a = b.dataset.g, m = gMe();
@@ -2382,6 +2595,7 @@ async function gClick(e){
     if(gOpen) requestAnimationFrame(function(){ gPlaceTokens(false); });
     return;
   }
+  if(a==='legend'){ gLegendOpen = !gLegendOpen; try{ localStorage.setItem('gd_gleg', gLegendOpen ? '1' : '0'); }catch(x){} return gameRender(); }
   if(a==='mode'){ gReadSetup(); gSetup.mode = b.dataset.m; return gameRender(); }
   if(a==='start'){ gReadSetup(); gSetup.start = b.dataset.s; return gameRender(); }
   if(a==='newsetup'){ gForceSetup = true; return gameRender(); }
