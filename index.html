@@ -216,18 +216,25 @@ html[data-theme=latex] .gturn,html[data-theme=hard] .gturn{font-family:var(--san
 .pr.g .bar i{background:linear-gradient(90deg,#8e0f2a,#ff5b79)}.pr.s .bar i{background:linear-gradient(90deg,#4a0710,#d4546a)}
 .pr b{width:24px;text-align:right;font-variant-numeric:tabular-nums}
 
-.gboard{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:14px 0;padding:8px;border-radius:18px;background:var(--plum);border:1px solid var(--plum2)}
-.gc{position:relative;aspect-ratio:1;border:1.5px solid var(--plum2);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;background-image:linear-gradient(160deg,rgba(255,255,255,.08),rgba(0,0,0,.2))}
-.gc:active{filter:brightness(1.3)}
-.gc.sp{border-width:2.5px}
-.gc.hg{box-shadow:inset 0 0 0 2px #dc143c}
-.gc.hs{box-shadow:inset 0 0 0 2px #c0394d}
-.gc.hg.hs{box-shadow:inset 0 0 0 2px #dc143c,inset 0 0 0 4px #c0394d}
-.gc.land{animation:land 1s ease-out}
-@keyframes land{0%{transform:scale(1);filter:brightness(1)}20%{transform:scale(1.14);filter:brightness(1.9)}100%{transform:scale(1);filter:brightness(1)}}
-.gn{position:absolute;top:3px;left:5px;font-size:10px;color:var(--steel)}
-.gstar{position:absolute;top:2px;right:4px;font-size:9px;color:var(--gold)}
-.gi{font-size:20px;line-height:1}
+.gboard{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:auto;gap:0;margin:14px 0;padding:6px;border-radius:18px;background:radial-gradient(circle at 50% 50%,var(--plum),var(--ink));border:1px solid var(--plum2)}
+.groad{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.groad .road{fill:none;stroke:var(--plum2);stroke-linecap:round;stroke-linejoin:round}
+.groad .roadc{fill:none;stroke:var(--gold);stroke-width:1.6;stroke-dasharray:1 6;stroke-linecap:round;stroke-linejoin:round;opacity:.65}
+.groad .arr{fill:none;stroke:var(--gold);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.gc{position:relative;z-index:1;aspect-ratio:1;padding:13%;cursor:pointer}
+.gcc{position:relative;width:100%;height:100%;border:1.5px solid var(--plum2);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background-color:var(--plum);box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.gc:active .gcc{filter:brightness(1.3)}
+.gcc.sp{border-width:2.5px}
+.gc.hg .gcc{box-shadow:inset 0 0 0 2px #dc143c,0 2px 6px rgba(0,0,0,.35)}
+.gc.hs .gcc{box-shadow:inset 0 0 0 2px #c0394d,0 2px 6px rgba(0,0,0,.35)}
+.gc.hg.hs .gcc{box-shadow:inset 0 0 0 2px #dc143c,inset 0 0 0 4px #c0394d,0 2px 6px rgba(0,0,0,.35)}
+.gc.rng .gcc{box-shadow:0 0 0 2px var(--gold),0 0 12px var(--gold);animation:rng 1.4s ease-in-out infinite}
+@keyframes rng{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+.gc.land .gcc{animation:land 1s ease-out}
+@keyframes land{0%{transform:scale(1);filter:brightness(1)}20%{transform:scale(1.18);filter:brightness(1.9)}100%{transform:scale(1);filter:brightness(1)}}
+.gn{position:absolute;top:2px;left:4px;font-size:10px;font-weight:700;color:var(--ivory);opacity:.85}
+.gstar{position:absolute;top:1px;right:3px;font-size:9px;color:var(--gold)}
+.gi{font-size:18px;line-height:1}
 .gtok{position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;z-index:3;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.55);transition-property:transform;transition-duration:.6s;transition-timing-function:cubic-bezier(.3,.8,.3,1)}
 .gti{display:inline-flex}
 .gtok.hop .gti{animation:hop .17s ease-out}
@@ -262,7 +269,10 @@ html[data-theme=latex] .gst,html[data-theme=hard] .gst{font-family:var(--sans);f
 .gbtns{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .gbtns .btn{width:100%}
 .btn:active,.opt:active,.tile:active,.chip2:active{transform:scale(.98)}
-@media (prefers-reduced-motion:reduce){.gteaser.hot,.gturn.me,.gfab.hot,.gtok.act::after,.gdice.roll,.gdice.pop,.gc.land,.gsheet,.gmodal,.game.open .gbody,.gtok.hop .gti{animation:none}.gtok{transition-duration:.01s!important}}
+@media (prefers-reduced-motion:reduce){.gteaser.hot,.gturn.me,.gfab.hot,.gtok.act::after,.gdice.roll,.gdice.pop,.gc.land .gcc,.gc.rng .gcc,.gsheet,.gmodal,.game.open .gbody,.gtok.hop .gti{animation:none}.gtok{transition-duration:.01s!important}}
+.ctr details{margin-top:8px}
+.ctr summary{cursor:pointer;color:var(--gold)}
+.sig{font-family:var(--serif);font-style:italic;font-size:24px;color:var(--gold)}
 </style>
 </head>
 <body>
@@ -279,6 +289,7 @@ html[data-theme=latex] .gst,html[data-theme=hard] .gst{font-family:var(--sans);f
     <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></g></symbol>
     <symbol id="i-bolt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></g></symbol>
     <symbol id="i-cagepic" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="30" cy="46" rx="19" ry="6.5"/><path d="M14 42C13 26 20 14 30 12c10 2 17 14 16 30"/><path d="M22 44C21 30 25 20 30 17M30 52V17M38 44C39 30 35 20 30 17"/><rect x="44" y="34" width="14" height="12" rx="2.5"/><path d="M47 34v-4a4 4 0 0 1 8 0v4"/><circle cx="51" cy="40" r="1.4" fill="currentColor"/></g></symbol>
+    <symbol id="i-scroll" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h10a2 2 0 0 1 2 2v13a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-1h3V5a2 2 0 0 1 1-2z"/><path d="M11 8h6M11 12h6M11 16h3"/></g></symbol>
   </defs>
 </svg>
 
@@ -721,6 +732,208 @@ async function syncClock(){
     lastClock = Date.now();
   }catch(e){}
 }
+/* ---------- CONTRATTI (li stipula solo la Dea) ---------- */
+const CTR_FOOT = "Gioco di ruolo tra adulti consenzienti, senza valore legale. Entrambi possono sospendere o sciogliere il contratto in qualsiasi momento.";
+const CTR = [
+  {ico:'🙏', t:"Contratto di devozione",
+   x:"Io, schiavo, riconosco la Dea come centro della mia devozione.\n1. Le dedicherò ogni giorno un pensiero di gratitudine, scritto o detto a voce.\n2. La chiamerò «Dea» o «Padrona» quando mi rivolgo a lei nel gioco.\n3. Accetterò con riconoscenza i suoi ordini, entro i limiti concordati.\n4. Ogni mia mancanza la segnalerò io stesso alla Dea.",
+   p:"Scrivi 50 volte «La mia Dea è tutto» e consegna la foto del foglio."},
+  {ico:'🤐', t:"Contratto di silenzio",
+   x:"Nei momenti stabiliti dalla Dea, io parlo solo se interrogato.\n1. Durante il silenzio rispondo solo «Sì, Dea» o «No, Dea».\n2. Nessuna lamentela e nessuna domanda non richiesta.\n3. Il silenzio finisce quando la Dea lo dichiara chiuso.\n4. Posso interromperlo solo per dire «stop» se qualcosa non va davvero.",
+   p:"Resta in silenzio per altri 30 minuti e scrivi perché non hai firmato."},
+  {ico:'🔒', t:"Contratto di castità",
+   x:"Affido alla Dea la chiave e ogni decisione sulla mia gabbia.\n1. La gabbia si apre e si chiude solo quando lo decide la Dea.\n2. Ogni richiesta di apertura va fatta per iscritto e può essere negata.\n3. Le prove di chiusura (foto o parola) vanno inviate entro i tempi stabiliti.\n4. Restano valide le regole di sicurezza: con dolore, gonfiore o intorpidimento la gabbia si toglie subito e si avvisa la Dea.",
+   p:"Invia subito una foto della gabbia, ben chiusa, e scrivi tre motivi per cui la Dea ha il diritto di tenere la chiave."},
+  {ico:'🐂', t:"Contratto da cornuto",
+   x:"Nel gioco di ruolo accetto la parte di chi aspetta mentre la Dea è la protagonista.\n1. Tutto resta fantasia: nessuna persona reale viene coinvolta o contattata.\n2. Quando la Dea «esce» nella finzione, io aspetto e preparo ciò che chiede.\n3. Racconto con sincerità cosa provo, senza contestare.\n4. Le umiliazioni di ruolo valgono solo nel gioco e finiscono con le parole «fine scena».",
+   p:"Scrivi una lettera in cui ammetti di non essere all'altezza della serata immaginaria della Dea."},
+  {ico:'👑', t:"Contratto di divinizzazione",
+   x:"Riconosco la Dea come divinità del nostro gioco.\n1. Le rivolgo una preghiera di lode ogni sera.\n2. Non la contraddico quando parla da dea: ascolto e ringrazio.\n3. Compongo per lei un inno e lo leggo quando lo chiede.\n4. Il suo giudizio sulle mie mancanze è definitivo, nel gioco.",
+   p:"Scrivi un inno di venti righe alla Dea e leggilo ad alta voce in ginocchio."},
+  {ico:'🎭', t:"Contratto pubblico (platea immaginaria)",
+   x:"Questo contratto si legge solennemente, come davanti a una platea immaginaria.\n1. Leggo ad alta voce ogni clausola, guardando in basso.\n2. Dichiaro davanti alla platea immaginaria di appartenere alla Dea.\n3. Nessuna persona reale assiste, riceve o partecipa: la platea esiste solo nel gioco.\n4. Nessuna foto o testo di questo contratto esce da questa app.",
+   p:"Rileggi ad alta voce tutto il contratto tre volte e registra un breve video in cui chiedi scusa alla Dea."},
+  {ico:'⛓', t:"Contratto di obbedienza",
+   x:"1. Eseguo gli ordini della Dea senza discutere, entro i limiti concordati.\n2. Rispondo «Sì, Dea» a ogni richiesta e poi eseguo.\n3. Se un ordine non mi è chiaro, lo chiedo con rispetto.\n4. Posso sempre dire «stop»: l'ordine si ferma e la Dea decide come proseguire.",
+   p:"Scrivi 100 volte «Obbedisco alla mia Dea» e consegna la foto del foglio."},
+  {ico:'🧹', t:"Contratto di servizio domestico",
+   x:"1. Mi occupo dei servizi domestici che la Dea assegna.\n2. Li svolgo con cura e nei tempi indicati.\n3. Consegno la prova (foto del prima e del dopo) quando viene richiesta.\n4. Il servizio finisce quando la Dea dichiara il lavoro concluso.",
+   p:"Esegui un servizio domestico extra scelto dalla Dea e invia la foto del risultato."},
+  {ico:'🏷', t:"Contratto dei titoli",
+   x:"1. Accetto i titoli che la Dea sceglie per me nel gioco.\n2. Li uso quando parlo di me e quando mi presento a lei.\n3. La Dea può cambiarli quando vuole.\n4. I titoli valgono solo nel gioco e finiscono con le parole «fine scena».",
+   p:"Presentati per iscritto con tutti i titoli scelti dalla Dea, dieci volte."},
+  {ico:'💶', t:"Contratto del tributo",
+   x:"1. Riconosco alla Dea il diritto di proporre un tributo simbolico.\n2. Ogni richiesta ha un tetto massimo che lei stabilisce in anticipo.\n3. Nessun pagamento parte da solo: la conferma è sempre mia, manuale.\n4. Rifiutare una singola richiesta di pagamento non ha conseguenze reali.",
+   p:"Scrivi 30 volte «Il mio tributo è un onore» e consegna la foto del foglio."},
+  {ico:'👣', t:"Contratto dei piedi",
+   x:"1. Dedico alla Dea un omaggio ai suoi piedi nei momenti che lei sceglie.\n2. L'omaggio è concordato: massaggio, cura o ricerca delle pantofole.\n3. Eseguo solo ciò che è già stato concordato, con delicatezza.\n4. Se qualcosa mi mette a disagio lo dico e la Dea cambia prova.",
+   p:"Prepara per la Dea tutto il necessario per un omaggio ai piedi di 15 minuti e invia la foto."},
+  {ico:'😈', t:"Contratto di umiliazione concordata",
+   x:"1. Accetto umiliazioni verbali concordate, recitate dalla Dea.\n2. Le parole valgono solo nel gioco e non parlano di me fuori da esso.\n3. Dopo ogni scena la Dea mi dice una parola di cura.\n4. «Fine scena» ferma subito tutto.",
+   p:"Scrivi cinque cose per cui chiedi scusa alla Dea e consegna il foglio."},
+  {ico:'🌙', t:"Contratto della notte",
+   x:"1. Prima di dormire scrivo alla Dea un messaggio di buonanotte e un'ammissione della giornata.\n2. Al mattino la ringrazio per ciò che mi ha concesso.\n3. Durante la notte non chiedo nulla senza il permesso della Dea.\n4. Il contratto vale finché la Dea lo scioglie.",
+   p:"Scrivi tre messaggi di scuse alla Dea per la notte e consegnali."}
+];
+let contracts = [], cErr = false, ksig = '', rtK = null, cLoaded = false;
+
+async function loadContracts(){
+  const r = await sb.from('contratti').select('*').order('created_at',{ascending:false}).limit(40);
+  cLoaded = true;
+  if(r.error){ cErr = true; return false; }
+  cErr = false; contracts = r.data || []; return true;
+}
+function contractsSignature(){
+  return contracts.map(function(c){ return [c.id,c.stato,c.firma,c.titolo,c.richiesta_scioglimento,c.scade_at].join(':'); }).join('|');
+}
+async function refreshContracts(notify){
+  const before = contracts.map(function(c){ return c.id+c.stato; }).join();
+  if(!await loadContracts()) return;
+  const sg = contractsSignature();
+  if(sg===ksig) return;
+  ksig = sg;
+  if(notify && !locked && before!==contracts.map(function(c){ return c.id+c.stato; }).join()) buzz();
+  if(locked) return;
+  if(ui.step==='contrform' || typing()){ pendingRender = true; return; }
+  render();
+}
+
+function contractTile(){
+  const slave = role==='schiavo';
+  const n = contracts.filter(function(c){ return c.stato==='proposto' || (!slave && c.richiesta_scioglimento && c.stato==='firmato'); }).length;
+  return '<button class="tile wide cast" data-a="contratti"><span class="ico">'+ic('scroll')+'</span><span class="tn">Contratti</span>'+
+    (n ? '<span class="badge ok">'+n+(slave ? ' da firmare' : ' da vedere')+'</span>' : '')+'</button>';
+}
+
+function contractCard(c){
+  const slave = role==='schiavo', st = c.stato;
+  const badge = st==='firmato' ? '<span class="badge ok">Firmato</span>'
+    : st==='proposto' ? '<span class="badge">Da firmare</span>'
+    : st==='rifiutato' ? '<span class="badge red">Non firmato</span>'
+    : st==='scaduto' ? '<span class="badge red">Scaduto</span>'
+    : '<span class="badge">Sciolto</span>';
+  let h = '<div class="card ctr"><div class="head"><span class="cat">'+esc(c.titolo)+'</span><span>'+fdate(c.created_at)+'</span></div><div>'+badge+
+    (!slave && c.richiesta_scioglimento && st==='firmato' ? ' <span class="badge red">Chiede di essere sciolto</span>' : '')+'</div>';
+  h += '<details class="ctxt"'+(st==='proposto' && slave ? ' open' : '')+'><summary>Leggi il contratto</summary><div class="txt" style="font-size:16px;margin-top:8px">'+esc(c.testo)+'</div>'+
+    '<p class="note">'+esc(CTR_FOOT)+'</p></details>';
+  h += '<div class="resp"><div class="lab">Firma della Dea</div><div class="val sig">La Dea</div></div>';
+  if(c.firma) h += '<div class="resp"><div class="lab">Firma dello schiavo · '+fdate(c.firmato_at)+'</div><div class="val sig">'+esc(c.firma)+'</div></div>';
+  if(st==='proposto' && c.scade_at) h += '<p class="note">Da firmare entro '+fdate(c.scade_at)+'.</p>';
+  if(st==='proposto' && c.pen_testo){
+    h += slave ? '<p class="note" style="color:var(--rose)">Se non firmi scatta una penitenza.</p>'
+               : '<p class="note">Penitenza se non firma: «'+esc(c.pen_testo)+'»</p>';
+  }
+  if(slave){
+    if(st==='proposto'){
+      h += '<input id="csig-'+c.id+'" type="text" maxlength="40" placeholder="Scrivi il tuo nome da schiavo come firma" style="margin-top:8px">'+
+        '<button class="btn block" data-a="csign" data-id="'+c.id+'">Firmo</button>'+
+        '<button class="btn ghost block" data-a="cnosign" data-id="'+c.id+'">Non firmo</button>';
+    } else if(st==='firmato'){
+      h += c.richiesta_scioglimento ? '<p class="note">Richiesta di scioglimento inviata alla Dea.</p>'
+        : '<button class="link" data-a="crelease" data-id="'+c.id+'">Chiedo di essere sciolto</button>';
+    }
+  } else {
+    h += '<div>';
+    if(st==='proposto') h += '<button class="link" data-a="cedit" data-id="'+c.id+'">Modifica</button>';
+    if(st==='proposto' || st==='firmato') h += '<button class="link red" data-a="crevoke" data-id="'+c.id+'">Sciogli</button>';
+    h += '<button class="link red" data-a="cdel" data-id="'+c.id+'">Elimina</button></div>';
+  }
+  return h + '</div>';
+}
+function contractsHtml(){
+  let h = '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+ic('scroll')+' Contratti</p>';
+  if(cErr) return h + '<p class="note">I contratti richiedono lo script SQL v8: eseguilo su Supabase e riapri l\'app.</p>';
+  h += '<p class="note">'+(role==='padrona'
+    ? 'Solo tu puoi stipulare contratti. Lo schiavo non è obbligato a firmare, ma se non firma scatta la penitenza che hai previsto.'
+    : 'Puoi firmare o non firmare. Se non firmi, scatta la penitenza prevista dalla Dea. Puoi sempre chiedere di essere sciolto.')+'</p>';
+  if(role==='padrona') h += '<button class="btn block" data-a="cnew">＋ Nuovo contratto</button>';
+  if(!contracts.length) h += '<p class="note" style="margin-top:14px">Nessun contratto.</p>';
+  return h + contracts.map(contractCard).join('');
+}
+function contrNewHtml(){
+  return '<button class="link" data-a="back">‹ Indietro</button><p class="lead">Scegli il contratto</p><div class="list">'+
+    CTR.map(function(c,i){
+      return '<button class="opt" data-a="cpick" data-i="'+i+'"><b>'+c.ico+' '+esc(c.t)+'</b><br><small class="muted">'+esc(c.x.split('\n')[0])+'</small></button>';
+    }).join('')+
+    '<button class="opt" data-a="cpick" data-i="-1"><b>✍️ Contratto personalizzato</b><br><small class="muted">Scrivi tu titolo e clausole</small></button></div>';
+}
+function contrFormHtml(){
+  const c = ui.cid ? contracts.find(function(x){ return x.id===ui.cid; }) : null;
+  if(ui.cid && !c){ ui = {step:'contratti'}; return ''; }
+  const tpl = ui.tpl || {t:'',x:'',p:''};
+  const t = c ? c.titolo : tpl.t, x = c ? c.testo : tpl.x, p = c ? (c.pen_testo||'') : tpl.p;
+  const dl = [[-1,'Non cambiare'],[0,'Nessuna scadenza'],[15,'15 minuti'],[30,'30 minuti'],[60,'1 ora'],[360,'6 ore'],[1440,'24 ore']];
+  const sel = c ? -1 : 60;
+  return '<button class="link" data-a="back">‹ Indietro</button><p class="lead">'+(c ? 'Modifica contratto' : 'Nuovo contratto')+'</p>'+
+    '<p class="note">Titolo</p><input id="ctt" type="text" maxlength="80" value="'+esc(t)+'">'+
+    '<p class="note" style="margin-top:14px">Clausole (puoi cambiarle come vuoi)</p><textarea id="ctx" rows="11" maxlength="4000">'+esc(x)+'</textarea>'+
+    '<p class="note" style="margin-top:14px">Penitenza se lo schiavo non firma (vuoto = nessuna)</p><textarea id="ctp" rows="2" maxlength="400">'+esc(p)+'</textarea>'+
+    '<p class="note" style="margin-top:14px">Tempo per firmare. Se scade, scatta la penitenza.</p>'+
+    '<select id="ctd">'+dl.filter(function(d){ return c || d[0]>=0; }).map(function(d){ return '<option value="'+d[0]+'"'+(d[0]===sel ? ' selected' : '')+'>'+d[1]+'</option>'; }).join('')+'</select>'+
+    '<p class="note">'+esc(CTR_FOOT)+'</p><button class="btn block" data-a="csave">'+(c ? 'Salva' : 'Stipula e invia')+'</button>';
+}
+
+async function saveContract(){
+  const t = (($('#ctt')||{}).value||'').trim(), x = (($('#ctx')||{}).value||'').trim(), p = (($('#ctp')||{}).value||'').trim();
+  if(!t) return toast('Scrivi il titolo');
+  if(!x) return toast('Scrivi le clausole');
+  const dmin = parseInt(($('#ctd')||{}).value, 10);
+  const row = {titolo:t, testo:x, pen_testo:p || null};
+  if(dmin>=0) row.scade_at = dmin>0 ? new Date(now()+dmin*60000).toISOString() : null;
+  const edit = ui.cid ? contracts.find(function(c){ return c.id===ui.cid; }) : null;
+  const btn = $('[data-a=csave]'); btn.disabled = true;
+  const res = edit ? await sb.from('contratti').update(row).eq('id', edit.id).select().single()
+                   : await sb.from('contratti').insert(row).select().single();
+  if(res.error){ btn.disabled = false; return toast('Non riuscito, riprova'); }
+  if(res.data){
+    const i = contracts.findIndex(function(c){ return c.id===res.data.id; });
+    if(i>=0) contracts[i] = res.data; else contracts.unshift(res.data);
+  }
+  ksig = contractsSignature(); ui = {step:'contratti'}; render();
+  toast(edit ? 'Contratto salvato' : 'Contratto inviato allo schiavo');
+}
+async function signContract(id){
+  const c = contracts.find(function(x){ return x.id===id; }); if(!c) return;
+  const inp = document.getElementById('csig-'+id);
+  const f = ((inp && inp.value) || '').trim();
+  if(!f) return toast('Scrivi il tuo nome da schiavo come firma');
+  const r = await sb.rpc('contratto_firma',{p_id:id, p_firma:f});
+  if(r.error) return toast(/firmabile/.test(r.error.message||'') ? 'Il contratto non è più firmabile' : 'Non riuscito, riprova');
+  c.stato = 'firmato'; c.firma = f; c.firmato_at = new Date(now()).toISOString();
+  ksig = contractsSignature(); render(); toast('Contratto firmato');
+}
+async function refuseContract(id){
+  const c = contracts.find(function(x){ return x.id===id; }); if(!c) return;
+  if(!confirm(c.pen_testo ? 'Se non firmi scatta la penitenza prevista dalla Dea. Vuoi non firmare?' : 'Vuoi non firmare questo contratto?')) return;
+  const r = await sb.rpc('contratto_rifiuta',{p_id:id});
+  if(r.error) return toast('Non riuscito, riprova');
+  c.stato = 'rifiutato'; ksig = contractsSignature(); render();
+  toast(c.pen_testo ? 'Non hai firmato: ti è stata assegnata una penitenza' : 'Non hai firmato');
+  sig = ''; refresh(false);
+}
+async function askRelease(id){
+  const c = contracts.find(function(x){ return x.id===id; }); if(!c) return;
+  if(!confirm('Chiedere alla Dea di essere sciolto da questo contratto?')) return;
+  const r = await sb.rpc('contratto_scioglimento',{p_id:id});
+  if(r.error) return toast('Non riuscito, riprova');
+  c.richiesta_scioglimento = true; ksig = contractsSignature(); render(); toast('Richiesta inviata alla Dea');
+}
+async function revokeContract(id){
+  const c = contracts.find(function(x){ return x.id===id; }); if(!c) return;
+  if(!confirm('Sciogliere questo contratto?')) return;
+  const r = await sb.from('contratti').update({stato:'revocato'}).eq('id', id).select().single();
+  if(r.error) return toast('Non riuscito, riprova');
+  if(r.data){ const i = contracts.findIndex(function(x){ return x.id===id; }); if(i>=0) contracts[i] = r.data; }
+  ksig = contractsSignature(); render(); toast('Contratto sciolto');
+}
+async function delContract(id){
+  const c = contracts.find(function(x){ return x.id===id; }); if(!c) return;
+  if(!confirm('Eliminare definitivamente questo contratto?')) return;
+  contracts = contracts.filter(function(x){ return x.id!==id; }); ksig = contractsSignature(); render(); toast('Eliminato');
+  const r = await sb.from('contratti').delete().eq('id', id);
+  if(r.error){ toast('Eliminazione non riuscita'); refreshContracts(false); }
+}
+
 /* ---------- TIMER CASTITA ---------- */
 function markSeen(id){
   seen.add(id);
@@ -1112,8 +1325,10 @@ function startLive(){
     clearTimeout(rtM); rtM = setTimeout(()=>refreshMsgs(true), 300);
   }).on('postgres_changes',{event:'*',schema:'public',table:'timer_cast'},()=>{
     clearTimeout(rtC); rtC = setTimeout(()=>refreshTimers(true), 300);
+  }).on('postgres_changes',{event:'*',schema:'public',table:'contratti'},()=>{
+    clearTimeout(rtK); rtK = setTimeout(()=>refreshContracts(true), 300);
   }).subscribe();
-  poll = setInterval(()=>{ if(!document.hidden && !locked){ refresh(true); refreshMsgs(true); refreshTimers(true); gRefresh(); } }, 25000);
+  poll = setInterval(()=>{ if(!document.hidden && !locked){ refresh(true); refreshMsgs(true); refreshTimers(true); refreshContracts(true); gRefresh(); } }, 25000);
 }
 function stopLive(){ if(channel){ sb.removeChannel(channel); channel=null; } if(poll){ clearInterval(poll); poll=null; } }
 
@@ -1123,7 +1338,7 @@ async function boot(){
   /* prima schermata subito, dai dati salvati; poi si aggiorna */
   const c = readCache();
   if(c && c.uid===uid && c.role){ role = c.role; orders = c.orders || []; sig = signature(); render(); }
-  const res = await Promise.all([sb.from('ruoli').select('ruolo').maybeSingle(), loadOrders(), loadMsgs(), loadTimers()]);
+  const res = await Promise.all([sb.from('ruoli').select('ruolo').maybeSingle(), loadOrders(), loadMsgs(), loadTimers(), loadContracts()]);
   const rl = res[0];
   if(rl.error){
     if(!role){ toast('Connessione assente, riprovo...'); setTimeout(boot, 4000); return; }
@@ -1132,7 +1347,7 @@ async function boot(){
   } else {
     role = rl.data.ruolo;
   }
-  sig = signature(); tsig = timersSignature(); writeCache();
+  sig = signature(); tsig = timersSignature(); ksig = contractsSignature(); writeCache();
   startLive(); render();
   syncPush(); syncClock(); applyTarget(); checkPopups(); gInit();
 }
@@ -1229,6 +1444,9 @@ function viewPadrona(){
 
   if(st==='settings') return h + settingsHtml();
   if(st==='msgs') return h + msgsHtml();
+  if(st==='contratti') return h + contractsHtml();
+  if(st==='contrnew') return h + contrNewHtml();
+  if(st==='contrform'){ const cf = contrFormHtml(); return cf ? h + cf : viewPadrona(); }
   if(st==='timerform'){ const tf = timerFormHtml(); return tf ? h + tf : viewPadrona(); }
   if(st==='archive'){
     const a = archiveView(L.archive, 'padrona');
@@ -1299,6 +1517,7 @@ function viewPadrona(){
   h += '<button class="tile wide" data-a="pen"><span class="ico">'+ic('chain')+'</span><span class="tn">Penitenze</span>'+
     (n ? '<span class="badge ok">'+n+' scaduti</span>' : '')+'</button>';
   h += msgTile();
+  h += contractTile();
   const open = L.pending.concat(L.needPen).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
   if(open.length) h += '<p class="sec">In attesa</p>'+open.map(o=>cardHtml(o,'padrona')).join('');
   h += archiveRows(L.archive);
@@ -1355,6 +1574,7 @@ function viewSchiavo(){
 
   if(ui.step==='settings') return h + settingsHtml();
   if(ui.step==='msgs') return h + msgsHtml();
+  if(ui.step==='contratti') return h + contractsHtml();
   if(ui.step==='archive'){
     const a = archiveView(arch, 'schiavo');
     if(a===null) return viewSchiavo();
@@ -1378,6 +1598,7 @@ function viewSchiavo(){
     h += '<p class="lead">Attendi gli ordini della Padrona.</p>';
   }
   h += msgTile();
+  h += contractTile();
   h += archiveRows(arch);
   h += '<div id="gameSlot"></div>';
   return h;
@@ -1598,6 +1819,16 @@ app.addEventListener('click', e => {
   if(a==='temer') return emerTimer(b.dataset.id);
   if(a==='tpa'){ const m = parseInt(b.dataset.m,10); $('#tah').value = Math.floor(m/60); $('#tam').value = m%60; return; }
   if(a==='tpb'){ const m = parseInt(b.dataset.m,10); $('#tbd').value = Math.floor(m/1440); $('#tbh').value = Math.floor(m%1440/60); $('#tbm').value = m%60; return; }
+  if(a==='contratti'){ ui = {step:'contratti'}; return render(); }
+  if(a==='cnew'){ ui = {step:'contrnew'}; return render(); }
+  if(a==='cpick'){ const ci = parseInt(b.dataset.i,10); ui = {step:'contrform', cid:null, tpl: ci>=0 ? CTR[ci] : {t:'',x:'',p:''}}; return render(); }
+  if(a==='cedit'){ ui = {step:'contrform', cid:b.dataset.id}; return render(); }
+  if(a==='csave') return saveContract();
+  if(a==='csign') return signContract(b.dataset.id);
+  if(a==='cnosign') return refuseContract(b.dataset.id);
+  if(a==='crevoke') return revokeContract(b.dataset.id);
+  if(a==='cdel') return delContract(b.dataset.id);
+  if(a==='crelease') return askRelease(b.dataset.id);
   if(a==='gopen') return gGoto();
   if(a==='msgs'){ ui = {step:'msgs'}; return render(); }
   if(a==='qm') return sendQuick(parseInt(b.dataset.i,10));
@@ -1639,6 +1870,7 @@ app.addEventListener('click', e => {
   if(a==='back'){
     const s = ui.step;
     if(s==='compose' && CATS[ui.cat].sub.length>1) ui = {step:'sub', cat:ui.cat};
+    else if(s==='contrform' || s==='contrnew') ui = {step:'contratti'};
     else if(s==='pencompose') ui = {step:'pen', src:ui.src, prev:ui.prev};
     else if(s==='pen') ui = ui.prev || {step:'home'};
     else ui = {step:'home'};
@@ -1678,8 +1910,8 @@ app.addEventListener('focusout', () => {
 document.addEventListener('visibilitychange', () => {
   if(document.hidden){ hiddenAt = Date.now(); return; }
   if(role && localStorage.getItem(PINKEY) && Date.now()-hiddenAt > LOCK_AFTER){
-    locked = true; lockHidePopup(); unlock(()=>{ locked=false; sig=''; refresh(false).then(render).then(applyTarget).then(()=>refreshMsgs(false)).then(()=>refreshTimers(false)).then(()=>gRefresh()); });
-  } else if(role){ refresh(true); refreshMsgs(true); refreshTimers(true); gRefresh(); applyTarget(); if(Date.now()-lastClock > 300000) syncClock(); }
+    locked = true; lockHidePopup(); unlock(()=>{ locked=false; sig=''; refresh(false).then(render).then(applyTarget).then(()=>refreshMsgs(false)).then(()=>refreshTimers(false)).then(()=>refreshContracts(false)).then(()=>gRefresh()); });
+  } else if(role){ refresh(true); refreshMsgs(true); refreshTimers(true); refreshContracts(true); gRefresh(); applyTarget(); if(Date.now()-lastClock > 300000) syncClock(); }
 });
 
 /* ---------- IL GIOCO DELLA DEA: DATI ---------- */
@@ -2057,6 +2289,21 @@ let gEl = null, gChannel = null, gT = null, gBoardMode = null, gOpen = true, gRu
 let gForceSetup = false, gPendingRender = false, gPlacedOnce = false, gAnimating = false, gHistSeen = 0, gFab = null, gVisible = false, gIO = null;
 try{ gOpen = localStorage.getItem('gd_gopen')!=='0'; gLegendOpen = localStorage.getItem('gd_gleg')!=='0'; }catch(e){}
 
+function gSpiral(){
+  const R = 8, C = 5, seen = [], out = [];
+  for(let i=0; i<R; i++) seen.push(new Array(C).fill(false));
+  const dr = [0,1,0,-1], dc = [1,0,-1,0];
+  let r = 0, c = 0, d = 0;
+  for(let n=0; n<R*C; n++){
+    out.push([r+1, c+1]); seen[r][c] = true;
+    let nr = r+dr[d], nc = c+dc[d];
+    if(nr<0 || nr>=R || nc<0 || nc>=C || seen[nr][nc]){ d = (d+1)%4; nr = r+dr[d]; nc = c+dc[d]; }
+    r = nr; c = nc;
+  }
+  return out;
+}
+const G_SP = gSpiral();
+let gRoadKey = '';
 function gMe(){ return role==='padrona' ? 'goddess' : 'slave'; }
 function gWho(w){ return w==='goddess' ? 'la Dea' : 'lo schiavo'; }
 function gClone(){ return JSON.parse(JSON.stringify(G.stato)); }
@@ -2257,6 +2504,8 @@ function gLegendHtml(s){
       item('▶','Partenza','Casella 1')+
       item('🏁','Arrivo','Casella 40, il Trono finale','#ffd700')+
       item('★','Casella con nome','12, 18, 25, 31 e 40')+
+      item('➜','Il percorso','Segui le frecce a spirale: dalla 1 al centro, la 40')+
+      item('✨','Dove puoi arrivare','Le 6 caselle raggiungibili col dado sono evidenziate')+
       item('👆','Tocca una casella','Per leggerne il significato');
     Object.keys(GCAT).forEach(function(k){
       if(seen.indexOf(k)<0 || k==='arrivo') return;
@@ -2406,19 +2655,40 @@ function gModalHtml(s){
 
 function gBuildBoard(mode){
   const b = gEl.querySelector('#gBoard'), cats = gBoardOf(mode);
-  let h = '';
-  for(let r=0; r<8; r++){
-    for(let c=0; c<5; c++){
-      const n = r%2===0 ? r*5+c+1 : r*5+(5-c);
-      const k = GCAT[cats[n-1]] || GCAT.vuota;
-      const special = G_NAMES[n] ? ' sp' : '';
-      const ico = n===1 ? '▶' : n===40 ? '🏁' : k.i;
-      h += '<div class="gc'+special+'" data-sq="'+n+'" style="border-color:'+k.c+';background-color:'+k.c+'22" title="'+esc(k.n)+'"><span class="gn">'+n+'</span>'+
-        (G_NAMES[n] && n!==1 && n!==40 ? '<span class="gstar">★</span>' : '')+'<span class="gi">'+ico+'</span></div>';
-    }
+  let h = '<svg class="groad" id="gRoad" aria-hidden="true"></svg>';
+  for(let n=1; n<=G_SIZE; n++){
+    const rc = G_SP[n-1], k = GCAT[cats[n-1]] || GCAT.vuota;
+    const ico = n===1 ? '▶' : n===40 ? '🏁' : k.i;
+    h += '<div class="gc" data-sq="'+n+'" style="grid-row:'+rc[0]+';grid-column:'+rc[1]+'" title="'+esc(k.n)+'">'+
+      '<div class="gcc'+(G_NAMES[n] ? ' sp' : '')+'" style="border-color:'+k.c+';background-image:linear-gradient('+k.c+'33,'+k.c+'33),linear-gradient(160deg,rgba(255,255,255,.08),rgba(0,0,0,.22))">'+
+      '<span class="gn">'+n+'</span>'+(G_NAMES[n] && n!==1 && n!==40 ? '<span class="gstar">★</span>' : '')+'<span class="gi">'+ico+'</span></div></div>';
   }
   b.innerHTML = h + '<div class="gtok g" id="tokG"><span class="gti">'+ic('crown')+'</span></div><div class="gtok s" id="tokS"><span class="gti">'+ic('lock')+'</span></div>';
-  gBoardMode = mode; gPlacedOnce = false;
+  gBoardMode = mode; gPlacedOnce = false; gRoadKey = '';
+}
+function gDrawRoad(){
+  const b = gEl && gEl.querySelector('#gBoard'), svg = b && b.querySelector('#gRoad');
+  if(!svg || !b.offsetWidth) return;
+  const key = b.offsetWidth+'x'+b.offsetHeight;
+  if(key===gRoadKey) return;
+  const pts = [];
+  let cw = 60;
+  for(let n=1; n<=G_SIZE; n++){
+    const cell = b.querySelector('[data-sq="'+n+'"]');
+    if(!cell) return;
+    cw = cell.offsetWidth || cw;
+    pts.push([cell.offsetLeft + (cell.offsetWidth||0)/2, cell.offsetTop + (cell.offsetHeight||0)/2]);
+  }
+  gRoadKey = key;
+  svg.setAttribute('viewBox', '0 0 '+b.offsetWidth+' '+b.offsetHeight);
+  const d = 'M'+pts.map(function(p){ return p[0].toFixed(1)+' '+p[1].toFixed(1); }).join(' L');
+  let h = '<path class="road" d="'+d+'" style="stroke-width:'+(cw*0.34).toFixed(1)+'"/><path class="roadc" d="'+d+'"/>';
+  for(let i=0; i<pts.length-1; i++){
+    const a = pts[i], c = pts[i+1];
+    const ang = Math.atan2(c[1]-a[1], c[0]-a[0])*180/Math.PI;
+    h += '<path class="arr" d="M-4 -5 L3 0 L-4 5" transform="translate('+((a[0]+c[0])/2).toFixed(1)+' '+((a[1]+c[1])/2).toFixed(1)+') rotate('+ang.toFixed(1)+')"/>';
+  }
+  svg.innerHTML = h;
 }
 function gSleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
 function gXY(n, off){
@@ -2436,13 +2706,20 @@ function gMoveTok(who, n, off, ms){
 }
 function gMarkCells(s){
   const b = gEl.querySelector('#gBoard');
-  Array.prototype.forEach.call(b.querySelectorAll('.gc.hg,.gc.hs'), function(c){ c.classList.remove('hg','hs'); });
+  Array.prototype.forEach.call(b.querySelectorAll('.gc.hg,.gc.hs,.gc.rng'), function(c){ c.classList.remove('hg','hs','rng'); });
   const cg = b.querySelector('[data-sq="'+s.goddessPosition+'"]'), cs = b.querySelector('[data-sq="'+s.slavePosition+'"]');
   if(cg) cg.classList.add('hg');
   if(cs) cs.classList.add('hs');
   const tg = b.querySelector('#tokG'), ts = b.querySelector('#tokS'), act = s.gameStatus==='attiva';
   if(tg) tg.classList.toggle('act', act && s.currentTurn==='goddess');
   if(ts) ts.classList.toggle('act', act && s.currentTurn==='slave');
+  if(act && s.phase==='roll'){
+    const pos = s.currentTurn==='goddess' ? s.goddessPosition : s.slavePosition;
+    for(let k=1; k<=6; k++){
+      let t = pos + k; if(t>G_SIZE) t = G_SIZE - (t - G_SIZE);
+      const c = b.querySelector('[data-sq="'+t+'"]'); if(c) c.classList.add('rng');
+    }
+  }
 }
 function gPlaceNow(s, ms){
   const same = s.goddessPosition===s.slavePosition;
@@ -2494,6 +2771,7 @@ function gPlaceTokens(animate){
   if(!gEl || !G || !gOpen || gAnimating) return;
   const b = gEl.querySelector('#gBoard');
   if(!b || !b.offsetWidth) return;
+  gDrawRoad();
   const s = G.stato, hl = s.turnHistory.length;
   if(!gPlacedOnce || !animate){ gPlaceNow(s, 0); gHistSeen = hl; gPlacedOnce = true; return; }
   if(hl > gHistSeen){ gHistSeen = hl; gAnimateRoll(s); return; }
@@ -2695,7 +2973,7 @@ async function gClick(e){
     return gSimple(function(ns){ ns.settings.customCards.splice(i,1); });
   }
 }
-window.addEventListener('resize', function(){ gPlaceTokens(false); });
+window.addEventListener('resize', function(){ gRoadKey = ''; gPlaceTokens(false); });
 
 /* ---------- AVVIO ---------- */
 (async function init(){
